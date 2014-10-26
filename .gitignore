@@ -1,0 +1,13 @@
+*.suo
+*.user
+*.[Oo]bj
+*.log
+[Oo]bj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+_ReSharper*/
+*.resharper
+[Bb]uild/
+packages/
+*.nupkg
