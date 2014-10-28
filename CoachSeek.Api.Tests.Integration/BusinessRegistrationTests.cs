@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
+using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -253,59 +253,5 @@ namespace CoachSeek.Api.Tests.Integration
             Assert.That(admin.passwordHash, Is.EqualTo(Password)); // TODO
             Assert.That(admin.passwordSalt, Is.EqualTo(string.Empty)); // TODO
         }
-
-
-
-        public class BusinessResponse
-        {
-            public BusinessData data { get; set; }
-            public List<ApplicationError> errors { get; set; }
-            public bool isSuccessful { get; set; } }
     }
-
-        public class BusinessData
-        {
-            public Guid id { get; set; }
-            public string name { get; set; }
-            public string domain { get; set; }
-            public BusinessAdminData admin { get; set; }
-            public IList<LocationData> locations { get; set; }
-            public IList<CoachData> coaches { get; set; }
-
-        }
-
-        public class BusinessAdminData
-        {
-            public Guid id { get; set; }
-
-            public string firstName { get; set; }
-            public string lastName { get; set; }
-            public string email { get; set; }
-            public string username { get; set; }
-            public string passwordHash { get; set; }
-            public string passwordSalt { get; set; }
-        }
-
-        public class LocationData
-        {
-            public Guid id { get; set; }
-            public string name { get; set; }
-        }
-
-        public class CoachData
-        {
-            public Guid id { get; set; }
-            public string firstName { get; set; }
-            public string lastName { get; set; }
-            public string name { get; set; }
-            public string email { get; set; }
-            public string phone { get; set; }
-            //public WeeklyWorkingHoursData WorkingHours { get; set; }
-        }
-
-        public class WebError
-        {
-            public string message { get; set; }
-        }
-    }
-
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -310,14 +311,6 @@ namespace CoachSeek.Api.Tests.Integration
             var location = (LocationData)response.Payload;
             Assert.That(location.id, Is.EqualTo(OrakeiId));
             Assert.That(location.name, Is.EqualTo(NewLocationName));
-        }
-
-
-        public class ApiLocationSaveCommand
-        {
-            public Guid? businessId { get; set; }
-            public Guid? id { get; set; }
-            public string name { get; set; }
         }
     }
 }

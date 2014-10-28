@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -259,47 +260,6 @@ namespace CoachSeek.Api.Tests.Integration
             Assert.That(errors.GetLength(0), Is.EqualTo(2));
             AssertApplicationError(errors[0], "coach.workingHours.wednesday", "The wednesday working hours are not valid.");
             AssertApplicationError(errors[1], "coach.workingHours.friday", "The friday working hours are not valid.");
-        }
-
-
-        public class ApiCoachSaveCommand
-        {
-            public Guid? businessId { get; set; }
-            public Guid? id { get; set; }
-
-            public string firstName { get; set; }
-            public string lastName { get; set; }
-            public string email { get; set; }
-            public string phone { get; set; }
-            public ApiWeeklyWorkingHours workingHours { get; set; }
-        }
-
-        public class ApiWeeklyWorkingHours
-        {
-            public ApiDailyWorkingHours monday { get; set; }
-            public ApiDailyWorkingHours tuesday { get; set; }
-            public ApiDailyWorkingHours wednesday { get; set; }
-            public ApiDailyWorkingHours thursday { get; set; }
-            public ApiDailyWorkingHours friday { get; set; }
-            public ApiDailyWorkingHours saturday { get; set; }
-            public ApiDailyWorkingHours sunday { get; set; }
-        }
-
-        public class ApiDailyWorkingHours
-        {
-            public bool isAvailable { get; set; }
-            public string startTime { get; set; }
-            public string finishTime { get; set; }
-
-            public ApiDailyWorkingHours()
-            { }
-
-            public ApiDailyWorkingHours(bool isAvailable, string startTime, string finishTime)
-            {
-                this.isAvailable = isAvailable;
-                this.startTime = startTime;
-                this.finishTime = finishTime;
-            }
         }
     }
 }

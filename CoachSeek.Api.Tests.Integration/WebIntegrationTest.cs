@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CoachSeek.Api.Tests.Integration.Models;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using Newtonsoft.Json;
-using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration
 {
@@ -127,38 +128,6 @@ namespace CoachSeek.Api.Tests.Integration
         protected string RandomString
         {
             get { return Guid.NewGuid().ToString().ToLower().Replace("-", ""); }
-        }
-
-        public class Response
-        {
-            public HttpStatusCode StatusCode { get; private set; }
-            public object Payload { get; private set; }
-
-            public Response(HttpStatusCode statusCode, object payload)
-            {
-                StatusCode = statusCode;
-                Payload = payload;
-            }
-        }
-
-        public class ApplicationError
-        {
-            public string field { get; set; }
-            public string message { get; set; }
-        }
-
-        public class ApiBusinessRegistrationCommand
-        {
-            public string businessName { get; set; }
-            public ApiBusinessRegistrant registrant { get; set; }
-        }
-
-        public class ApiBusinessRegistrant
-        {
-            public string firstName { get; set; }
-            public string lastName { get; set; }
-            public string email { get; set; }
-            public string password { get; set; }
         }
     }
 }
