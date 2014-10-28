@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ApiServiceSaveCommand.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\CoachTests.cs" />
     <Compile Include="Tests\LocationTests.cs" />
