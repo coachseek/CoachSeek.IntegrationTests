@@ -95,9 +95,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
         [Test]
-        public void GivenNewLocationAndChangeToAnAlreadyExistingLocationName_WhenPost_ThenReturnDuplicateLocationErrorResponse()
+        public void GivenNewLocationWithAnAlreadyExistingLocationName_WhenPost_ThenReturnDuplicateLocationErrorResponse()
         {
-            var command = GivenNewLocationAndChangeToAnAlreadyExistingLocationName();
+            var command = GivenNewLocationWithAnAlreadyExistingLocationName();
             var response = WhenPost(command);
             ThenReturnDuplicateLocationErrorResponse(response);
         }
@@ -168,7 +168,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(location);
         }
 
-        private string GivenNewLocationAndChangeToAnAlreadyExistingLocationName()
+        private string GivenNewLocationWithAnAlreadyExistingLocationName()
         {
             var location = new ApiLocationSaveCommand
             {

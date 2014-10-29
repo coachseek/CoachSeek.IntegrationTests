@@ -116,9 +116,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
         [Test]
-        public void GivenNewCoachAndChangeToAnAlreadyExistingCoachName_WhenPost_ThenReturnDuplicateCoachErrorResponse()
+        public void GivenNewCoachWithAnAlreadyExistingCoachName_WhenPost_ThenReturnDuplicateCoachErrorResponse()
         {
-            var command = GivenNewCoachAndChangeToAnAlreadyExistingCoachName();
+            var command = GivenNewCoachWithAnAlreadyExistingCoachName();
             var response = WhenPost(command);
             ThenReturnDuplicateCoachErrorResponse(response);
         }
@@ -224,7 +224,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(coach);
         }
 
-        private string GivenNewCoachAndChangeToAnAlreadyExistingCoachName()
+        private string GivenNewCoachWithAnAlreadyExistingCoachName()
         {
             var coach = new ApiCoachSaveCommand
             {

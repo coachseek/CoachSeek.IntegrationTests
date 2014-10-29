@@ -9,10 +9,56 @@ namespace CoachSeek.Api.Tests.Integration.Tests
     [TestFixture]
     public class ServiceTests : WebIntegrationTest
     {
+        private const string MINI_RED_NAME = "Mini Red";
+        private const string MINI_BLUE_NAME = "Mini Blue";
+
+        private Guid MiniRedId { get; set; }
+        private Guid MiniBlueId { get; set; }
+
         protected override string RelativePath
         {
             get { return "Services"; }
         }
+
+        [SetUp]
+        public void Setup()
+        {
+            RegisterTestBusiness();
+            RegisterTestServices();
+        }
+
+        private void RegisterTestServices()
+        {
+            RegisterMiniRedService();
+            RegisterMiniBlueService();
+        }
+
+        private void RegisterMiniRedService()
+        {
+            var json = CreateNewServiceSaveCommand(MINI_RED_NAME);
+            var response = Post<ServiceData>(json);
+            MiniRedId = ((ServiceData)response.Payload).id;
+        }
+
+        private void RegisterMiniBlueService()
+        {
+            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME);
+            var response = Post<ServiceData>(json);
+            MiniBlueId = ((ServiceData)response.Payload).id;
+        }
+
+        private string CreateNewServiceSaveCommand(string name)
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = name,
+                description = RandomString
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
 
         [Test]
         public void GivenNoServiceSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
@@ -38,6 +84,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenReturnInvalidBusinessIdErrorResponse(response);
         }
 
+        [Test]
+        public void GivenNonExistentServiceId_WhenPost_ThenReturnInvalidServiceIdErrorResponse()
+        {
+            var command = GivenNonExistentServiceId();
+            var response = WhenPost(command);
+            ThenReturnInvalidServiceIdErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenNewServiceWithAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceErrorResponse()
+        {
+            var command = GivenNewServiceWithAnAlreadyExistingServiceName();
+            var response = WhenPost(command);
+            ThenReturnDuplicateServiceErrorResponse(response);
+        }
+
 
         private string GivenNoServiceSaveCommand()
         {
@@ -51,14 +113,39 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private string GivenNonExistentBusinessId()
         {
-            var location = new ApiServiceSaveCommand
+            var service = new ApiServiceSaveCommand
             {
                 businessId = Guid.Empty,
                 name = RandomString,
                 description = RandomString
             };
 
-            return JsonConvert.SerializeObject(location);
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenNonExistentServiceId()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = Guid.Empty,
+                name = RandomString,
+                description = RandomString
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenNewServiceWithAnAlreadyExistingServiceName()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = MINI_RED_NAME,
+                description = RandomString
+            };
+
+            return JsonConvert.SerializeObject(service);
         }
 
 
@@ -98,6 +185,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "service.businessId", "This business does not exist.");
+        }
+
+        private void ThenReturnInvalidServiceIdErrorResponse(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], "service.id", "This service does not exist.");
+        }
+
+        private void ThenReturnDuplicateServiceErrorResponse(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], "service.name", "This service already exists.");
         }
     }
 }
