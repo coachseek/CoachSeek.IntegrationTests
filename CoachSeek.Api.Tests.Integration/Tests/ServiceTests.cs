@@ -14,6 +14,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private Guid MiniRedId { get; set; }
         private Guid MiniBlueId { get; set; }
+        private string NewServiceName { get; set; }
 
         protected override string RelativePath
         {
@@ -25,6 +26,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             RegisterTestBusiness();
             RegisterTestServices();
+
+            NewServiceName = string.Empty;
         }
 
         private void RegisterTestServices()
@@ -35,25 +38,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterMiniRedService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_RED_NAME);
+            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, "Mini Red Description");
             var response = Post<ServiceData>(json);
             MiniRedId = ((ServiceData)response.Payload).id;
         }
 
         private void RegisterMiniBlueService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME);
+            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME, "Mini Blue Description");
             var response = Post<ServiceData>(json);
             MiniBlueId = ((ServiceData)response.Payload).id;
         }
 
-        private string CreateNewServiceSaveCommand(string name)
+        private string CreateNewServiceSaveCommand(string name, string description)
         {
             var service = new ApiServiceSaveCommand
             {
                 businessId = BusinessId,
                 name = name,
-                description = RandomString
+                description = description
             };
 
             return JsonConvert.SerializeObject(service);
@@ -100,6 +103,38 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenReturnDuplicateServiceErrorResponse(response);
         }
 
+        [Test]
+        public void GivenExistingServiceAndChangeToAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceErrorResponse()
+        {
+            var command = GivenExistingServiceAndChangeToAnAlreadyExistingServiceName();
+            var response = WhenPost(command);
+            ThenReturnDuplicateServiceErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenNewUniqueService_WhenPost_ThenReturnNewServiceSuccessResponse()
+        {
+            var command = GivenNewUniqueService();
+            var response = WhenPost(command);
+            ThenReturnNewServiceSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenExistingServiceAndChangeToUniqueServiceName_WhenPost_ThenReturnExistingServiceSuccessResponse()
+        {
+            var command = GivenExistingServiceAndChangeToUniqueServiceName();
+            var response = WhenPost(command);
+            ThenReturnExistingServiceSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenExistingServiceAndKeepServiceNameSame_WhenPost_ThenReturnExistingServiceSuccessResponse()
+        {
+            var command = GivenExistingServiceAndKeepServiceNameSame();
+            var response = WhenPost(command);
+            ThenReturnExistingServiceSuccessResponse(response);
+        }
+
 
         private string GivenNoServiceSaveCommand()
         {
@@ -143,6 +178,61 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 businessId = BusinessId,
                 name = MINI_RED_NAME,
                 description = RandomString
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenExistingServiceAndChangeToAnAlreadyExistingServiceName()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = MiniRedId,
+                name = MINI_BLUE_NAME,
+                description = RandomString
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenNewUniqueService()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Orange",
+                description = "Tennis for 5-7 year olds of intermediate skill level."
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenExistingServiceAndChangeToUniqueServiceName()
+        {
+            NewServiceName = "Mini Red #3";
+
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = MiniRedId,
+                name = NewServiceName,
+                description = "Tennis for 6-8 year olds of low skill level."
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenExistingServiceAndKeepServiceNameSame()
+        {
+            NewServiceName = MINI_RED_NAME;
+
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = MiniRedId,
+                name = NewServiceName,
+                description = "Tennis for 6-8 year olds of low skill level."
             };
 
             return JsonConvert.SerializeObject(service);
@@ -207,6 +297,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "service.name", "This service already exists.");
+        }
+
+        private void ThenReturnNewServiceSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(service.name, Is.EqualTo("Mini Orange"));
+            Assert.That(service.description, Is.EqualTo("Tennis for 5-7 year olds of intermediate skill level."));
+        }
+
+        private void ThenReturnExistingServiceSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.EqualTo(MiniRedId));
+            Assert.That(service.name, Is.EqualTo(NewServiceName));
+            Assert.That(service.description, Is.EqualTo("Tennis for 6-8 year olds of low skill level."));
         }
     }
 }
