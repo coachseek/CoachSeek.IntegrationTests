@@ -15,6 +15,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private Guid MiniRedId { get; set; }
         private Guid MiniBlueId { get; set; }
         private string NewServiceName { get; set; }
+        private int? Duration { get; set; }
+        private decimal? Price { get; set; }
+        private int? StudentCapacity { get; set; }
+        private bool? IsOnlineBookable { get; set; }
+        private string Colour { get; set; }
+
 
         protected override string RelativePath
         {
@@ -56,7 +62,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 businessId = BusinessId,
                 name = name,
-                description = description
+                description = description,
+                defaults = new ApiServiceDefaults
+                {
+                    duration = 45,
+                    price = 50,
+                    studentCapacity = 6,
+                    isOnlineBookable = null,
+                    colour = "orange"
+                }
+
             };
 
             return JsonConvert.SerializeObject(service);
@@ -133,6 +148,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var command = GivenExistingServiceAndKeepServiceNameSame();
             var response = WhenPost(command);
             ThenReturnExistingServiceSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenNewServiceWithDefaults_WhenPost_ThenReturnNewServiceWithDefaultsSuccessResponse()
+        {
+            var command = GivenNewServiceWithDefaults();
+            var response = WhenPost(command);
+            ThenReturnNewServiceWithDefaultsSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenNewServiceWithInvalidDefaults_WhenPost_ThenReturnServiceDefaultsErrorResponse()
+        {
+            var command = GivenNewServiceWithInvalidDefaults();
+            var response = WhenPost(command);
+            ThenReturnServiceDefaultsErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenExistingServiceWithDefaults_WhenPost_ThenReturnExistingServiceWithDefaultsSuccessResponse()
+        {
+            var command = GivenExistingServiceWithDefaults();
+            var response = WhenPost(command);
+            ThenReturnExistingServiceWithDefaultsSuccessResponse(response);
         }
 
 
@@ -238,6 +277,84 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(service);
         }
 
+        private string GivenNewServiceWithDefaults()
+        {
+            Duration = 60;
+            Price = 45;
+            StudentCapacity = 8;
+            IsOnlineBookable = true;
+            Colour = "orange";
+
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Orange",
+                description = "Mini Orange Service",
+                defaults = new ApiServiceDefaults
+                {
+                    duration = Duration,
+                    price = Price,
+                    studentCapacity = StudentCapacity,
+                    isOnlineBookable = IsOnlineBookable,
+                    colour = Colour
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenNewServiceWithInvalidDefaults()
+        {
+            Duration = 67;
+            Price = 78.904m;
+            StudentCapacity = -8;
+            IsOnlineBookable = true;
+            Colour = "mandarin";
+
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Orange",
+                description = "Mini Orange Service",
+                defaults = new ApiServiceDefaults
+                {
+                    duration = Duration,
+                    price = Price,
+                    studentCapacity = StudentCapacity,
+                    isOnlineBookable = IsOnlineBookable,
+                    colour = Colour
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenExistingServiceWithDefaults()
+        {
+            Duration = 60;
+            Price = 75;
+            StudentCapacity = 8;
+            IsOnlineBookable = true;
+            Colour = "red";
+
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = MiniRedId,
+                name = "Mini Red",
+                description = "Mini Red Service",
+                defaults = new ApiServiceDefaults
+                {
+                    duration = Duration,
+                    price = Price,
+                    studentCapacity = StudentCapacity,
+                    isOnlineBookable = IsOnlineBookable,
+                    colour = Colour
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
 
         private Response WhenPost(string json)
         {
@@ -321,6 +438,57 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(service.id, Is.EqualTo(MiniRedId));
             Assert.That(service.name, Is.EqualTo(NewServiceName));
             Assert.That(service.description, Is.EqualTo("Tennis for 6-8 year olds of low skill level."));
+        }
+
+        private void ThenReturnNewServiceWithDefaultsSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(service.name, Is.EqualTo("Mini Orange"));
+            Assert.That(service.description, Is.EqualTo("Mini Orange Service"));
+            var defaults = service.defaults;
+            Assert.That(defaults.duration, Is.EqualTo(Duration));
+            Assert.That(defaults.price, Is.EqualTo(Price));
+            Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
+            Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
+            Assert.That(defaults.colour, Is.EqualTo(Colour));
+        }
+
+        private void ThenReturnServiceDefaultsErrorResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(4));
+            AssertApplicationError(errors[0], "service.duration", "The duration is not valid.");
+            AssertApplicationError(errors[1], "service.price", "The price is not valid.");
+            AssertApplicationError(errors[2], "service.studentCapacity", "The studentCapacity is not valid.");
+            AssertApplicationError(errors[3], "service.colour", "The colour is not valid.");
+        }
+
+        private void ThenReturnExistingServiceWithDefaultsSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.EqualTo(MiniRedId));
+            Assert.That(service.name, Is.EqualTo("Mini Red"));
+            Assert.That(service.description, Is.EqualTo("Mini Red Service"));
+            var defaults = service.defaults;
+            Assert.That(defaults.duration, Is.EqualTo(Duration));
+            Assert.That(defaults.price, Is.EqualTo(Price));
+            Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
+            Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
+            Assert.That(defaults.colour, Is.EqualTo(Colour));
         }
     }
 }
