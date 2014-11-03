@@ -174,6 +174,38 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenReturnExistingServiceWithDefaultsSuccessResponse(response);
         }
 
+        [Test]
+        public void GivenNewServiceWithRepetition_WhenPost_ThenReturnNewServiceWithRepetitionSuccessResponse()
+        {
+            var command = GivenNewServiceWithRepetition();
+            var response = WhenPost(command);
+            ThenReturnNewServiceWithRepetitionSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenNewServiceWithInvalidRepetition_WhenPost_ThenReturnServiceRepetitionErrorResponse()
+        {
+            var command = GivenNewServiceWithInvalidRepetition();
+            var response = WhenPost(command);
+            ThenReturnServiceRepetitionErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenExistingServiceWithRepetition_WhenPost_ThenReturnExistingServiceWithRepetitionSuccessResponse()
+        {
+            var command = GivenExistingServiceWithRepetition();
+            var response = WhenPost(command);
+            ThenReturnExistingServiceWithRepetitionSuccessResponse(response);
+        }
+
+        [Test]
+        public void GivenInvalidServiceWithDefaultsAndRepetition_WhenPost_ThenReturnServiceDefaultAndRepetitionErrorResponse()
+        {
+            var command = GivenInvalidServiceWithDefaultsAndRepetition();
+            var response = WhenPost(command);
+            ThenReturnServiceDefaultAndRepetitionErrorResponse(response);
+        }
+
 
         private string GivenNoServiceSaveCommand()
         {
@@ -356,6 +388,84 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(service);
         }
 
+        private string GivenNewServiceWithRepetition()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Orange",
+                description = "Mini Orange Service",
+                repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "w",
+                    repeatTimes = 10
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenNewServiceWithInvalidRepetition()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Orange",
+                description = "Mini Orange Service",
+                repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "xxx",
+                    repeatTimes = -12
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenExistingServiceWithRepetition()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                id = MiniRedId,
+                name = "Mini Red 2",
+                description = "Mini Red 2 Service",
+                repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "2d",
+                    repeatTimes = 15
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string GivenInvalidServiceWithDefaultsAndRepetition()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = "Mini Green",
+                description = "Mini Green Service",
+                defaults = new ApiServiceDefaults
+                {
+                    duration = 80,
+                    price = 50,
+                    studentCapacity = 0,
+                    isOnlineBookable = null,
+                    colour = "Lime"
+                },
+                repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "z",
+                    repeatTimes = 6
+                }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+
         private Response WhenPost(string json)
         {
             return Post<ServiceData>(json);
@@ -467,10 +577,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var errors = (ApplicationError[])response.Payload;
 
             Assert.That(errors.GetLength(0), Is.EqualTo(4));
-            AssertApplicationError(errors[0], "service.duration", "The duration is not valid.");
-            AssertApplicationError(errors[1], "service.price", "The price is not valid.");
-            AssertApplicationError(errors[2], "service.studentCapacity", "The studentCapacity is not valid.");
-            AssertApplicationError(errors[3], "service.colour", "The colour is not valid.");
+            AssertApplicationError(errors[0], "service.defaults.duration", "The duration is not valid.");
+            AssertApplicationError(errors[1], "service.defaults.price", "The price is not valid.");
+            AssertApplicationError(errors[2], "service.defaults.studentCapacity", "The studentCapacity is not valid.");
+            AssertApplicationError(errors[3], "service.defaults.colour", "The colour is not valid.");
         }
 
         private void ThenReturnExistingServiceWithDefaultsSuccessResponse(Response response)
@@ -489,6 +599,63 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
             Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
             Assert.That(defaults.colour, Is.EqualTo(Colour));
+        }
+
+        private void ThenReturnNewServiceWithRepetitionSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(service.name, Is.EqualTo("Mini Orange"));
+            Assert.That(service.description, Is.EqualTo("Mini Orange Service"));
+            var repetition = service.repetition;
+            Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
+            Assert.That(repetition.repeatTimes, Is.EqualTo(10));
+        }
+
+        private void ThenReturnServiceRepetitionErrorResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(2));
+            AssertApplicationError(errors[0], "service.repetition.repeatFrequency", "The repeatFrequency is not valid.");
+            AssertApplicationError(errors[1], "service.repetition.repeatTimes", "The repeatTimes is not valid.");
+        }
+
+        private void ThenReturnExistingServiceWithRepetitionSuccessResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+            var service = (ServiceData)response.Payload;
+            Assert.That(service.id, Is.EqualTo(MiniRedId));
+            Assert.That(service.name, Is.EqualTo("Mini Red 2"));
+            Assert.That(service.description, Is.EqualTo("Mini Red 2 Service"));
+            var repetition = service.repetition;
+            Assert.That(repetition.repeatFrequency, Is.EqualTo("2d"));
+            Assert.That(repetition.repeatTimes, Is.EqualTo(15));
+        }
+
+        private void ThenReturnServiceDefaultAndRepetitionErrorResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(3));
+            AssertApplicationError(errors[0], "service.defaults.duration", "The duration is not valid.");
+            AssertApplicationError(errors[1], "service.defaults.colour", "The colour is not valid.");
+            AssertApplicationError(errors[2], "service.repetition.repeatFrequency", "The repeatFrequency is not valid.");
         }
     }
 }
