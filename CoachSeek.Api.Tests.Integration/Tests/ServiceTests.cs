@@ -6,20 +6,23 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
-    [TestFixture]
-    public class ServiceTests : WebIntegrationTest
+    public abstract class ServiceTests : WebIntegrationTest
     {
         private const string MINI_RED_NAME = "Mini Red";
+        private const string MINI_RED_DESCRIPTION = "Mini Red Service";
         private const string MINI_BLUE_NAME = "Mini Blue";
 
         private Guid MiniRedId { get; set; }
         private Guid MiniBlueId { get; set; }
         private string NewServiceName { get; set; }
+        private string NewServiceDescription { get; set; }
         private int? Duration { get; set; }
         private decimal? Price { get; set; }
         private int? StudentCapacity { get; set; }
         private bool? IsOnlineBookable { get; set; }
         private string Colour { get; set; }
+        private decimal? SessionPrice { get; set; }
+        private decimal? CoursePrice { get; set; }
 
 
         protected override string RelativePath
@@ -44,7 +47,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterMiniRedService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, "Mini Red Description");
+            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, MINI_RED_DESCRIPTION);
             var response = Post<ServiceData>(json);
             MiniRedId = ((ServiceData)response.Payload).id;
         }
@@ -78,391 +81,600 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        [Test]
-        public void GivenNoServiceSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
+        [TestFixture]
+        public class ServiceCommandTests : ServiceTests
         {
-            var command = GivenNoServiceSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnNoDataErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenEmptyServiceSaveCommand_WhenPost_ThenReturnRootRequiredErrorResponse()
-        {
-            var command = GivenEmptyServiceSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnRootRequiredErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdErrorResponse()
-        {
-            var command = GivenNonExistentBusinessId();
-            var response = WhenPost(command);
-            ThenReturnInvalidBusinessIdErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentServiceId_WhenPost_ThenReturnInvalidServiceIdErrorResponse()
-        {
-            var command = GivenNonExistentServiceId();
-            var response = WhenPost(command);
-            ThenReturnInvalidServiceIdErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNewServiceWithAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceErrorResponse()
-        {
-            var command = GivenNewServiceWithAnAlreadyExistingServiceName();
-            var response = WhenPost(command);
-            ThenReturnDuplicateServiceErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingServiceAndChangeToAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceErrorResponse()
-        {
-            var command = GivenExistingServiceAndChangeToAnAlreadyExistingServiceName();
-            var response = WhenPost(command);
-            ThenReturnDuplicateServiceErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNewUniqueService_WhenPost_ThenReturnNewServiceSuccessResponse()
-        {
-            var command = GivenNewUniqueService();
-            var response = WhenPost(command);
-            ThenReturnNewServiceSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingServiceAndChangeToUniqueServiceName_WhenPost_ThenReturnExistingServiceSuccessResponse()
-        {
-            var command = GivenExistingServiceAndChangeToUniqueServiceName();
-            var response = WhenPost(command);
-            ThenReturnExistingServiceSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingServiceAndKeepServiceNameSame_WhenPost_ThenReturnExistingServiceSuccessResponse()
-        {
-            var command = GivenExistingServiceAndKeepServiceNameSame();
-            var response = WhenPost(command);
-            ThenReturnExistingServiceSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenNewServiceWithDefaults_WhenPost_ThenReturnNewServiceWithDefaultsSuccessResponse()
-        {
-            var command = GivenNewServiceWithDefaults();
-            var response = WhenPost(command);
-            ThenReturnNewServiceWithDefaultsSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenNewServiceWithInvalidDefaults_WhenPost_ThenReturnServiceDefaultsErrorResponse()
-        {
-            var command = GivenNewServiceWithInvalidDefaults();
-            var response = WhenPost(command);
-            ThenReturnServiceDefaultsErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingServiceWithDefaults_WhenPost_ThenReturnExistingServiceWithDefaultsSuccessResponse()
-        {
-            var command = GivenExistingServiceWithDefaults();
-            var response = WhenPost(command);
-            ThenReturnExistingServiceWithDefaultsSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenNewServiceWithRepetition_WhenPost_ThenReturnNewServiceWithRepetitionSuccessResponse()
-        {
-            var command = GivenNewServiceWithRepetition();
-            var response = WhenPost(command);
-            ThenReturnNewServiceWithRepetitionSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenNewServiceWithInvalidRepetition_WhenPost_ThenReturnServiceRepetitionErrorResponse()
-        {
-            var command = GivenNewServiceWithInvalidRepetition();
-            var response = WhenPost(command);
-            ThenReturnServiceRepetitionErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingServiceWithRepetition_WhenPost_ThenReturnExistingServiceWithRepetitionSuccessResponse()
-        {
-            var command = GivenExistingServiceWithRepetition();
-            var response = WhenPost(command);
-            ThenReturnExistingServiceWithRepetitionSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenInvalidServiceWithDefaultsAndRepetition_WhenPost_ThenReturnServiceDefaultAndRepetitionErrorResponse()
-        {
-            var command = GivenInvalidServiceWithDefaultsAndRepetition();
-            var response = WhenPost(command);
-            ThenReturnServiceDefaultAndRepetitionErrorResponse(response);
-        }
-
-
-        private string GivenNoServiceSaveCommand()
-        {
-            return "";
-        }
-
-        private string GivenEmptyServiceSaveCommand()
-        {
-            return "{}";
-        }
-
-        private string GivenNonExistentBusinessId()
-        {
-            var service = new ApiServiceSaveCommand
+            [Test]
+            public void GivenNoServiceSaveCommand_WhenPost_ThenReturnNoDataError()
             {
-                businessId = Guid.Empty,
-                name = RandomString,
-                description = RandomString
-            };
+                var command = GivenNoServiceSaveCommand();
+                var response = WhenPost(command);
+                AssertSingleError(response, "Please post us some data!");
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenNonExistentServiceId()
-        {
-            var service = new ApiServiceSaveCommand
+            [Test]
+            public void GivenEmptyServiceSaveCommand_WhenPost_ThenReturnMultipleErrors()
             {
-                businessId = BusinessId,
-                id = Guid.Empty,
-                name = RandomString,
-                description = RandomString
-            };
+                var command = GivenEmptyServiceSaveCommand();
+                var response = WhenPost(command);
+                AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "service.businessId" }, 
+                                                        { "The name field is required.", "service.name" } });
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenNewServiceWithAnAlreadyExistingServiceName()
-        {
-            var service = new ApiServiceSaveCommand
+            [Test]
+            public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdError()
             {
-                businessId = BusinessId,
-                name = MINI_RED_NAME,
-                description = RandomString
-            };
+                var command = GivenNonExistentBusinessId();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This business does not exist.", "service.businessId");
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
 
-        private string GivenExistingServiceAndChangeToAnAlreadyExistingServiceName()
-        {
-            var service = new ApiServiceSaveCommand
+            private string GivenNoServiceSaveCommand()
             {
-                businessId = BusinessId,
-                id = MiniRedId,
-                name = MINI_BLUE_NAME,
-                description = RandomString
-            };
+                return "";
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenNewUniqueService()
-        {
-            var service = new ApiServiceSaveCommand
+            private string GivenEmptyServiceSaveCommand()
             {
-                businessId = BusinessId,
-                name = "Mini Orange",
-                description = "Tennis for 5-7 year olds of intermediate skill level."
-            };
+                return "{}";
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenExistingServiceAndChangeToUniqueServiceName()
-        {
-            NewServiceName = "Mini Red #3";
-
-            var service = new ApiServiceSaveCommand
+            private ApiServiceSaveCommand GivenNonExistentBusinessId()
             {
-                businessId = BusinessId,
-                id = MiniRedId,
-                name = NewServiceName,
-                description = "Tennis for 6-8 year olds of low skill level."
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenExistingServiceAndKeepServiceNameSame()
-        {
-            NewServiceName = MINI_RED_NAME;
-
-            var service = new ApiServiceSaveCommand
-            {
-                businessId = BusinessId,
-                id = MiniRedId,
-                name = NewServiceName,
-                description = "Tennis for 6-8 year olds of low skill level."
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenNewServiceWithDefaults()
-        {
-            Duration = 60;
-            Price = 45;
-            StudentCapacity = 8;
-            IsOnlineBookable = true;
-            Colour = "orange";
-
-            var service = new ApiServiceSaveCommand
-            {
-                businessId = BusinessId,
-                name = "Mini Orange",
-                description = "Mini Orange Service",
-                defaults = new ApiServiceDefaults
+                return new ApiServiceSaveCommand
                 {
-                    duration = Duration,
-                    price = Price,
-                    studentCapacity = StudentCapacity,
-                    isOnlineBookable = IsOnlineBookable,
-                    colour = Colour
-                }
-            };
-
-            return JsonConvert.SerializeObject(service);
+                    businessId = Guid.Empty,
+                    name = RandomString,
+                    description = RandomString
+                };
+            }
         }
 
-        private string GivenNewServiceWithInvalidDefaults()
-        {
-            Duration = 67;
-            Price = 78.904m;
-            StudentCapacity = -8;
-            IsOnlineBookable = true;
-            Colour = "mandarin";
 
-            var service = new ApiServiceSaveCommand
+        [TestFixture]
+        public class ServiceNewTests : ServiceTests
+        {
+            [Test]
+            public void GivenAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceError()
             {
-                businessId = BusinessId,
-                name = "Mini Orange",
-                description = "Mini Orange Service",
-                defaults = new ApiServiceDefaults
+                var command = GivenAnAlreadyExistingServiceName();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This service already exists.", "service.name");
+            }
+
+            [Test]
+            public void GivenNewUniqueService_WhenPost_ThenReturnNewServiceSuccess()
+            {
+                var command = GivenNewUniqueService();
+                var response = WhenPost(command);
+                AssertNewServiceSuccess(response);
+            }
+
+            [Test]
+            public void GivenNewServiceWithInvalidDefaults_WhenPost_ThenReturnInvalidDefaultsErrors()
+            {
+                var command = GivenNewServiceWithInvalidDefaults();
+                var response = WhenPost(command);
+                AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
+                                                        { "The price is not valid.", "service.defaults.price" },
+                                                        { "The studentCapacity is not valid.", "service.defaults.studentCapacity" },
+                                                        { "The colour is not valid.", "service.defaults.colour" } });
+            }
+
+            [Test]
+            public void GivenNewServiceWithValidDefaults_WhenPost_ThenReturnNewServiceWitDefaultsSuccess()
+            {
+                var command = GivenNewServiceWithValidDefaults();
+                var response = WhenPost(command);
+                AssertNewServiceWithDefaultsSuccess(response);
+            }
+
+            [Test]
+            public void GivenNewServiceWithEmptyPricingStructure_WhenPost_ThenReturnInvalidPricingError()
+            {
+                var command = GivenNewServiceWithPricing(null, null);
+                var response = WhenPost(command);
+                AssertSingleError(response, "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing");
+            }
+
+            [Test]
+            public void GivenNewServiceWithSessionPriceOnly_WhenPost_ThenReturnNewServiceSuccess()
+            {
+                var command = GivenNewServiceWithPricing(15, null);
+                var response = WhenPost(command);
+                AssertNewServiceWithPricingSuccess(response, 15, null);
+            }
+
+            [Test]
+            public void GivenSessionServiceWithCoursePrice_WhenPost_ThenReturnServiceDefaultsError()
+            {
+                var command = GivenSessionServiceWithCoursePrice();
+                var response = WhenPost(command);
+                AssertSingleError(response, 
+                                  "The coursePrice cannot be specified if the service is not for a course or is open-ended.",
+                                  "service.pricing.coursePrice");
+            }
+
+            [Test]
+            public void GivenOpenEndedCourseServiceWithCoursePrice_WhenPost_ThenReturnServiceDefaultsError()
+            {
+                var command = GivenOpenEndedCourseServiceWithCoursePrice();
+                var response = WhenPost(command);
+                AssertSingleError(response,
+                                  "The coursePrice cannot be specified if the service is not for a course or is open-ended.",
+                                  "service.pricing.coursePrice");
+            }
+
+            [Test]
+            public void GivenFiniteCourseServiceWithoutCoursePrice_WhenPost_ThenCalculateTheCoursePrice()
+            {
+                var command = GivenFiniteCourseServiceWithoutCoursePrice();
+                var response = WhenPost(command);
+                AssertNewServiceWithPricingSuccess(response, 15, 150);
+            }
+
+            [Test]
+            public void GivenUnpricedCourseService_WhenPost_ThenReturnNewServiceWithRepetitionSuccess()
+            {
+                var command = GivenUnpricedCourseService();
+                var response = WhenPost(command);
+                AssertNewServiceWithoutPricingSuccess(response);
+            }
+
+            [Test]
+            public void GivenInvalidCourseService_WhenPost_ThenReturnServiceRepetitionErrors()
+            {
+                var command = GivenInvalidCourseService();
+                var response = WhenPost(command);
+                AssertMultipleErrors(response, new[,] { { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" }, 
+                                                        { "The repeatTimes is not valid.", "service.repetition.repeatTimes" } });
+            }
+
+            [Test]
+            public void GivenMultipleErrorsInService_WhenPost_ThenReturnServiceErrors()
+            {
+                var command = GivenMultipleErrorsInService();
+                var response = WhenPost(command);
+                AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
+                                                        { "The colour is not valid.", "service.defaults.colour" },
+                                                        { "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing" },
+                                                        { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" } });
+            }
+
+
+            private ApiServiceSaveCommand GivenNewUniqueService()
+            {
+                return new ApiServiceSaveCommand
                 {
-                    duration = Duration,
-                    price = Price,
-                    studentCapacity = StudentCapacity,
-                    isOnlineBookable = IsOnlineBookable,
-                    colour = Colour
-                }
-            };
+                    businessId = BusinessId,
+                    name = "Mini Orange",
+                    description = "Mini Orange Service"
+                };
+            }
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenExistingServiceWithDefaults()
-        {
-            Duration = 60;
-            Price = 75;
-            StudentCapacity = 8;
-            IsOnlineBookable = true;
-            Colour = "red";
-
-            var service = new ApiServiceSaveCommand
+            private ApiServiceSaveCommand GivenAnAlreadyExistingServiceName()
             {
-                businessId = BusinessId,
-                id = MiniRedId,
-                name = "Mini Red",
-                description = "Mini Red Service",
-                defaults = new ApiServiceDefaults
+                var service = GivenNewUniqueService();
+                service.name = MINI_RED_NAME;
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenNewServiceWithValidDefaults()
+            {
+                var service = GivenNewUniqueService();
+
+                service.defaults = new ApiServiceDefaults
                 {
-                    duration = Duration,
-                    price = Price,
-                    studentCapacity = StudentCapacity,
-                    isOnlineBookable = IsOnlineBookable,
-                    colour = Colour
-                }
-            };
+                    duration = 60,
+                    price = 75,
+                    studentCapacity = 8,
+                    isOnlineBookable = true,
+                    colour = " Orange"
+                };
 
-            return JsonConvert.SerializeObject(service);
-        }
+                return service;
+            }
 
-        private string GivenNewServiceWithRepetition()
-        {
-            var service = new ApiServiceSaveCommand
+            private ApiServiceSaveCommand GivenNewServiceWithInvalidDefaults()
             {
-                businessId = BusinessId,
-                name = "Mini Orange",
-                description = "Mini Orange Service",
-                repetition = new ApiServiceRepetition
+                var service = GivenNewUniqueService();
+
+                service.defaults = new ApiServiceDefaults
+                {
+                    duration = 67,
+                    price = 78.904m,
+                    studentCapacity = -8,
+                    isOnlineBookable = true,
+                    colour = "mandarin"
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenNewServiceWithPricing(decimal? sessionPrice, decimal? coursePrice)
+            {
+                var service = GivenNewUniqueService();
+
+                service.pricing = new ApiServicePricing
+                {
+                    sessionPrice = sessionPrice,
+                    coursePrice = coursePrice
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenSessionServiceWithCoursePrice()
+            {
+                var service = GivenNewUniqueService();
+
+                service.pricing = new ApiServicePricing
+                {
+                    sessionPrice = 15,
+                    coursePrice = 100
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenOpenEndedCourseServiceWithCoursePrice()
+            {
+                var service = GivenNewUniqueService();
+
+                service.repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "d",
+                    repeatTimes = -1 // Open-Ended
+                };
+
+                service.pricing = new ApiServicePricing
+                {
+                    sessionPrice = 15,
+                    coursePrice = 100
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenFiniteCourseServiceWithoutCoursePrice()
+            {
+                var service = GivenNewUniqueService();
+
+                service.repetition = new ApiServiceRepetition
                 {
                     repeatFrequency = "w",
                     repeatTimes = 10
-                }
-            };
+                };
 
-            return JsonConvert.SerializeObject(service);
-        }
+                service.pricing = new ApiServicePricing
+                {
+                    sessionPrice = 15,
+                    coursePrice = null
+                };
 
-        private string GivenNewServiceWithInvalidRepetition()
-        {
-            var service = new ApiServiceSaveCommand
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenUnpricedCourseService()
             {
-                businessId = BusinessId,
-                name = "Mini Orange",
-                description = "Mini Orange Service",
-                repetition = new ApiServiceRepetition
+                var service = GivenNewUniqueService();
+
+                service.repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "w",
+                    repeatTimes = 10
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenInvalidCourseService()
+            {
+                var service = GivenNewUniqueService();
+
+                service.repetition = new ApiServiceRepetition
                 {
                     repeatFrequency = "xxx",
                     repeatTimes = -12
-                }
-            };
+                };
 
-            return JsonConvert.SerializeObject(service);
-        }
+                return service;
+            }
 
-        private string GivenExistingServiceWithRepetition()
-        {
-            var service = new ApiServiceSaveCommand
+            private ApiServiceSaveCommand GivenMultipleErrorsInService()
             {
-                businessId = BusinessId,
-                id = MiniRedId,
-                name = "Mini Red 2",
-                description = "Mini Red 2 Service",
-                repetition = new ApiServiceRepetition
-                {
-                    repeatFrequency = "2d",
-                    repeatTimes = 15
-                }
-            };
+                var service = GivenNewUniqueService();
 
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string GivenInvalidServiceWithDefaultsAndRepetition()
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                businessId = BusinessId,
-                name = "Mini Green",
-                description = "Mini Green Service",
-                defaults = new ApiServiceDefaults
+                service.defaults = new ApiServiceDefaults
                 {
                     duration = 80,
                     price = 50,
                     studentCapacity = 0,
                     isOnlineBookable = null,
                     colour = "Lime"
-                },
-                repetition = new ApiServiceRepetition
-                {
-                    repeatFrequency = "z",
-                    repeatTimes = 6
-                }
-            };
+                };
 
-            return JsonConvert.SerializeObject(service);
+                service.repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "fred",
+                    repeatTimes = 12
+                };
+
+                service.pricing = new ApiServicePricing();
+
+                return service;
+            }
+
+
+            private ServiceData AssertNewServiceSuccess(Response response)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+                var service = (ServiceData)response.Payload;
+
+                Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
+                Assert.That(service.name, Is.EqualTo("Mini Orange"));
+                Assert.That(service.description, Is.EqualTo("Mini Orange Service"));
+
+                return service;
+            }
+
+            private void AssertNewServiceWithDefaultsSuccess(Response response)
+            {
+                var service = AssertNewServiceSuccess(response);
+                AssertDefaults(service.defaults);
+            }
+
+            private void AssertNewServiceWithPricingSuccess(Response response, decimal? sessionPrice, decimal? coursePrice)
+            {
+                var service = AssertNewServiceSuccess(response);
+                AssertPricing(service.pricing, sessionPrice, coursePrice);
+            }
+
+            private void AssertNewServiceWithoutPricingSuccess(Response response)
+            {
+                var service = AssertNewServiceSuccess(response);
+                Assert.That(service.pricing, Is.Null);
+            }
+
+            private void AssertDefaults(ServiceDefaults defaults)
+            {
+                Assert.That(defaults, Is.Not.Null);
+                Assert.That(defaults.duration, Is.EqualTo(60));
+                Assert.That(defaults.price, Is.EqualTo(75));
+                Assert.That(defaults.studentCapacity, Is.EqualTo(8));
+                Assert.That(defaults.isOnlineBookable, Is.EqualTo(true));
+                Assert.That(defaults.colour, Is.EqualTo("orange"));
+            }
+
+            private void AssertPricing(ServicePricing pricing, decimal? sessionPrice, decimal? coursePrice)
+            {
+                Assert.That(pricing, Is.Not.Null);
+                Assert.That(pricing.sessionPrice, Is.EqualTo(sessionPrice));
+                Assert.That(pricing.coursePrice, Is.EqualTo(coursePrice));
+            }
+        }
+
+
+        [TestFixture]
+        public class ServiceExistingTests : ServiceTests
+        {
+            [Test]
+            public void GivenNonExistentServiceId_WhenPost_ThenReturnInvalidServiceIdError()
+            {
+                var command = GivenNonExistentServiceId();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This service does not exist.", "service.id");
+            }
+
+            [Test]
+            public void GivenChangeToAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceError()
+            {
+                var command = GivenChangeToAnAlreadyExistingServiceName();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This service already exists.", "service.name");
+            }
+
+            [Test]
+            public void GivenChangeToUniqueServiceName_WhenPost_ThenReturnExistingServiceSuccessResponse()
+            {
+                var command = GivenChangeToUniqueServiceName();
+                var response = WhenPost(command);
+                ThenReturnExistingServiceSuccessResponse(response);
+            }
+
+            [Test]
+            public void GivenKeepServiceNameSame_WhenPost_ThenReturnExistingServiceSuccessResponse()
+            {
+                var command = GivenKeepServiceNameSame();
+                var response = WhenPost(command);
+                ThenReturnExistingServiceSuccessResponse(response);
+            }
+
+            [Test]
+            public void GivenExistingServiceWithDefaults_WhenPost_ThenReturnExistingServiceWithDefaultsSuccessResponse()
+            {
+                var command = GivenExistingServiceWithDefaults();
+                var response = WhenPost(command);
+                ThenReturnExistingServiceWithDefaultsSuccessResponse(response);
+            }
+
+            [Test]
+            public void GivenExistingServiceWithRepetition_WhenPost_ThenReturnExistingServiceWithRepetitionSuccessResponse()
+            {
+                var command = GivenExistingServiceWithRepetition();
+                var response = WhenPost(command);
+                ThenReturnExistingServiceWithRepetitionSuccessResponse(response);
+            }
+
+            [Test]
+            public void GivenExistingServiceWithPricing_WhenPost_ThenReturnExistingServiceWithPricingSuccessResponse()
+            {
+                var command = GivenExistingServiceWithPricing();
+                var response = WhenPost(command);
+                ThenReturnExistingServiceWithPricingSuccessResponse(response);
+            }
+
+
+            private ApiServiceSaveCommand GivenExistingService()
+            {
+                return new ApiServiceSaveCommand
+                {
+                    businessId = BusinessId,
+                    id = MiniRedId,
+                    name = MINI_RED_NAME,
+                    description = "Mini Red Service"
+                };
+            }
+
+            private ApiServiceSaveCommand GivenNonExistentServiceId()
+            {
+                var service = GivenExistingService();
+                service.id = Guid.NewGuid();
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenChangeToAnAlreadyExistingServiceName()
+            {
+                var service = GivenExistingService();
+                service.name = MINI_BLUE_NAME;
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenChangeToUniqueServiceName()
+            {
+                var service = GivenExistingService();
+                service.name = NewServiceName = "Mini Red #3";
+                service.description = NewServiceDescription = "Mini Red #3 Service";
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenKeepServiceNameSame()
+            {
+                var service = GivenExistingService();
+                service.name = NewServiceName = MINI_RED_NAME;
+                service.description = NewServiceDescription = "Mini Red Service";
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenExistingServiceWithDefaults()
+            {
+                var service = GivenExistingService();
+                service.defaults = new ApiServiceDefaults
+                {
+                    duration = Duration = 60,
+                    price = Price = 75,
+                    studentCapacity = StudentCapacity = 8,
+                    isOnlineBookable = IsOnlineBookable = true,
+                    colour = Colour = "Red"
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenExistingServiceWithRepetition()
+            {
+                var service = GivenExistingService();
+                service.repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "2d",
+                    repeatTimes = 15
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenExistingServiceWithPricing()
+            {
+                var service = GivenExistingService();
+                service.pricing = new ApiServicePricing
+                {
+                    sessionPrice = 16.99m,
+                    coursePrice = 149.99m,
+                };
+                service.repetition = new ApiServiceRepetition
+                {
+                    repeatFrequency = "w",
+                    repeatTimes = 10
+                };
+
+                return service;
+            }
+
+
+            private ServiceData AssertSuccess(Response response)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+                var service = (ServiceData)response.Payload;
+
+                return service;
+            }
+
+            private void ThenReturnExistingServiceSuccessResponse(Response response)
+            {
+                var service = AssertSuccess(response);
+
+                Assert.That(service.id, Is.EqualTo(MiniRedId));
+                Assert.That(service.name, Is.EqualTo(NewServiceName));
+                Assert.That(service.description, Is.EqualTo(NewServiceDescription));
+            }
+
+            private void ThenReturnExistingServiceWithDefaultsSuccessResponse(Response response)
+            {
+                var service = AssertSuccess(response);
+
+                Assert.That(service.id, Is.EqualTo(MiniRedId));
+                Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
+                Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
+
+                var defaults = service.defaults;
+                Assert.That(defaults.duration, Is.EqualTo(Duration));
+                Assert.That(defaults.price, Is.EqualTo(Price));
+                Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
+                Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
+                Assert.That(defaults.colour, Is.EqualTo(Colour.ToLower()));
+            }
+
+            private void ThenReturnExistingServiceWithRepetitionSuccessResponse(Response response)
+            {
+                var service = AssertSuccess(response);
+
+                Assert.That(service.id, Is.EqualTo(MiniRedId));
+                Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
+                Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
+
+                var repetition = service.repetition;
+                Assert.That(repetition.repeatFrequency, Is.EqualTo("2d"));
+                Assert.That(repetition.repeatTimes, Is.EqualTo(15));
+            }
+
+            private void ThenReturnExistingServiceWithPricingSuccessResponse(Response response)
+            {
+                var service = AssertSuccess(response);
+
+                Assert.That(service.id, Is.EqualTo(MiniRedId));
+                Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
+                Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
+
+                var pricing = service.pricing;
+                Assert.That(pricing.sessionPrice, Is.EqualTo(16.99m));
+                Assert.That(pricing.coursePrice, Is.EqualTo(149.99m));
+
+                var repetition = service.repetition;
+                Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
+                Assert.That(repetition.repeatTimes, Is.EqualTo(10));
+            }
         }
 
 
@@ -471,104 +683,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<ServiceData>(json);
         }
 
-
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private Response WhenPost(ApiServiceSaveCommand command)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+            var json = JsonConvert.SerializeObject(command);
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "Please post us some data!");
+            return WhenPost(json);
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+
+        private void AssertSingleError(Response response, string message, string field = null)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "service.businessId", "The businessId field is required.");
-            AssertApplicationError(errors[1], "service.name", "The name field is required.");
-        }
-
-        private void ThenReturnInvalidBusinessIdErrorResponse(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
+            var errors = AssertErrors(response);
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "service.businessId", "This business does not exist.");
+            AssertApplicationError(errors[0], field, message);
         }
 
-        private void ThenReturnInvalidServiceIdErrorResponse(Response response)
+        private void AssertMultipleErrors(Response response, string[,] expectedErrors)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+            var errors = AssertErrors(response);
+            Assert.That(errors.GetLength(0), Is.EqualTo(expectedErrors.GetLength(0)));
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "service.id", "This service does not exist.");
+            var i = 0;
+            foreach (var error in errors)
+            {
+                AssertApplicationError(error, expectedErrors[i,1], expectedErrors[i,0]);
+                i++;
+            }
         }
 
-        private void ThenReturnDuplicateServiceErrorResponse(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "service.name", "This service already exists.");
-        }
-
-        private void ThenReturnNewServiceSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(service.name, Is.EqualTo("Mini Orange"));
-            Assert.That(service.description, Is.EqualTo("Tennis for 5-7 year olds of intermediate skill level."));
-        }
-
-        private void ThenReturnExistingServiceSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.EqualTo(MiniRedId));
-            Assert.That(service.name, Is.EqualTo(NewServiceName));
-            Assert.That(service.description, Is.EqualTo("Tennis for 6-8 year olds of low skill level."));
-        }
-
-        private void ThenReturnNewServiceWithDefaultsSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(service.name, Is.EqualTo("Mini Orange"));
-            Assert.That(service.description, Is.EqualTo("Mini Orange Service"));
-            var defaults = service.defaults;
-            Assert.That(defaults.duration, Is.EqualTo(Duration));
-            Assert.That(defaults.price, Is.EqualTo(Price));
-            Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
-            Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
-            Assert.That(defaults.colour, Is.EqualTo(Colour));
-        }
-
-        private void ThenReturnServiceDefaultsErrorResponse(Response response)
+        private ApplicationError[] AssertErrors(Response response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
@@ -576,86 +720,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
 
-            Assert.That(errors.GetLength(0), Is.EqualTo(4));
-            AssertApplicationError(errors[0], "service.defaults.duration", "The duration is not valid.");
-            AssertApplicationError(errors[1], "service.defaults.price", "The price is not valid.");
-            AssertApplicationError(errors[2], "service.defaults.studentCapacity", "The studentCapacity is not valid.");
-            AssertApplicationError(errors[3], "service.defaults.colour", "The colour is not valid.");
-        }
-
-        private void ThenReturnExistingServiceWithDefaultsSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.EqualTo(MiniRedId));
-            Assert.That(service.name, Is.EqualTo("Mini Red"));
-            Assert.That(service.description, Is.EqualTo("Mini Red Service"));
-            var defaults = service.defaults;
-            Assert.That(defaults.duration, Is.EqualTo(Duration));
-            Assert.That(defaults.price, Is.EqualTo(Price));
-            Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
-            Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
-            Assert.That(defaults.colour, Is.EqualTo(Colour));
-        }
-
-        private void ThenReturnNewServiceWithRepetitionSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(service.name, Is.EqualTo("Mini Orange"));
-            Assert.That(service.description, Is.EqualTo("Mini Orange Service"));
-            var repetition = service.repetition;
-            Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
-            Assert.That(repetition.repeatTimes, Is.EqualTo(10));
-        }
-
-        private void ThenReturnServiceRepetitionErrorResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "service.repetition.repeatFrequency", "The repeatFrequency is not valid.");
-            AssertApplicationError(errors[1], "service.repetition.repeatTimes", "The repeatTimes is not valid.");
-        }
-
-        private void ThenReturnExistingServiceWithRepetitionSuccessResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-            var service = (ServiceData)response.Payload;
-            Assert.That(service.id, Is.EqualTo(MiniRedId));
-            Assert.That(service.name, Is.EqualTo("Mini Red 2"));
-            Assert.That(service.description, Is.EqualTo("Mini Red 2 Service"));
-            var repetition = service.repetition;
-            Assert.That(repetition.repeatFrequency, Is.EqualTo("2d"));
-            Assert.That(repetition.repeatTimes, Is.EqualTo(15));
-        }
-
-        private void ThenReturnServiceDefaultAndRepetitionErrorResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(3));
-            AssertApplicationError(errors[0], "service.defaults.duration", "The duration is not valid.");
-            AssertApplicationError(errors[1], "service.defaults.colour", "The colour is not valid.");
-            AssertApplicationError(errors[2], "service.repetition.repeatFrequency", "The repeatFrequency is not valid.");
+            return errors;
         }
     }
 }

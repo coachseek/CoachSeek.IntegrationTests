@@ -46,10 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ApiServicePricing.cs" />
     <Compile Include="Models\ApiServiceRepetition.cs" />
     <Compile Include="Models\ServiceDefaults.cs" />
     <Compile Include="Models\ApiServiceDefaults.cs" />
     <Compile Include="Models\ApiServiceSaveCommand.cs" />
+    <Compile Include="Models\ServicePricing.cs" />
     <Compile Include="Models\ServiceRepetition.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\CoachTests.cs" />
