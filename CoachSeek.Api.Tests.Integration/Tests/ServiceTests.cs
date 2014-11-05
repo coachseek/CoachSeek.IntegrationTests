@@ -17,12 +17,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private string NewServiceName { get; set; }
         private string NewServiceDescription { get; set; }
         private int? Duration { get; set; }
-        private decimal? Price { get; set; }
         private int? StudentCapacity { get; set; }
         private bool? IsOnlineBookable { get; set; }
         private string Colour { get; set; }
-        private decimal? SessionPrice { get; set; }
-        private decimal? CoursePrice { get; set; }
 
 
         protected override string RelativePath
@@ -69,7 +66,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 defaults = new ApiServiceDefaults
                 {
                     duration = 45,
-                    price = 50,
                     studentCapacity = 6,
                     isOnlineBookable = null,
                     colour = "orange"
@@ -157,7 +153,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenPost(command);
                 AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
-                                                        { "The price is not valid.", "service.defaults.price" },
                                                         { "The studentCapacity is not valid.", "service.defaults.studentCapacity" },
                                                         { "The colour is not valid.", "service.defaults.colour" } });
             }
@@ -268,7 +263,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 60,
-                    price = 75,
                     studentCapacity = 8,
                     isOnlineBookable = true,
                     colour = " Orange"
@@ -284,7 +278,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 67,
-                    price = 78.904m,
                     studentCapacity = -8,
                     isOnlineBookable = true,
                     colour = "mandarin"
@@ -390,7 +383,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 80,
-                    price = 50,
                     studentCapacity = 0,
                     isOnlineBookable = null,
                     colour = "Lime"
@@ -445,7 +437,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 Assert.That(defaults, Is.Not.Null);
                 Assert.That(defaults.duration, Is.EqualTo(60));
-                Assert.That(defaults.price, Is.EqualTo(75));
                 Assert.That(defaults.studentCapacity, Is.EqualTo(8));
                 Assert.That(defaults.isOnlineBookable, Is.EqualTo(true));
                 Assert.That(defaults.colour, Is.EqualTo("orange"));
@@ -571,7 +562,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = Duration = 60,
-                    price = Price = 75,
                     studentCapacity = StudentCapacity = 8,
                     isOnlineBookable = IsOnlineBookable = true,
                     colour = Colour = "Red"
@@ -640,7 +630,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 var defaults = service.defaults;
                 Assert.That(defaults.duration, Is.EqualTo(Duration));
-                Assert.That(defaults.price, Is.EqualTo(Price));
                 Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
                 Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
                 Assert.That(defaults.colour, Is.EqualTo(Colour.ToLower()));
