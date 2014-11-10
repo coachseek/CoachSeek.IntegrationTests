@@ -86,6 +86,38 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(actualStatusCode, Is.EqualTo(expectedStatusCode));
         }
 
+        protected void AssertSingleError(Response response, string message, string field = null)
+        {
+            var errors = AssertErrors(response);
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], field, message);
+        }
+
+        protected void AssertMultipleErrors(Response response, string[,] expectedErrors)
+        {
+            var errors = AssertErrors(response);
+            Assert.That(errors.GetLength(0), Is.EqualTo(expectedErrors.GetLength(0)));
+
+            var i = 0;
+            foreach (var error in errors)
+            {
+                AssertApplicationError(error, expectedErrors[i, 1], expectedErrors[i, 0]);
+                i++;
+            }
+        }
+
+        private ApplicationError[] AssertErrors(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            var errors = (ApplicationError[])response.Payload;
+
+            return errors;
+        }
+
         protected void AssertApplicationError(ApplicationError error, string field, string message)
         {
             Assert.That(error.field, Is.EqualTo(field));
