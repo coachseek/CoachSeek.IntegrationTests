@@ -30,10 +30,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                     { "The service field is required.", "session.service" },
                                                     { "The location field is required.", "session.location" },
                                                     { "The coach field is required.", "session.coach" },
-                                                    { "The startDate field is required.", "session.startDate" },
-                                                    { "The startTime field is required.", "session.startTime" },
-                                                    { "The duration field is required.", "session.duration" },
-                                                    { "The studentCapacity field is required.", "session.studentCapacity" } });
+                                                    { "The timing field is required.", "session.timing" },
+                                                    { "The booking field is required.", "session.booking" } });
         }
 
         [Test]
@@ -63,11 +61,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service = new ApiServiceKey { id = Guid.NewGuid() },
                 location = new ApiLocationKey { id = Guid.NewGuid() },
                 coach = new ApiCoachKey { id = Guid.NewGuid() },
-                startDate = RandomString,
-                startTime = RandomString,
-                studentCapacity = 10,
-                isOnlineBookable = true,
-                colour = "blue"
+                timing = new ApiSessionTiming { startDate = RandomString, startTime = RandomString },
+                booking = new ApiSessionBooking()
             };
         }
 

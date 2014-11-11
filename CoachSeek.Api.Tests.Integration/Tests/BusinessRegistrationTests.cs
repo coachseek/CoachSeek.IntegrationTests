@@ -69,7 +69,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [Test]
         public void GivenDuplicateBusinessAdmin_WhenPost_ThenReturnDuplicateAdminErrorResponse()
         {
-
             var command = GivenDuplicateBusinessAdmin();
             var response = WhenPost(command);
             ThenReturnDuplicateAdminErrorResponse(response);

@@ -48,10 +48,13 @@
   <ItemGroup>
     <Compile Include="Models\ApiCoachKey.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
+    <Compile Include="Models\ApiPresentation.cs" />
     <Compile Include="Models\ApiServiceKey.cs" />
     <Compile Include="Models\ApiServicePricing.cs" />
     <Compile Include="Models\ApiServiceRepetition.cs" />
+    <Compile Include="Models\ApiSessionBooking.cs" />
     <Compile Include="Models\ApiSessionSaveCommand.cs" />
+    <Compile Include="Models\ApiSessionTiming.cs" />
     <Compile Include="Models\SessionData.cs" />
     <Compile Include="Models\ServiceDefaults.cs" />
     <Compile Include="Models\ApiServiceDefaults.cs" />
