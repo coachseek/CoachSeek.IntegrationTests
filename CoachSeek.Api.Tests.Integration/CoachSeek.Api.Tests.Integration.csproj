@@ -48,12 +48,23 @@
   <ItemGroup>
     <Compile Include="Models\ApiCoachKey.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
+    <Compile Include="Models\CoachKeyData.cs" />
+    <Compile Include="Models\KeyData.cs" />
+    <Compile Include="Models\LocationKeyData.cs" />
+    <Compile Include="Models\PricingData.cs" />
+    <Compile Include="Models\PresentationData.cs" />
     <Compile Include="Models\ApiPresentation.cs" />
+    <Compile Include="Models\ApiPricing.cs" />
+    <Compile Include="Models\RepetitionData.cs" />
+    <Compile Include="Models\ApiRepetition.cs" />
     <Compile Include="Models\ApiServiceKey.cs" />
     <Compile Include="Models\ApiServicePricing.cs" />
     <Compile Include="Models\ApiServiceRepetition.cs" />
+    <Compile Include="Models\ServiceKeyData.cs" />
+    <Compile Include="Models\SessionBookingData.cs" />
     <Compile Include="Models\ApiSessionBooking.cs" />
     <Compile Include="Models\ApiSessionSaveCommand.cs" />
+    <Compile Include="Models\SessionTimingData.cs" />
     <Compile Include="Models\ApiSessionTiming.cs" />
     <Compile Include="Models\SessionData.cs" />
     <Compile Include="Models\ServiceDefaults.cs" />
@@ -80,6 +91,7 @@
     <Compile Include="Models\ServiceData.cs" />
     <Compile Include="Models\WebError.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\ScheduleTests.cs" />
     <Compile Include="Tests\ServiceTests.cs" />
     <Compile Include="Tests\SessionTests.cs" />
     <Compile Include="Tests\WebIntegrationTest.cs" />

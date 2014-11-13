@@ -63,7 +63,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var obj = JsonConvert.DeserializeObject<TData>(content);
 
                 return new Response(status, obj);
-
             }
             catch (WebException ex)
             {
