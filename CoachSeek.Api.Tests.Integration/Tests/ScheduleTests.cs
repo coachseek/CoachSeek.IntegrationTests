@@ -127,14 +127,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterMiniRedService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, "RED");
+            var json = CreateNewServiceSaveCommandWithDefaults(MINI_RED_NAME, "RED");
             var response = PostService(json);
             MiniRedId = ((ServiceData)response.Payload).id;
         }
 
         private void RegisterMiniBlueService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME, "blue");
+            var json = CreateNewServiceSaveCommandWithoutDefaults(MINI_BLUE_NAME, "blue");
             var response = PostService(json);
             MiniBlueId = ((ServiceData)response.Payload).id;
         }
@@ -144,21 +144,44 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<ServiceData>(json, "Services");
         }
 
-        private string CreateNewServiceSaveCommand(string name, string colour)
+        private string CreateNewServiceSaveCommandWithoutDefaults(string name, string colour)
         {
             var service = new ApiServiceSaveCommand
             {
                 businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
+                repetition = new ApiServiceRepetition { repeatTimes = 1 },
                 defaults = new ApiServiceDefaults
                 {
                     duration = 45,
-                    studentCapacity = 6,
-                    isOnlineBookable = null,
                     colour = colour
-                }
+                },
+            };
 
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string CreateNewServiceSaveCommandWithDefaults(string name, string colour)
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                businessId = BusinessId,
+                name = name,
+                description = string.Format("{0} Service", name),
+                repetition = new ApiServiceRepetition
+                {
+                    repeatTimes = 1
+                },
+                defaults = new ApiServiceDefaults
+                {
+                    duration = 75,
+                    colour = colour
+                },
+                pricing = new ApiServicePricing
+                {
+                    sessionPrice = 19.95m
+                }
             };
 
             return JsonConvert.SerializeObject(service);

@@ -4,6 +4,6 @@
     {
         public string startDate { get; set; }
         public string startTime { get; set; }
-        public int duration { get; set; }
+        public int? duration { get; set; }
     }
 }

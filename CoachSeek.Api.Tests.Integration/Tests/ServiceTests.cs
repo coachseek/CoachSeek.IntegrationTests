@@ -17,8 +17,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private string NewServiceName { get; set; }
         private string NewServiceDescription { get; set; }
         private int? Duration { get; set; }
-        private int? StudentCapacity { get; set; }
-        private bool? IsOnlineBookable { get; set; }
         private string Colour { get; set; }
 
 
@@ -66,11 +64,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 defaults = new ApiServiceDefaults
                 {
                     duration = 45,
-                    studentCapacity = 6,
-                    isOnlineBookable = null,
                     colour = "orange"
+                },
+                repetition = new ApiServiceRepetition
+                {
+                    repeatTimes = 1
                 }
-
             };
 
             return JsonConvert.SerializeObject(service);
@@ -94,7 +93,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var command = GivenEmptyServiceSaveCommand();
                 var response = WhenPost(command);
                 AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "service.businessId" }, 
-                                                        { "The name field is required.", "service.name" } });
+                                                        { "The name field is required.", "service.name" },
+                                                        { "The repetition field is required.", "service.repetition" } });
             }
 
             [Test]
@@ -122,7 +122,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 {
                     businessId = Guid.Empty,
                     name = RandomString,
-                    description = RandomString
+                    description = RandomString,
+                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
                 };
             }
         }
@@ -148,12 +149,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
 
             [Test]
+            public void GivenNewServiceWithInvalidBooking_WhenPost_ThenReturnInvalidBookingErrors()
+            {
+                var command = GivenNewServiceWithBooking(-8, true);
+                var response = WhenPost(command);
+                AssertSingleError(response, "The studentCapacity is not valid.", "service.booking.studentCapacity");
+            }
+
+            [Test]
+            public void GivenNewServiceWithValidBooking_WhenPost_ThenReturnNewServiceSuccess()
+            {
+                var command = GivenNewServiceWithBooking(12, true);
+                var response = WhenPost(command);
+                AssertNewServiceWithBookingSuccess(response, 12, true);
+            }
+
+
+
+
+            [Test]
             public void GivenNewServiceWithInvalidDefaults_WhenPost_ThenReturnInvalidDefaultsErrors()
             {
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenPost(command);
                 AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
-                                                        { "The studentCapacity is not valid.", "service.defaults.studentCapacity" },
                                                         { "The colour is not valid.", "service.defaults.colour" } });
             }
 
@@ -192,7 +211,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
 
             [Test]
-            public void GivenOpenEndedCourseServiceWithCoursePrice_WhenPost_ThenReturnServiceDefaultsError()
+            public void GivenServiceWithoutRepetition_WhenPost_ThenReturnServiceRepetitionError()
+            {
+                var command = GivenServiceWithoutRepetition();
+                var response = WhenPost(command);
+                AssertSingleError(response, "The repetition field is required.", "service.repetition");
+            }
+
+            [Test]
+            public void GivenOpenEndedCourseServiceWithCoursePrice_WhenPost_ThenReturnServiceDefaultsCoursePriceError()
             {
                 var command = GivenOpenEndedCourseServiceWithCoursePrice();
                 var response = WhenPost(command);
@@ -222,8 +249,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenInvalidCourseService();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" }, 
-                                                        { "The repeatTimes is not valid.", "service.repetition.repeatTimes" } });
+                AssertMultipleErrors(response, new[,] { { "The repeatTimes is not valid.", "service.repetition.repeatTimes" },
+                                                        { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" } });
             }
 
             [Test]
@@ -233,24 +260,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var response = WhenPost(command);
                 AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
                                                         { "The colour is not valid.", "service.defaults.colour" },
+                                                        { "The studentCapacity is not valid.", "service.booking.studentCapacity" },
                                                         { "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing" },
                                                         { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" } });
             }
 
 
-            private ApiServiceSaveCommand GivenNewUniqueService()
+            private ApiServiceSaveCommand GivenNewSessionService()
             {
                 return new ApiServiceSaveCommand
                 {
                     businessId = BusinessId,
                     name = "Mini Orange",
-                    description = "Mini Orange Service"
+                    description = "Mini Orange Service",
+                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
                 };
+            }
+
+            private ApiServiceSaveCommand GivenNewUniqueService()
+            {
+                return GivenNewSessionService();
             }
 
             private ApiServiceSaveCommand GivenAnAlreadyExistingServiceName()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
                 service.name = MINI_RED_NAME;
 
                 return service;
@@ -258,14 +292,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenNewServiceWithValidDefaults()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 60,
-                    studentCapacity = 8,
-                    isOnlineBookable = true,
                     colour = " Orange"
+                };
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenNewServiceWithBooking(int? studentCapacity, bool? isOnlineBookable)
+            {
+                var service = GivenNewSessionService();
+
+                service.booking = new ApiServiceBooking
+                {
+                    studentCapacity = studentCapacity,
+                    isOnlineBookable = isOnlineBookable,
                 };
 
                 return service;
@@ -273,13 +318,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenNewServiceWithInvalidDefaults()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 67,
-                    studentCapacity = -8,
-                    isOnlineBookable = true,
                     colour = "mandarin"
                 };
 
@@ -288,7 +331,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenNewServiceWithPricing(decimal? sessionPrice, decimal? coursePrice)
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.pricing = new ApiServicePricing
                 {
@@ -299,9 +342,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 return service;
             }
 
+            private ApiServiceSaveCommand GivenServiceWithoutRepetition()
+            {
+                var service = GivenNewSessionService();
+
+                service.repetition = null;
+
+                return service;
+            }
+
             private ApiServiceSaveCommand GivenSessionServiceWithCoursePrice()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.pricing = new ApiServicePricing
                 {
@@ -314,7 +366,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenOpenEndedCourseServiceWithCoursePrice()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.repetition = new ApiServiceRepetition
                 {
@@ -333,7 +385,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenFiniteCourseServiceWithoutCoursePrice()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.repetition = new ApiServiceRepetition
                 {
@@ -352,7 +404,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenUnpricedCourseService()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.repetition = new ApiServiceRepetition
                 {
@@ -365,7 +417,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenInvalidCourseService()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.repetition = new ApiServiceRepetition
                 {
@@ -378,14 +430,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenMultipleErrorsInService()
             {
-                var service = GivenNewUniqueService();
+                var service = GivenNewSessionService();
 
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = 80,
-                    studentCapacity = 0,
-                    isOnlineBookable = null,
                     colour = "Lime"
+                };
+
+                service.booking = new ApiServiceBooking
+                {
+                    studentCapacity = -8,
+                    isOnlineBookable = true
                 };
 
                 service.repetition = new ApiServiceRepetition
@@ -421,6 +477,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 AssertDefaults(service.defaults);
             }
 
+            private void AssertNewServiceWithBookingSuccess(Response response, int? studentCapacity, bool? isOnlineBookable)
+            {
+                var service = AssertNewServiceSuccess(response);
+                AssertBooking(service.booking, studentCapacity, isOnlineBookable);
+            }
+
             private void AssertNewServiceWithPricingSuccess(Response response, decimal? sessionPrice, decimal? coursePrice)
             {
                 var service = AssertNewServiceSuccess(response);
@@ -437,9 +499,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 Assert.That(defaults, Is.Not.Null);
                 Assert.That(defaults.duration, Is.EqualTo(60));
-                Assert.That(defaults.studentCapacity, Is.EqualTo(8));
-                Assert.That(defaults.isOnlineBookable, Is.EqualTo(true));
                 Assert.That(defaults.colour, Is.EqualTo("orange"));
+            }
+
+            private void AssertBooking(ServiceBooking booking, int? studentCapacity, bool? isOnlineBookable)
+            {
+                Assert.That(booking, Is.Not.Null);
+                Assert.That(booking.studentCapacity, Is.EqualTo(studentCapacity));
+                Assert.That(booking.isOnlineBookable, Is.EqualTo(isOnlineBookable));
             }
 
             private void AssertPricing(ServicePricing pricing, decimal? sessionPrice, decimal? coursePrice)
@@ -511,20 +578,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
 
 
-            private ApiServiceSaveCommand GivenExistingService()
+            private ApiServiceSaveCommand GivenExistingSessionService()
             {
                 return new ApiServiceSaveCommand
                 {
                     businessId = BusinessId,
                     id = MiniRedId,
                     name = MINI_RED_NAME,
-                    description = "Mini Red Service"
+                    description = "Mini Red Service",
+                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
                 };
             }
 
             private ApiServiceSaveCommand GivenNonExistentServiceId()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.id = Guid.NewGuid();
 
                 return service;
@@ -532,7 +600,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenChangeToAnAlreadyExistingServiceName()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.name = MINI_BLUE_NAME;
 
                 return service;
@@ -540,7 +608,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenChangeToUniqueServiceName()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.name = NewServiceName = "Mini Red #3";
                 service.description = NewServiceDescription = "Mini Red #3 Service";
 
@@ -549,7 +617,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenKeepServiceNameSame()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.name = NewServiceName = MINI_RED_NAME;
                 service.description = NewServiceDescription = "Mini Red Service";
 
@@ -558,12 +626,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenExistingServiceWithDefaults()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.defaults = new ApiServiceDefaults
                 {
                     duration = Duration = 60,
-                    studentCapacity = StudentCapacity = 8,
-                    isOnlineBookable = IsOnlineBookable = true,
                     colour = Colour = "Red"
                 };
 
@@ -572,7 +638,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenExistingServiceWithRepetition()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.repetition = new ApiServiceRepetition
                 {
                     repeatFrequency = "2d",
@@ -584,7 +650,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             private ApiServiceSaveCommand GivenExistingServiceWithPricing()
             {
-                var service = GivenExistingService();
+                var service = GivenExistingSessionService();
                 service.pricing = new ApiServicePricing
                 {
                     sessionPrice = 16.99m,
@@ -630,8 +696,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 var defaults = service.defaults;
                 Assert.That(defaults.duration, Is.EqualTo(Duration));
-                Assert.That(defaults.studentCapacity, Is.EqualTo(StudentCapacity));
-                Assert.That(defaults.isOnlineBookable, Is.EqualTo(IsOnlineBookable));
                 Assert.That(defaults.colour, Is.EqualTo(Colour.ToLower()));
             }
 

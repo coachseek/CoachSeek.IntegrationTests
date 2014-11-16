@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Models\ApiCoachKey.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
+    <Compile Include="Models\ApiServiceBooking.cs" />
     <Compile Include="Models\CoachKeyData.cs" />
     <Compile Include="Models\KeyData.cs" />
     <Compile Include="Models\LocationKeyData.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Models\ApiServicePricing.cs" />
     <Compile Include="Models\ApiServiceRepetition.cs" />
     <Compile Include="Models\ServiceKeyData.cs" />
+    <Compile Include="Models\ServiceBooking.cs" />
     <Compile Include="Models\SessionBookingData.cs" />
     <Compile Include="Models\ApiSessionBooking.cs" />
     <Compile Include="Models\ApiSessionSaveCommand.cs" />

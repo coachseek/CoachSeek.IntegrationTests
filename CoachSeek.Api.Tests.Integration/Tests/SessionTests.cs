@@ -50,11 +50,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
         [Test]
-        public void GivenSingleSessionWithNoClashes_WhenPost_ThenReturnNewSessionSuccess()
+        public void GivenSingleSessionWithValues_WhenPost_ThenOverrideServiceDefaults()
         {
-            var command = GivenSingleSessionWithNoClashes();
+            var command = GivenSingleSessionWithValues();
             var response = WhenPost(command);
-            AssertNewSessionSuccess(response);
+            ThenOverrideServiceDefaults(response);
+        }
+
+        [Test]
+        public void GivenSingleSessionMissingValues_WhenPost_ThenGetServiceDefaults()
+        {
+            var command = GivenSingleSessionMissingValues();
+            var response = WhenPost(command);
+            ThenGetServiceDefaults(response);
         }
 
 
@@ -80,7 +88,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        private ApiSessionSaveCommand GivenSingleSessionWithNoClashes()
+        private ApiSessionSaveCommand GivenSingleSessionWithValues()
         {
             return new ApiSessionSaveCommand
             {
@@ -110,6 +118,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
+        private ApiSessionSaveCommand GivenSingleSessionMissingValues()
+        {
+            return new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                service = new ApiServiceKey { id = MiniRedId },
+                location = new ApiLocationKey { id = OrakeiId },
+                coach = new ApiCoachKey { id = AaronId },
+                timing = new ApiSessionTiming
+                {
+                    startDate = "2014-11-11",
+                    startTime = "16:45"
+                }
+            };
+        }
+
 
         private Response WhenPost(string json)
         {
@@ -124,7 +148,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        private SessionData AssertNewSessionSuccess(Response response)
+        private SessionData ThenOverrideServiceDefaults(Response response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
@@ -155,6 +179,49 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var pricing = session.pricing;
             Assert.That(pricing, Is.Not.Null);
             Assert.That(pricing.sessionPrice, Is.EqualTo(12));
+            Assert.That(pricing.coursePrice, Is.Null);
+
+            var repetition = session.repetition;
+            Assert.That(repetition, Is.Null);
+
+            var presentation = session.presentation;
+            Assert.That(presentation, Is.Not.Null);
+            Assert.That(presentation.colour, Is.EqualTo("red"));
+
+            return session;
+        }
+
+        private SessionData ThenGetServiceDefaults(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<SessionData>());
+            var session = (SessionData)response.Payload;
+
+            Assert.That(session, Is.Not.Null);
+            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(session.location, Is.Not.Null);
+            Assert.That(session.location.id, Is.EqualTo(OrakeiId));
+            Assert.That(session.coach, Is.Not.Null);
+            Assert.That(session.coach.id, Is.EqualTo(AaronId));
+            Assert.That(session.service, Is.Not.Null);
+            Assert.That(session.service.id, Is.EqualTo(MiniRedId));
+
+            var timing = session.timing;
+            Assert.That(timing, Is.Not.Null);
+            Assert.That(timing.startDate, Is.EqualTo("2014-11-11"));
+            Assert.That(timing.startTime, Is.EqualTo("16:45"));
+            Assert.That(timing.duration, Is.EqualTo(75));
+
+            var booking = session.booking;
+            Assert.That(booking, Is.Not.Null);
+            Assert.That(booking.studentCapacity, Is.EqualTo(13));
+            Assert.That(booking.isOnlineBookable, Is.True);
+
+            var pricing = session.pricing;
+            Assert.That(pricing, Is.Not.Null);
+            Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
             Assert.That(pricing.coursePrice, Is.Null);
 
             var repetition = session.repetition;
