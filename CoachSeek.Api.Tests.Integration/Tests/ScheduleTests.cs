@@ -178,6 +178,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     duration = 75,
                     colour = colour
                 },
+                booking = new ApiServiceBooking
+                {
+                    studentCapacity = 13,
+                    isOnlineBookable = true
+                },
                 pricing = new ApiServicePricing
                 {
                     sessionPrice = 19.95m
