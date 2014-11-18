@@ -249,8 +249,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenInvalidCourseService();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The repeatTimes is not valid.", "service.repetition.repeatTimes" },
-                                                        { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" } });
+                AssertMultipleErrors(response, new[,] { { "The repeatTimes field is not valid.", "service.repetition.repeatTimes" },
+                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" } });
             }
 
             [Test]
@@ -262,7 +262,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                         { "The colour is not valid.", "service.defaults.colour" },
                                                         { "The studentCapacity is not valid.", "service.booking.studentCapacity" },
                                                         { "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing" },
-                                                        { "The repeatFrequency is not valid.", "service.repetition.repeatFrequency" } });
+                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" } });
             }
 
 
