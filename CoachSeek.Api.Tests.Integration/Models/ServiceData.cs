@@ -8,10 +8,10 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public string name { get; set; }
         public string description { get; set; }
 
-        public ServiceDefaults defaults { get; set; }
-
+        public ServiceTiming timing { get; set; }
         public ServiceBooking booking { get; set; }
         public ServicePricing pricing { get; set; }
         public ServiceRepetition repetition { get; set; }
+        public PresentationData presentation { get; set; }
     }
 }

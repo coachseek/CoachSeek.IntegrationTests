@@ -61,15 +61,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 businessId = BusinessId,
                 name = name,
                 description = description,
-                defaults = new ApiServiceDefaults
-                {
-                    duration = 45,
-                    colour = "orange"
-                },
-                repetition = new ApiServiceRepetition
-                {
-                    repeatTimes = 1
-                }
+                timing = new ApiServiceTiming { duration = 45 },
+                repetition = new ApiServiceRepetition { repeatTimes = 1 },
+                presentation = new ApiPresentation { colour = "orange" }
             };
 
             return JsonConvert.SerializeObject(service);
@@ -153,7 +147,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenNewServiceWithBooking(-8, true);
                 var response = WhenPost(command);
-                AssertSingleError(response, "The studentCapacity is not valid.", "service.booking.studentCapacity");
+                AssertSingleError(response, "The studentCapacity field is not valid.", "service.booking.studentCapacity");
             }
 
             [Test]
@@ -172,8 +166,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
-                                                        { "The colour is not valid.", "service.defaults.colour" } });
+                AssertMultipleErrors(response, new[,] { { "The duration field is not valid.", "service.timing.duration" }, 
+                                                        { "The colour field is not valid.", "service.presentation.colour" } });
             }
 
             [Test]
@@ -258,11 +252,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenMultipleErrorsInService();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The duration is not valid.", "service.defaults.duration" }, 
-                                                        { "The colour is not valid.", "service.defaults.colour" },
-                                                        { "The studentCapacity is not valid.", "service.booking.studentCapacity" },
+                AssertMultipleErrors(response, new[,] { { "The duration field is not valid.", "service.timing.duration" }, 
+                                                        { "The studentCapacity field is not valid.", "service.booking.studentCapacity" },
                                                         { "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing" },
-                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" } });
+                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" },
+                                                        { "The colour field is not valid.", "service.presentation.colour" } });
             }
 
 
@@ -294,11 +288,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var service = GivenNewSessionService();
 
-                service.defaults = new ApiServiceDefaults
-                {
-                    duration = 60,
-                    colour = " Orange"
-                };
+                service.timing = new ApiServiceTiming { duration = 60 };
+                service.presentation = new ApiPresentation { colour = " Orange" };
 
                 return service;
             }
@@ -320,11 +311,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var service = GivenNewSessionService();
 
-                service.defaults = new ApiServiceDefaults
-                {
-                    duration = 67,
-                    colour = "mandarin"
-                };
+                service.timing = new ApiServiceTiming { duration = 67 };
+                service.presentation = new ApiPresentation { colour = "mandarin" };
 
                 return service;
             }
@@ -333,7 +321,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var service = GivenNewSessionService();
 
-                service.pricing = new ApiServicePricing
+                service.pricing = new ApiPricing
                 {
                     sessionPrice = sessionPrice,
                     coursePrice = coursePrice
@@ -355,7 +343,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var service = GivenNewSessionService();
 
-                service.pricing = new ApiServicePricing
+                service.pricing = new ApiPricing
                 {
                     sessionPrice = 15,
                     coursePrice = 100
@@ -374,7 +362,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     repeatTimes = -1 // Open-Ended
                 };
 
-                service.pricing = new ApiServicePricing
+                service.pricing = new ApiPricing
                 {
                     sessionPrice = 15,
                     coursePrice = 100
@@ -393,7 +381,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     repeatTimes = 10
                 };
 
-                service.pricing = new ApiServicePricing
+                service.pricing = new ApiPricing
                 {
                     sessionPrice = 15,
                     coursePrice = null
@@ -432,11 +420,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var service = GivenNewSessionService();
 
-                service.defaults = new ApiServiceDefaults
-                {
-                    duration = 80,
-                    colour = "Lime"
-                };
+                service.timing = new ApiServiceTiming { duration = 80 };
 
                 service.booking = new ApiServiceBooking
                 {
@@ -450,7 +434,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     repeatTimes = 12
                 };
 
-                service.pricing = new ApiServicePricing();
+                service.pricing = new ApiPricing();
+
+                service.presentation = new ApiPresentation { colour = "Lime" };
 
                 return service;
             }
@@ -474,7 +460,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             private void AssertNewServiceWithDefaultsSuccess(Response response)
             {
                 var service = AssertNewServiceSuccess(response);
-                AssertDefaults(service.defaults);
+                AssertDefaults(service);
             }
 
             private void AssertNewServiceWithBookingSuccess(Response response, int? studentCapacity, bool? isOnlineBookable)
@@ -495,11 +481,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 Assert.That(service.pricing, Is.Null);
             }
 
-            private void AssertDefaults(ServiceDefaults defaults)
+            private void AssertDefaults(ServiceData service)
             {
-                Assert.That(defaults, Is.Not.Null);
-                Assert.That(defaults.duration, Is.EqualTo(60));
-                Assert.That(defaults.colour, Is.EqualTo("orange"));
+                Assert.That(service.timing, Is.Not.Null);
+                Assert.That(service.timing.duration, Is.EqualTo(60));
+
+                Assert.That(service.presentation, Is.Not.Null);
+                Assert.That(service.presentation.colour, Is.EqualTo("orange"));
             }
 
             private void AssertBooking(ServiceBooking booking, int? studentCapacity, bool? isOnlineBookable)
@@ -627,11 +615,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             private ApiServiceSaveCommand GivenExistingServiceWithDefaults()
             {
                 var service = GivenExistingSessionService();
-                service.defaults = new ApiServiceDefaults
-                {
-                    duration = Duration = 60,
-                    colour = Colour = "Red"
-                };
+
+                service.timing = new ApiServiceTiming { duration = Duration = 60 };
+                service.presentation = new ApiPresentation { colour = Colour = "Red" };
 
                 return service;
             }
@@ -651,7 +637,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             private ApiServiceSaveCommand GivenExistingServiceWithPricing()
             {
                 var service = GivenExistingSessionService();
-                service.pricing = new ApiServicePricing
+                service.pricing = new ApiPricing
                 {
                     sessionPrice = 16.99m,
                     coursePrice = 149.99m,
@@ -694,9 +680,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
                 Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
 
-                var defaults = service.defaults;
-                Assert.That(defaults.duration, Is.EqualTo(Duration));
-                Assert.That(defaults.colour, Is.EqualTo(Colour.ToLower()));
+                var timing = service.timing;
+                Assert.That(timing, Is.Not.Null);
+                Assert.That(timing.duration, Is.EqualTo(Duration));
+
+                var presentation = service.presentation;
+                Assert.That(presentation, Is.Not.Null);
+                Assert.That(presentation.colour, Is.EqualTo(Colour.ToLower()));
             }
 
             private void ThenReturnExistingServiceWithRepetitionSuccessResponse(Response response)

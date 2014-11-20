@@ -151,12 +151,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
+                timing = new ApiServiceTiming { duration = 45 },
                 repetition = new ApiServiceRepetition { repeatTimes = 1 },
-                defaults = new ApiServiceDefaults
-                {
-                    duration = 45,
-                    colour = colour
-                },
+                presentation = new ApiPresentation { colour = colour }
             };
 
             return JsonConvert.SerializeObject(service);
@@ -169,24 +166,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
-                repetition = new ApiServiceRepetition
-                {
-                    repeatTimes = 1
-                },
-                defaults = new ApiServiceDefaults
-                {
-                    duration = 75,
-                    colour = colour
-                },
+                timing = new ApiServiceTiming { duration = 75 },
                 booking = new ApiServiceBooking
                 {
                     studentCapacity = 13,
                     isOnlineBookable = true
                 },
-                pricing = new ApiServicePricing
-                {
-                    sessionPrice = 19.95m
-                }
+                repetition = new ApiServiceRepetition { repeatTimes = 1 },
+                pricing = new ApiPricing { sessionPrice = 19.95m },
+                presentation = new ApiPresentation { colour = colour }
             };
 
             return JsonConvert.SerializeObject(service);
