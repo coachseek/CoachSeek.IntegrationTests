@@ -62,7 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 name = name,
                 description = description,
                 timing = new ApiServiceTiming { duration = 45 },
-                repetition = new ApiServiceRepetition { repeatTimes = 1 },
+                repetition = new ApiServiceRepetition { sessionCount = 1 },
                 presentation = new ApiPresentation { colour = "orange" }
             };
 
@@ -117,7 +117,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     businessId = Guid.Empty,
                     name = RandomString,
                     description = RandomString,
-                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
+                    repetition = new ApiServiceRepetition { sessionCount = 1 }
                 };
             }
         }
@@ -243,7 +243,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenInvalidCourseService();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The repeatTimes field is not valid.", "service.repetition.repeatTimes" },
+                AssertMultipleErrors(response, new[,] { { "The sessionCount field is not valid.", "service.repetition.sessionCount" },
                                                         { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" } });
             }
 
@@ -267,7 +267,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     businessId = BusinessId,
                     name = "Mini Orange",
                     description = "Mini Orange Service",
-                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
+                    repetition = new ApiServiceRepetition { sessionCount = 1 }
                 };
             }
 
@@ -358,8 +358,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "d",
-                    repeatTimes = -1 // Open-Ended
+                    sessionCount = -1,  // Open-Ended
+                    repeatFrequency = "d"
                 };
 
                 service.pricing = new ApiPricing
@@ -377,8 +377,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "w",
-                    repeatTimes = 10
+                    sessionCount = 10,
+                    repeatFrequency = "w"
                 };
 
                 service.pricing = new ApiPricing
@@ -396,8 +396,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "w",
-                    repeatTimes = 10
+                    sessionCount = 10,
+                    repeatFrequency = "w"
                 };
 
                 return service;
@@ -409,8 +409,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "xxx",
-                    repeatTimes = -12
+                    sessionCount = -12,
+                    repeatFrequency = "xxx"
                 };
 
                 return service;
@@ -430,8 +430,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "fred",
-                    repeatTimes = 12
+                    sessionCount = 12,
+                    repeatFrequency = "fred"
                 };
 
                 service.pricing = new ApiPricing();
@@ -574,7 +574,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     id = MiniRedId,
                     name = MINI_RED_NAME,
                     description = "Mini Red Service",
-                    repetition = new ApiServiceRepetition { repeatTimes = 1 }
+                    repetition = new ApiServiceRepetition { sessionCount = 1 }
                 };
             }
 
@@ -627,8 +627,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var service = GivenExistingSessionService();
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "2d",
-                    repeatTimes = 15
+                    sessionCount = 15,
+                    repeatFrequency = "2d"
                 };
 
                 return service;
@@ -644,8 +644,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 };
                 service.repetition = new ApiServiceRepetition
                 {
-                    repeatFrequency = "w",
-                    repeatTimes = 10
+                    sessionCount = 10,
+                    repeatFrequency = "w"
                 };
 
                 return service;
@@ -698,8 +698,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
 
                 var repetition = service.repetition;
+                Assert.That(repetition.sessionCount, Is.EqualTo(15));
                 Assert.That(repetition.repeatFrequency, Is.EqualTo("2d"));
-                Assert.That(repetition.repeatTimes, Is.EqualTo(15));
             }
 
             private void ThenReturnExistingServiceWithPricingSuccessResponse(Response response)
@@ -715,8 +715,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 Assert.That(pricing.coursePrice, Is.EqualTo(149.99m));
 
                 var repetition = service.repetition;
+                Assert.That(repetition.sessionCount, Is.EqualTo(10));
                 Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
-                Assert.That(repetition.repeatTimes, Is.EqualTo(10));
             }
         }
 

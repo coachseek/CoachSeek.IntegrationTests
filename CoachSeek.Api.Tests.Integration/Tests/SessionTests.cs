@@ -183,7 +183,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             var repetition = session.repetition;
             Assert.That(repetition, Is.Not.Null);
-            Assert.That(repetition.repeatTimes, Is.EqualTo(1));
+            Assert.That(repetition.sessionCount, Is.EqualTo(1));
             Assert.That(repetition.repeatFrequency, Is.Null);
 
             var presentation = session.presentation;
@@ -228,7 +228,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             var repetition = session.repetition;
             Assert.That(repetition, Is.Not.Null);
-            Assert.That(repetition.repeatTimes, Is.EqualTo(1));
+            Assert.That(repetition.sessionCount, Is.EqualTo(1));
             Assert.That(repetition.repeatFrequency, Is.Null);
 
             var presentation = session.presentation;

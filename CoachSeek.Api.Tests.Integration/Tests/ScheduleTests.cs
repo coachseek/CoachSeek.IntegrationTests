@@ -152,7 +152,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 name = name,
                 description = string.Format("{0} Service", name),
                 timing = new ApiServiceTiming { duration = 45 },
-                repetition = new ApiServiceRepetition { repeatTimes = 1 },
+                repetition = new ApiServiceRepetition { sessionCount = 1 },
                 presentation = new ApiPresentation { colour = colour }
             };
 
@@ -172,7 +172,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     studentCapacity = 13,
                     isOnlineBookable = true
                 },
-                repetition = new ApiServiceRepetition { repeatTimes = 1 },
+                repetition = new ApiServiceRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 19.95m },
                 presentation = new ApiPresentation { colour = colour }
             };

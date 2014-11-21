@@ -2,7 +2,7 @@
 {
     public class RepetitionData
     {
+        public int sessionCount { get; set; }
         public string repeatFrequency { get; set; }
-        public int repeatTimes { get; set; }
     }
 }
