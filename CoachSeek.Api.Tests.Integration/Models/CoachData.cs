@@ -10,6 +10,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public string name { get; set; }
         public string email { get; set; }
         public string phone { get; set; }
-        //public WeeklyWorkingHoursData WorkingHours { get; set; }
+        
+        public WeeklyWorkingHoursData workingHours { get; set; }
     }
 }

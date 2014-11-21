@@ -51,6 +51,7 @@
     <Compile Include="Models\ApiServiceBooking.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
     <Compile Include="Models\CoachKeyData.cs" />
+    <Compile Include="Models\DailyWorkingHoursData.cs" />
     <Compile Include="Models\KeyData.cs" />
     <Compile Include="Models\LocationKeyData.cs" />
     <Compile Include="Models\PricingData.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Models\ApiServiceSaveCommand.cs" />
     <Compile Include="Models\ServicePricing.cs" />
     <Compile Include="Models\ServiceRepetition.cs" />
+    <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\CoachTests.cs" />
     <Compile Include="Tests\LocationTests.cs" />

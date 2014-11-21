@@ -123,6 +123,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenReturnDuplicateCoachErrorResponse(response);
         }
 
+        [Test]
+        public void GivenValidNewCoach_WhenPost_ThenReturnNewCoachResponse()
+        {
+            var command = GivenValidNewCoach();
+            var response = WhenPost(command);
+            ThenReturnNewCoachResponse(response);
+        }
+
 
         private string GivenNoCoachSaveCommand()
         {
@@ -239,6 +247,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(coach);
         }
 
+        private string GivenValidNewCoach()
+        {
+            var coach = new ApiCoachSaveCommand
+            {
+                businessId = BusinessId,
+                firstName = "Carl",
+                lastName = "Carson",
+                email = "Carl@CoachMaster.com",
+                phone = "021 69 69 69",
+                workingHours = SetupStandardWorkingHours()
+            };
+
+            coach.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
+
+            return JsonConvert.SerializeObject(coach);
+        }
+
 
         private Response WhenPost(string json)
         {
@@ -327,6 +352,54 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], null, "This coach already exists.");
+        }
+
+        private void ThenReturnNewCoachResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<CoachData>());
+            var coach = (CoachData)response.Payload;
+
+            Assert.That(coach.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(coach.firstName, Is.EqualTo("Carl"));
+            Assert.That(coach.lastName, Is.EqualTo("Carson"));
+            Assert.That(coach.email, Is.EqualTo("carl@coachmaster.com"));
+            Assert.That(coach.phone, Is.EqualTo("021 69 69 69"));
+
+            Assert.That(coach.workingHours, Is.Not.Null);
+            AssertStandardWorkingDay(coach.workingHours.monday);
+            AssertStandardWorkingDay(coach.workingHours.tuesday);
+            AssertStandardWorkingDay(coach.workingHours.wednesday);
+            AssertStandardWorkingDay(coach.workingHours.thursday);
+            AssertStandardWorkingDay(coach.workingHours.friday);
+            AssertStandardWeekendDay(coach.workingHours.saturday);
+            AssertWorkingHours(coach.workingHours.sunday, false, "10:30", "15:45"); ;
+        }
+
+        private void AssertStandardWorkingDay(DailyWorkingHoursData workingDay)
+        {
+            Assert.That(workingDay, Is.Not.Null);
+            Assert.That(workingDay.isAvailable, Is.True);
+            Assert.That(workingDay.startTime, Is.EqualTo("9:00"));
+            Assert.That(workingDay.finishTime, Is.EqualTo("17:00"));
+        }
+
+        private void AssertStandardWeekendDay(DailyWorkingHoursData workingDay)
+        {
+            Assert.That(workingDay, Is.Not.Null);
+            Assert.That(workingDay.isAvailable, Is.False);
+            Assert.That(workingDay.startTime, Is.Null);
+            Assert.That(workingDay.finishTime, Is.Null);
+        }
+
+        private void AssertWorkingHours(DailyWorkingHoursData workingDay, bool isAvailable, string startTime, string finishTime)
+        {
+            Assert.That(workingDay, Is.Not.Null);
+            Assert.That(workingDay.isAvailable, Is.EqualTo(isAvailable));
+            Assert.That(workingDay.startTime, Is.EqualTo(startTime));
+            Assert.That(workingDay.finishTime, Is.EqualTo(finishTime));
         }
     }
 }
