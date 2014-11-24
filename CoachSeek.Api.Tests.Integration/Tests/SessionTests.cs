@@ -65,6 +65,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenGetServiceDefaults(response);
         }
 
+        [Test]
+        public void GivenSessionClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
+        {
+            var command = GivenClashingSingleSession();
+            var response = WhenPost(command);
+            AssertSingleError(response, "This session clashes with another session.");
+        }
+
 
         private string GivenNoSessionSaveCommand()
         {
@@ -130,6 +138,32 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 {
                     startDate = "2014-11-11",
                     startTime = "16:45"
+                }
+            };
+        }
+
+        private ApiSessionSaveCommand GivenClashingSingleSession()
+        {
+            return new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                coach = new ApiCoachKey { id = AaronId },
+                location = new ApiLocationKey { id = RemueraId },
+                service = new ApiServiceKey { id = MiniBlueId },
+                timing = new ApiSessionTiming
+                {
+                    startDate = GetDateFormatOneWeekOut(),
+                    startTime = "14:30",
+                    duration = 60
+                },
+                booking = new ApiSessionBooking
+                {
+                    studentCapacity = 9,
+                    isOnlineBookable = true
+                },
+                pricing = new ApiPricing
+                {
+                    sessionPrice = 25
                 }
             };
         }

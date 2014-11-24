@@ -20,6 +20,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid BobbyId { get; set; }
         protected Guid MiniRedId { get; set; }
         protected Guid MiniBlueId { get; set; }
+        protected Guid NewSessionId { get; set; }
 
         protected void SetupFullTestBusiness()
         {
@@ -27,6 +28,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestLocations();
             RegisterTestCoaches();
             RegisterTestServices();
+            RegisterTestSessions();
         }
 
         private void RegisterTestLocations()
@@ -151,7 +153,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
-                timing = new ApiServiceTiming { duration = 45 },
                 repetition = new ApiServiceRepetition { sessionCount = 1 },
                 presentation = new ApiPresentation { colour = colour }
             };
@@ -178,6 +179,45 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
 
             return JsonConvert.SerializeObject(service);
+        }
+
+        private void RegisterTestSessions()
+        {
+            RegisterAaronOrakei2To3();
+        }
+
+        private void RegisterAaronOrakei2To3()
+        {
+            var json = CreateSessionSaveCommandAaronOrakei2To3();
+            var response = PostSession(json);
+            NewSessionId = ((SessionData)response.Payload).id;
+        }
+
+        private Response PostSession(string json)
+        {
+            return Post<SessionData>(json, "Sessions");
+        }
+
+        private string CreateSessionSaveCommandAaronOrakei2To3()
+        {
+            var service = new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                location = new ApiLocationKey { id = OrakeiId },
+                coach = new ApiCoachKey { id = AaronId },
+                service = new ApiServiceKey { id = MiniRedId },
+                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:00", duration = 60 }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        protected string GetDateFormatOneWeekOut()
+        {
+            var today = DateTime.Today;
+            var oneWeekFromToday = today.AddDays(7);
+
+            return oneWeekFromToday.ToString("yyyy-MM-dd");
         }
     }
 }

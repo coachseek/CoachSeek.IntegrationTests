@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CoachSeek.Api.Tests.Integration.Models;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
-using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
