@@ -6,10 +6,8 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
-    [TestFixture]
-    public class SessionTests : ScheduleTests
+    public abstract class SessionTests : ScheduleTests
     {
-
         [SetUp]
         public void Setup()
         {
@@ -21,82 +19,214 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             get { return "Sessions"; }
         }
 
-        [Test]
-        public void GivenNoSessionSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
+        [TestFixture]
+        public class SessionCommandTests : SessionTests
         {
-            var command = GivenNoSessionSaveCommand();
-            var response = WhenPost(command);
-            AssertSingleError(response, "Please post us some data!");
+            [Test]
+            public void GivenNoSessionSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
+            {
+                var command = GivenNoSessionSaveCommand();
+                var response = WhenPost(command);
+                AssertSingleError(response, "Please post us some data!");
+            }
+
+            [Test]
+            public void GivenEmptySessionSaveCommand_WhenPost_ThenReturnMultipleErrors()
+            {
+                var command = GivenEmptySessionSaveCommand();
+                var response = WhenPost(command);
+                AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "session.businessId" }, 
+                                                        { "The service field is required.", "session.service" },
+                                                        { "The location field is required.", "session.location" },
+                                                        { "The coach field is required.", "session.coach" },
+                                                        { "The timing field is required.", "session.timing" } });
+            }
+
+            [Test]
+            public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdError()
+            {
+                var command = GivenNonExistentBusinessId();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This business does not exist.", "session.businessId");
+            }
+
+            private string GivenNoSessionSaveCommand()
+            {
+                return "";
+            }
+
+            private string GivenEmptySessionSaveCommand()
+            {
+                return "{}";
+            }
+
+            private ApiSessionSaveCommand GivenNonExistentBusinessId()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    businessId = Guid.Empty,
+                    service = new ApiServiceKey { id = Guid.NewGuid() },
+                    location = new ApiLocationKey { id = Guid.NewGuid() },
+                    coach = new ApiCoachKey { id = Guid.NewGuid() },
+                    timing = new ApiSessionTiming { startDate = RandomString, startTime = RandomString }
+                };
+            }
         }
 
-        [Test]
-        public void GivenEmptySessionSaveCommand_WhenPost_ThenReturnMultipleErrors()
-        {
-            var command = GivenEmptySessionSaveCommand();
-            var response = WhenPost(command);
-            AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "session.businessId" }, 
-                                                    { "The service field is required.", "session.service" },
-                                                    { "The location field is required.", "session.location" },
-                                                    { "The coach field is required.", "session.coach" },
-                                                    { "The timing field is required.", "session.timing" } });
-        }
 
-        [Test]
-        public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdError()
+        [TestFixture]
+        public class SessionNewTests : SessionTests
         {
-            var command = GivenNonExistentBusinessId();
-            var response = WhenPost(command);
-            AssertSingleError(response, "This business does not exist.", "session.businessId");
-        }
+            [Test]
+            public void GivenSingleSessionWithValues_WhenPost_ThenOverrideServiceDefaults()
+            {
+                var command = GivenSingleSessionWithAllValues();
+                var response = WhenPost(command);
+                ThenOverrideServiceDefaults(response);
+            }
 
-        [Test]
-        public void GivenSingleSessionWithValues_WhenPost_ThenOverrideServiceDefaults()
-        {
-            var command = GivenSingleSessionWithValues();
-            var response = WhenPost(command);
-            ThenOverrideServiceDefaults(response);
-        }
+            [Test]
+            public void GivenSingleSessionMissingValues_WhenPost_ThenGetServiceDefaults()
+            {
+                var command = GivenSingleSessionMissingValues();
+                var response = WhenPost(command);
+                ThenGetServiceDefaults(response);
+            }
 
-        [Test]
-        public void GivenSingleSessionMissingValues_WhenPost_ThenGetServiceDefaults()
-        {
-            var command = GivenSingleSessionMissingValues();
-            var response = WhenPost(command);
-            ThenGetServiceDefaults(response);
-        }
-
-        [Test]
-        public void GivenSessionClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
-        {
-            var command = GivenClashingSingleSession();
-            var response = WhenPost(command);
-            AssertSingleError(response, "This session clashes with another session.");
+            [Test]
+            public void GivenSessionClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
+            {
+                var command = GivenClashingSingleSession();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This session clashes with another session.");
+            }
         }
 
 
-        private string GivenNoSessionSaveCommand()
+        [TestFixture]
+        public class SessionExistingTests : SessionTests
         {
-            return "";
+            [Test]
+            public void GivenNonExistentSessionId_WhenPost_ThenReturnInvalidSessionIdError()
+            {
+                var command = GivenNonExistentSessionId();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This session does not exist.", "session.id");
+            }
+
+            [Test]
+            public void GivenSessionClashesAnotherSession_WhenPost_ThenReturnSessionClashErrorResponse()
+            {
+                var command = GivenSessionClashesAnotherSession();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This session clashes with another session.");
+            }
+
+            [Test]
+            public void GivenSessionClashesWithItself_WhenPost_ThenSessionWasUpdatedResponse()
+            {
+                var command = GivenSessionClashesWithItself();
+                var response = WhenPost(command);
+                ThenSessionWasUpdatedResponse(response);
+            }
+
+            private ApiSessionSaveCommand GivenNonExistentSessionId()
+            {
+                var session = GivenExistingSession();
+                session.id = Guid.NewGuid();
+
+                return session;
+            }
+
+            private ApiSessionSaveCommand GivenExistingSession()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    businessId = BusinessId,
+                    id = AaronOrakei2To3SessionId,
+                    location = new ApiLocationKey { id = OrakeiId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    service = new ApiServiceKey { id = MiniRedId },
+                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:00", duration = 60 }
+                };
+            }
+
+            private ApiSessionSaveCommand GivenSessionClashesAnotherSession()
+            {
+                // Should clash with AaronOrakei4To5Session
+                return new ApiSessionSaveCommand
+                {
+                    businessId = BusinessId,
+                    id = AaronOrakei2To3SessionId,
+                    location = new ApiLocationKey { id = OrakeiId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    service = new ApiServiceKey { id = MiniRedId },
+                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "15:30", duration = 60 }
+                };
+            }
+
+            private SessionData ThenSessionWasUpdatedResponse(Response response)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<SessionData>());
+                var session = (SessionData)response.Payload;
+
+                Assert.That(session, Is.Not.Null);
+
+                Assert.That(session.id, Is.EqualTo(AaronOrakei2To3SessionId));
+                Assert.That(session.location, Is.Not.Null);
+                Assert.That(session.location.id, Is.EqualTo(OrakeiId));
+                Assert.That(session.coach, Is.Not.Null);
+                Assert.That(session.coach.id, Is.EqualTo(AaronId));
+                Assert.That(session.service, Is.Not.Null);
+                Assert.That(session.service.id, Is.EqualTo(MiniRedId));
+
+                var timing = session.timing;
+                Assert.That(timing, Is.Not.Null);
+                Assert.That(timing.startDate, Is.EqualTo(GetDateFormatOneWeekOut()));
+                Assert.That(timing.startTime, Is.EqualTo("14:30"));
+                Assert.That(timing.duration, Is.EqualTo(60));
+
+                var booking = session.booking;
+                Assert.That(booking, Is.Not.Null);
+                Assert.That(booking.studentCapacity, Is.EqualTo(13));
+                Assert.That(booking.isOnlineBookable, Is.True);
+
+                var pricing = session.pricing;
+                Assert.That(pricing, Is.Not.Null);
+                Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
+                Assert.That(pricing.coursePrice, Is.Null);
+
+                var repetition = session.repetition;
+                Assert.That(repetition, Is.Not.Null);
+                Assert.That(repetition.sessionCount, Is.EqualTo(1));
+                Assert.That(repetition.repeatFrequency, Is.Null);
+
+                var presentation = session.presentation;
+                Assert.That(presentation, Is.Not.Null);
+                Assert.That(presentation.colour, Is.EqualTo("red"));
+
+                return session;
+            }
         }
 
-        private string GivenEmptySessionSaveCommand()
+        private ApiSessionSaveCommand GivenSessionClashesWithItself()
         {
-            return "{}";
-        }
-
-        private ApiSessionSaveCommand GivenNonExistentBusinessId()
-        {
+            // Start time moved from 14:00 to 14:30 and duration is 1 hr. 
             return new ApiSessionSaveCommand
             {
-                businessId = Guid.Empty,
-                service = new ApiServiceKey { id = Guid.NewGuid() },
-                location = new ApiLocationKey { id = Guid.NewGuid() },
-                coach = new ApiCoachKey { id = Guid.NewGuid() },
-                timing = new ApiSessionTiming { startDate = RandomString, startTime = RandomString }
+                businessId = BusinessId,
+                id = AaronOrakei2To3SessionId,
+                location = new ApiLocationKey { id = OrakeiId },
+                coach = new ApiCoachKey { id = AaronId },
+                service = new ApiServiceKey { id = MiniRedId },
+                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:30", duration = 60 }
             };
         }
 
-        private ApiSessionSaveCommand GivenSingleSessionWithValues()
+        private ApiSessionSaveCommand GivenSingleSessionWithAllValues()
         {
             return new ApiSessionSaveCommand
             {

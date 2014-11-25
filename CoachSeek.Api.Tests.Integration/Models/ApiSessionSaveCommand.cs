@@ -5,6 +5,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
     public class ApiSessionSaveCommand
     {
         public Guid? businessId { get; set; }
+        public Guid? id { get; set; }
 
         public ApiServiceKey service { get; set; }
         public ApiLocationKey location { get; set; }

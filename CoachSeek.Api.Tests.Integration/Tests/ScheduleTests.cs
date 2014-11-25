@@ -20,7 +20,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid BobbyId { get; set; }
         protected Guid MiniRedId { get; set; }
         protected Guid MiniBlueId { get; set; }
-        protected Guid NewSessionId { get; set; }
+        protected Guid AaronOrakei2To3SessionId { get; set; }
+        protected Guid AaronOrakei4To5SessionId { get; set; }
 
         protected void SetupFullTestBusiness()
         {
@@ -184,13 +185,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void RegisterTestSessions()
         {
             RegisterAaronOrakei2To3();
+            RegisterAaronOrakei4To5();
         }
 
         private void RegisterAaronOrakei2To3()
         {
             var json = CreateSessionSaveCommandAaronOrakei2To3();
             var response = PostSession(json);
-            NewSessionId = ((SessionData)response.Payload).id;
+            AaronOrakei2To3SessionId = ((SessionData)response.Payload).id;
+        }
+
+        private void RegisterAaronOrakei4To5()
+        {
+            var json = CreateSessionSaveCommandAaronOrakei4To5();
+            var response = PostSession(json);
+            AaronOrakei4To5SessionId = ((SessionData)response.Payload).id;
         }
 
         private Response PostSession(string json)
@@ -207,6 +216,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:00", duration = 60 }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string CreateSessionSaveCommandAaronOrakei4To5()
+        {
+            var service = new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                location = new ApiLocationKey { id = OrakeiId },
+                coach = new ApiCoachKey { id = AaronId },
+                service = new ApiServiceKey { id = MiniRedId },
+                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "16:00", duration = 60 }
             };
 
             return JsonConvert.SerializeObject(service);
