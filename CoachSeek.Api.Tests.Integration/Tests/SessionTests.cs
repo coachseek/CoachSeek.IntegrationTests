@@ -98,7 +98,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenSingleSessionClashingWithSession();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with another session.");
+                AssertSingleError(response, "This session clashes with one or more session(s).");
             }
 
             [Test]
@@ -106,7 +106,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenSingleSessionClashingWithCourse();
                 var response = WhenPost(command);
-                AssertSingleError(response, "One or more sessions clash with other session(s).");
+                AssertSingleError(response, "This session clashes with one or more session(s).");
             }
         }
 
@@ -127,7 +127,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenSessionClashesAnotherSession();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with another session.");
+                AssertSingleError(response, "This session clashes with one or more session(s).");
             }
 
             [Test]
