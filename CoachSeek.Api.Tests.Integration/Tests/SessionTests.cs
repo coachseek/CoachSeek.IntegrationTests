@@ -96,9 +96,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             [Test]
             public void GivenSessionClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
             {
-                var command = GivenClashingSingleSession();
+                var command = GivenSingleSessionClashingWithSession();
                 var response = WhenPost(command);
                 AssertSingleError(response, "This session clashes with another session.");
+            }
+
+            [Test]
+            public void GivenSessionClashesWithExistingCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+            {
+                var command = GivenSingleSessionClashingWithCourse();
+                var response = WhenPost(command);
+                AssertSingleError(response, "One or more sessions clash with other session(s).");
             }
         }
 
@@ -272,19 +280,45 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        private ApiSessionSaveCommand GivenClashingSingleSession()
+        private ApiSessionSaveCommand GivenSingleSessionClashingWithSession()
         {
             return new ApiSessionSaveCommand
             {
                 businessId = BusinessId,
                 coach = new ApiCoachKey { id = AaronId },
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = OrakeiId },
                 service = new ApiServiceKey { id = MiniBlueId },
                 timing = new ApiSessionTiming
                 {
                     startDate = GetDateFormatOneWeekOut(),
-                    startTime = "14:30",
+                    startTime = "16:30",
                     duration = 60
+                },
+                booking = new ApiSessionBooking
+                {
+                    studentCapacity = 9,
+                    isOnlineBookable = true
+                },
+                pricing = new ApiPricing
+                {
+                    sessionPrice = 25
+                }
+            };
+        }
+
+        private ApiSessionSaveCommand GivenSingleSessionClashingWithCourse()
+        {
+            return new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                coach = new ApiCoachKey { id = AaronId },
+                location = new ApiLocationKey { id = OrakeiId },
+                service = new ApiServiceKey { id = MiniBlueId },
+                timing = new ApiSessionTiming
+                {
+                    startDate = GetDateFormatTwoWeeksOut(),
+                    startTime = "9:30",
+                    duration = 30
                 },
                 booking = new ApiSessionBooking
                 {

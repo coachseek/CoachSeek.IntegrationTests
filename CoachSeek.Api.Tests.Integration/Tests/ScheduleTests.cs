@@ -30,6 +30,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestCoaches();
             RegisterTestServices();
             RegisterTestSessions();
+            RegisterTestCourses();
         }
 
         private void RegisterTestLocations()
@@ -202,6 +203,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AaronOrakei4To5SessionId = ((SessionData)response.Payload).id;
         }
 
+        private void RegisterTestCourses()
+        {
+            RegisterAaronRemuera9To10For8Weeks();
+        }
+
+        private void RegisterAaronRemuera9To10For8Weeks()
+        {
+            var json = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+            var response = PostSession(json);
+            AaronOrakei4To5SessionId = ((SessionData)response.Payload).id;
+        }
+
         private Response PostSession(string json)
         {
             return Post<SessionData>(json, "Sessions");
@@ -235,12 +248,35 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(service);
         }
 
+        private string CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        {
+            var service = new ApiSessionSaveCommand
+            {
+                businessId = BusinessId,
+                location = new ApiLocationKey { id = RemueraId },
+                coach = new ApiCoachKey { id = AaronId },
+                service = new ApiServiceKey { id = MiniRedId },
+                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "9:00", duration = 60 },
+                repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
         protected string GetDateFormatOneWeekOut()
         {
             var today = DateTime.Today;
             var oneWeekFromToday = today.AddDays(7);
 
             return oneWeekFromToday.ToString("yyyy-MM-dd");
+        }
+
+        protected string GetDateFormatTwoWeeksOut()
+        {
+            var today = DateTime.Today;
+            var twoWeeksFromToday = today.AddDays(14);
+
+            return twoWeeksFromToday.ToString("yyyy-MM-dd");
         }
     }
 }

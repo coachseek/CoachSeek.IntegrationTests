@@ -42,9 +42,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected Response Post<TData>(string json, HttpWebRequest request)
         {
-            request.Accept = "application/json";
-            request.ContentType = "application/json";
-            request.Method = "POST";
+            PrepareRequest<TData>(request);
 
             var encoding = new ASCIIEncoding();
             var bytes = encoding.GetBytes(json);
@@ -78,6 +76,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     }
                 }
             }
+        }
+
+        private static void PrepareRequest<TData>(HttpWebRequest request)
+        {
+            request.Accept = "application/json";
+            request.ContentType = "application/json";
+            request.Method = "POST";
         }
 
         protected void AssertStatusCode(HttpStatusCode actualStatusCode, HttpStatusCode expectedStatusCode)
