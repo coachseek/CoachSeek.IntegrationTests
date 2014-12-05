@@ -11,8 +11,8 @@ namespace CoachSeek.Api.Tests.Integration.Models
 
         public ApiServiceTiming timing { get; set; }
         public ApiServiceBooking booking { get; set; }
+        public ApiPresentation presentation { get; set; }
         public ApiServiceRepetition repetition { get; set; }
         public ApiPricing pricing { get; set; }
-        public ApiPresentation presentation { get; set; }
     }
 }

@@ -191,7 +191,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterAaronOrakei2To3()
         {
-            var json = CreateSessionSaveCommandAaronOrakei2To3();
+            var json = CreateSessionSaveCommandAaronOrakei2To3(GetDateFormatNumberOfWeeksOut(3));
             var response = PostSession(json);
             AaronOrakei2To3SessionId = ((SessionData)response.Payload).id;
         }
@@ -220,7 +220,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<SessionData>(json, "Sessions");
         }
 
-        private string CreateSessionSaveCommandAaronOrakei2To3()
+        private string CreateSessionSaveCommandAaronOrakei2To3(string startDate)
         {
             var service = new ApiSessionSaveCommand
             {
@@ -228,7 +228,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:00", duration = 60 }
+                timing = new ApiSessionTiming { startDate = startDate, startTime = "14:00", duration = 60 }
             };
 
             return JsonConvert.SerializeObject(service);
@@ -265,16 +265,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected string GetDateFormatOneWeekOut()
         {
-            var today = DateTime.Today;
-            var oneWeekFromToday = today.AddDays(7);
-
-            return oneWeekFromToday.ToString("yyyy-MM-dd");
+            return GetDateFormatNumberOfWeeksOut(1);
         }
 
         protected string GetDateFormatTwoWeeksOut()
         {
+            return GetDateFormatNumberOfWeeksOut(2);
+        }
+
+        protected string GetDateFormatNumberOfWeeksOut(int numberOfWeeks)
+        {
             var today = DateTime.Today;
-            var twoWeeksFromToday = today.AddDays(14);
+            var twoWeeksFromToday = today.AddDays(7 * numberOfWeeks);
 
             return twoWeeksFromToday.ToString("yyyy-MM-dd");
         }
