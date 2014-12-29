@@ -24,6 +24,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [SetUp]
         public void Setup()
         {
+            // Reset email.
+            Email = RandomEmail;
+            Password = "password1";
+
             RegisterTestBusiness();
             RegisterTestLocations();
 

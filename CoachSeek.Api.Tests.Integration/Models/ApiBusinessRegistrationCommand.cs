@@ -2,7 +2,7 @@
 {
     public class ApiBusinessRegistrationCommand
     {
-        public string businessName { get; set; }
-        public ApiBusinessRegistrant registrant { get; set; }
+        public ApiBusiness business { get; set; }
+        public ApiBusinessAdmin admin { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace CoachSeek.Api.Tests.Integration.Models
 {
-    public class ApiBusinessRegistrant
+    public class ApiBusinessAdmin
     {
         public string firstName { get; set; }
         public string lastName { get; set; }

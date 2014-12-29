@@ -10,6 +10,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class WebIntegrationTest
     {
+        private string _email;
+
         //protected string BUSINESS_ID = "01234567-89AB-CDEF-0123-456789ABCDEF";
         protected Guid BusinessId { get; set; }
 
@@ -25,24 +27,55 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             get { return string.Format("{0}/{1}", BaseUrl, RelativePath); }
         }
 
-        protected Response Post<TData>(string json)
+        protected string Email
+        {
+            get { return _email; }
+            set { _email = value ?? RandomEmail; }
+        }
+
+        protected string Username
+        {
+            get { return Email; }
+        }
+
+        protected string Password { get; set; }
+
+
+        protected Response PostAnonymously<TResponse>(string json)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
 
-            return Post<TData>(json, http);
+            return Post<TResponse>(json, http);
         }
 
-        protected Response Post<TData>(string json, string relativePath)
+        protected Response PostAnonymously<TResponse>(string json, string relativePath)
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
 
-            return Post<TData>(json, http);
+            return Post<TResponse>(json, http);
         }
 
-        protected Response Post<TData>(string json, HttpWebRequest request)
+        protected Response Post<TResponse>(string json)
         {
-            PrepareRequest<TData>(request);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Post<TResponse>(json, http);
+        }
+
+        protected Response Post<TResponse>(string json, string relativePath)
+        {
+            var url = string.Format("{0}/{1}", BaseUrl, relativePath);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Post<TResponse>(json, http);
+        }
+
+        protected Response Post<TResponse>(string json, HttpWebRequest request)
+        {
+            PrepareRequest(request);
 
             var encoding = new ASCIIEncoding();
             var bytes = encoding.GetBytes(json);
@@ -58,7 +91,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 var stream = response.GetResponseStream();
                 var sr = new StreamReader(stream);
                 var content = sr.ReadToEnd();
-                var obj = JsonConvert.DeserializeObject<TData>(content);
+                var obj = JsonConvert.DeserializeObject<TResponse>(content);
 
                 return new Response(status, obj);
             }
@@ -78,7 +111,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
         }
 
-        private static void PrepareRequest<TData>(HttpWebRequest request)
+        private void SetBasicAuthHeader(WebRequest request, string username, string password)
+        {
+            var authInfo = string.Format("{0}:{1}", username, password);
+            authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
+            request.Headers["Authorization"] = "Basic " + authInfo;
+        }
+
+        private static void PrepareRequest(HttpWebRequest request)
         {
             request.Accept = "application/json";
             request.ContentType = "application/json";
@@ -131,8 +171,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected void RegisterTestBusiness()
         {
             var json = CreateTestBusinessRegistrationCommand();
-            var response = Post<BusinessData>(json, "BusinessRegistration");
-            BusinessId = ((BusinessData)response.Payload).id;
+            var response = PostAnonymously<RegistrationData>(json, "BusinessRegistration");
+            var registrationResponse = ((RegistrationData)response.Payload);
+            BusinessId = registrationResponse.business.id;
+            //BusinessId = registrationResponse.business.id;
         }
 
 
@@ -140,13 +182,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                businessName = RandomString,
-                registrant = new ApiBusinessRegistrant
+                business = new ApiBusiness { name = RandomString },
+                admin = new ApiBusinessAdmin
                 {
                     firstName = "Bob",
                     lastName = "Smith",
-                    email = RandomEmail,
-                    password = "password"
+                    email = Email,
+                    password = Password
                 }
             };
 

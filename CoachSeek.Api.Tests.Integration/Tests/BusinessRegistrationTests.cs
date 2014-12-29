@@ -13,8 +13,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private string Domain { get; set; }
         private string FirstName { get; set; }
         private string LastName { get; set; }
-        private string Email { get; set; }
-        private string Password { get; set; }
 
         protected override string RelativePath
         {
@@ -51,11 +49,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
         [Test]
-        public void GivenMissingRegistrantProperties_WhenPost_ThenReturnRegistrantPropertyErrorResponse()
+        public void GivenMissingProperties_WhenPost_ThenReturnMissingPropertiesErrorResponse()
         {
-            var command = GivenMissingRegistrantProperties();
+            var command = GivenMissingProperties();
             var response = WhenPost(command);
-            ThenReturnRegistrantPropertyErrorResponse(response);
+            ThenReturnMissingPropertiesErrorResponse(response);
         }
 
         [Test]
@@ -93,12 +91,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return "{}";
         }
 
-        private string GivenMissingRegistrantProperties()
+        private string GivenMissingProperties()
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                businessName = BusinessName,
-                registrant = new ApiBusinessRegistrant()
+                business = new ApiBusiness(),
+                admin = new ApiBusinessAdmin()
             };
 
             return JsonConvert.SerializeObject(registration);
@@ -108,8 +106,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                businessName = BusinessName,
-                registrant = new ApiBusinessRegistrant
+                business = new ApiBusiness { name = BusinessName },
+                admin = new ApiBusinessAdmin
                 {
                     firstName = FirstName,
                     lastName = LastName,
@@ -143,8 +141,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                businessName = BusinessName,
-                registrant = new ApiBusinessRegistrant
+                business = new ApiBusiness { name = BusinessName },
+                admin = new ApiBusinessAdmin
                 {
                     firstName = FirstName,
                     lastName = LastName,
@@ -159,7 +157,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private Response WhenPost(string json)
         {
-            return Post<BusinessData>(json);
+            return PostAnonymously<RegistrationData>(json);
         }
 
 
@@ -180,21 +178,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "registration.businessName", "The businessName field is required.");
-            AssertApplicationError(errors[1], "registration.registrant", "The registrant field is required.");
+            AssertApplicationError(errors[0], "registration.business", "The business field is required.");
+            AssertApplicationError(errors[1], "registration.admin", "The admin field is required.");
         }
 
-        private void ThenReturnRegistrantPropertyErrorResponse(Response response)
+        private void ThenReturnMissingPropertiesErrorResponse(Response response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
 
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(4));
-            AssertApplicationError(errors[0], "registration.registrant.firstName", "The firstName field is required.");
-            AssertApplicationError(errors[1], "registration.registrant.lastName", "The lastName field is required.");
-            AssertApplicationError(errors[2], "registration.registrant.email", "The email field is required.");
-            AssertApplicationError(errors[3], "registration.registrant.password", "The password field is required.");
+            Assert.That(errors.GetLength(0), Is.EqualTo(5));
+            AssertApplicationError(errors[0], "registration.business.name", "The name field is required.");
+            AssertApplicationError(errors[1], "registration.admin.firstName", "The firstName field is required.");
+            AssertApplicationError(errors[2], "registration.admin.lastName", "The lastName field is required.");
+            AssertApplicationError(errors[3], "registration.admin.email", "The email field is required.");
+            AssertApplicationError(errors[4], "registration.admin.password", "The password field is required.");
         }
 
         private void ThenReturnMultipleErrorResponse(Response response)
@@ -205,20 +204,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(3));
             AssertMultipleEmailErrors(errors[0], errors[1]);
-            AssertApplicationError(errors[2], "registration.registrant.password", "The field password must be a string with a maximum length of 20.");
+            AssertApplicationError(errors[2], "registration.admin.password", "The field password must be a string with a maximum length of 20.");
         }
 
         private void AssertMultipleEmailErrors(ApplicationError error1, ApplicationError error2)
         {
             if (error1.message.Contains("maximum length"))
             {
-                AssertApplicationError(error1, "registration.registrant.email", "The field email must be a string with a maximum length of 100.");
-                AssertApplicationError(error2, "registration.registrant.email", "The email field is not a valid e-mail address.");
+                AssertApplicationError(error1, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
+                AssertApplicationError(error2, "registration.admin.email", "The email field is not a valid e-mail address.");
             }
             else
             {
-                AssertApplicationError(error1, "registration.registrant.email", "The email field is not a valid e-mail address.");
-                AssertApplicationError(error2, "registration.registrant.email", "The field email must be a string with a maximum length of 100.");
+                AssertApplicationError(error1, "registration.admin.email", "The email field is not a valid e-mail address.");
+                AssertApplicationError(error2, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
             }
         }
 
@@ -229,7 +228,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "registration.registrant.email", "This email address is already in use.");
+            AssertApplicationError(errors[0], "registration.admin.email", "The user with this email address already exists.");
         }
 
         private void ThenReturnNewBusinessSuccessResponse(Response response)
@@ -237,20 +236,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            Assert.That(response.Payload, Is.InstanceOf<BusinessData>());
-            var business = (BusinessData)response.Payload;
+            Assert.That(response.Payload, Is.InstanceOf<RegistrationData>());
+            var registration = (RegistrationData)response.Payload;
+            var business = registration.business;
             Assert.That(business.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(business.name, Is.EqualTo(BusinessName));
             Assert.That(business.domain, Is.EqualTo(Domain));
-            var admin = business.admin;
+            var admin = registration.admin;
             Assert.That(admin, Is.Not.Null);
             Assert.That(admin.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(admin.firstName, Is.EqualTo(FirstName));
             Assert.That(admin.lastName, Is.EqualTo(LastName));
             Assert.That(admin.email, Is.EqualTo(Email));
             Assert.That(admin.username, Is.EqualTo(Email));
-            Assert.That(admin.passwordHash, Is.EqualTo(Password)); // TODO
-            Assert.That(admin.passwordSalt, Is.EqualTo(string.Empty)); // TODO
+            Assert.That(admin.passwordHash, Is.Not.EqualTo(Password));
+            Assert.That(admin.businessId, Is.EqualTo(business.id));
+            Assert.That(admin.businessName, Is.EqualTo(business.name));
         }
     }
 }

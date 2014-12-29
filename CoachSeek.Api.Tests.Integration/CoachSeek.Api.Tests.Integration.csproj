@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ApiBusiness.cs" />
     <Compile Include="Models\ApiCoachKey.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
     <Compile Include="Models\ApiServiceBooking.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Models\PresentationData.cs" />
     <Compile Include="Models\ApiPresentation.cs" />
     <Compile Include="Models\ApiPricing.cs" />
+    <Compile Include="Models\RegistrationData.cs" />
     <Compile Include="Models\RepetitionData.cs" />
     <Compile Include="Models\ApiRepetition.cs" />
     <Compile Include="Models\ApiServiceKey.cs" />
@@ -78,11 +80,12 @@
     <Compile Include="Models\ApiServiceSaveCommand.cs" />
     <Compile Include="Models\ServicePricing.cs" />
     <Compile Include="Models\ServiceRepetition.cs" />
+    <Compile Include="Models\UserData.cs" />
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\CoachTests.cs" />
     <Compile Include="Tests\LocationTests.cs" />
-    <Compile Include="Models\ApiBusinessRegistrant.cs" />
+    <Compile Include="Models\ApiBusinessAdmin.cs" />
     <Compile Include="Models\ApiBusinessRegistrationCommand.cs" />
     <Compile Include="Models\ApiCoachSaveCommand.cs" />
     <Compile Include="Models\ApiDailyWorkingHours.cs" />
