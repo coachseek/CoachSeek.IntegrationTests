@@ -62,7 +62,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 name = name
             };
 

@@ -58,7 +58,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 name = name
             };
 
@@ -80,14 +79,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var command = GivenEmptyLocationSaveCommand();
             var response = WhenPost(command);
             ThenReturnRootRequiredErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdErrorResponse()
-        {
-            var command = GivenNonExistentBusinessId();
-            var response = WhenPost(command);
-            ThenReturnInvalidBusinessIdErrorResponse(response);
         }
 
         [Test]
@@ -153,7 +144,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = Guid.Empty,
+                //businessId = Guid.Empty,
                 name = RandomString
             };
 
@@ -164,7 +155,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 id = Guid.Empty,
                 name = RandomString
             };
@@ -176,7 +166,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 name = ORAKEI_NAME
             };
 
@@ -187,7 +176,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 id = RemueraId,
                 name = ORAKEI_NAME
             };
@@ -199,7 +187,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 name = "Mt Eden Squash Club"
             };
 
@@ -212,7 +199,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 id = OrakeiId,
                 name = NewLocationName
             };
@@ -226,7 +212,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             var location = new ApiLocationSaveCommand
             {
-                businessId = BusinessId,
                 id = OrakeiId,
                 name = NewLocationName
             };
@@ -257,9 +242,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "location.businessId", "The businessId field is required.");
-            AssertApplicationError(errors[1], "location.name", "The name field is required.");
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], "location.name", "The name field is required.");
         }
 
         private void ThenReturnInvalidBusinessIdErrorResponse(Response response)

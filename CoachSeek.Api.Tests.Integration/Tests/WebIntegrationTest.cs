@@ -12,7 +12,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
     {
         private string _email;
 
-        //protected string BUSINESS_ID = "01234567-89AB-CDEF-0123-456789ABCDEF";
         protected Guid BusinessId { get; set; }
 
         protected string BaseUrl
@@ -174,7 +173,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var response = PostAnonymously<RegistrationData>(json, "BusinessRegistration");
             var registrationResponse = ((RegistrationData)response.Payload);
             BusinessId = registrationResponse.business.id;
-            //BusinessId = registrationResponse.business.id;
         }
 
 
