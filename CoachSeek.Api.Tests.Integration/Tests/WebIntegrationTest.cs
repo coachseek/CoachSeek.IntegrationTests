@@ -185,8 +185,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 {
                     firstName = "Bob",
                     lastName = "Smith",
-                    email = Email,
-                    password = Password
+                    email = Email = RandomEmail,
+                    password = Password = "password1"
                 }
             };
 

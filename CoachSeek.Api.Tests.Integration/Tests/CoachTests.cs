@@ -20,9 +20,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [SetUp]
         public void Setup()
         {
-            // Reset email.
-            Email = RandomEmail;
-
             RegisterTestBusiness();
             RegisterTestCoaches();
 
@@ -53,7 +50,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = firstName,
                 lastName = lastName,
                 email = RandomEmail,
@@ -84,14 +80,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var command = GivenEmptyCoachSaveCommand();
             var response = WhenPost(command);
             ThenReturnRootRequiredErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdErrorResponse()
-        {
-            var command = GivenNonExistentBusinessId();
-            var response = WhenPost(command);
-            ThenReturnInvalidBusinessIdErrorResponse(response);
         }
 
         [Test]
@@ -145,21 +133,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return "{}";
         }
 
-        private string GivenNonExistentBusinessId()
-        {
-            var coach = new ApiCoachSaveCommand
-            {
-                businessId = Guid.Empty,
-                firstName = RandomString,
-                lastName = RandomString,
-                email = RandomEmail,
-                phone = RandomString,
-                workingHours = SetupStandardWorkingHours()
-            };
-
-            return JsonConvert.SerializeObject(coach);
-        }
-
         private ApiWeeklyWorkingHours SetupStandardWorkingHours()
         {
             return new ApiWeeklyWorkingHours
@@ -178,7 +151,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = RandomString,
                 lastName = RandomString,
                 email = RandomEmail,
@@ -199,7 +171,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = RandomString,
                 lastName = RandomString,
                 email = RandomEmail,
@@ -223,7 +194,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 id = Guid.Empty,
                 firstName = RandomString,
                 lastName = RandomString,
@@ -239,7 +209,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = AARON_FIRST_NAME,
                 lastName = SMITH_LAST_NAME,
                 email = RandomEmail,
@@ -254,7 +223,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = "Carl",
                 lastName = "Carson",
                 email = "Carl@CoachMaster.com",
@@ -290,24 +258,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(6));
-            AssertApplicationError(errors[0], "coach.businessId", "The businessId field is required.");
-            AssertApplicationError(errors[1], "coach.firstName", "The firstName field is required.");
-            AssertApplicationError(errors[2], "coach.lastName", "The lastName field is required.");
-            AssertApplicationError(errors[3], "coach.email", "The email field is required.");
-            AssertApplicationError(errors[4], "coach.phone", "The phone field is required.");
-            AssertApplicationError(errors[5], "coach.workingHours", "The workingHours field is required.");
-        }
-
-        private void ThenReturnInvalidBusinessIdErrorResponse(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "coach.businessId", "This business does not exist.");
+            Assert.That(errors.GetLength(0), Is.EqualTo(5));
+            AssertApplicationError(errors[0], "coach.firstName", "The firstName field is required.");
+            AssertApplicationError(errors[1], "coach.lastName", "The lastName field is required.");
+            AssertApplicationError(errors[2], "coach.email", "The email field is required.");
+            AssertApplicationError(errors[3], "coach.phone", "The phone field is required.");
+            AssertApplicationError(errors[4], "coach.workingHours", "The workingHours field is required.");
         }
 
         private void ThenReturnMissingWorkingHoursPropertyErrorResponse(Response response)
@@ -378,7 +334,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertStandardWorkingDay(coach.workingHours.thursday);
             AssertStandardWorkingDay(coach.workingHours.friday);
             AssertStandardWeekendDay(coach.workingHours.saturday);
-            AssertWorkingHours(coach.workingHours.sunday, false, "10:30", "15:45"); ;
+            AssertWorkingHours(coach.workingHours.sunday, false, "10:30", "15:45");
         }
 
         private void AssertStandardWorkingDay(DailyWorkingHoursData workingDay)

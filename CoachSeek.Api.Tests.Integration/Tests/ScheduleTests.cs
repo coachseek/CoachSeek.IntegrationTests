@@ -97,7 +97,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var coach = new ApiCoachSaveCommand
             {
-                businessId = BusinessId,
                 firstName = firstName,
                 lastName = lastName,
                 email = RandomEmail,

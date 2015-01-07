@@ -4,9 +4,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
 {
     public class ApiCoachSaveCommand
     {
-        public Guid? businessId { get; set; }
         public Guid? id { get; set; }
-
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string email { get; set; }

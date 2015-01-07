@@ -24,10 +24,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [SetUp]
         public void Setup()
         {
-            // Reset email.
-            Email = RandomEmail;
-            Password = "password1";
-
             RegisterTestBusiness();
             RegisterTestLocations();
 
@@ -138,17 +134,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private string GivenEmptyLocationSaveCommand()
         {
             return "{}";
-        }
-
-        private string GivenNonExistentBusinessId()
-        {
-            var location = new ApiLocationSaveCommand
-            {
-                //businessId = Guid.Empty,
-                name = RandomString
-            };
-
-            return JsonConvert.SerializeObject(location);
         }
 
         private string GivenNonExistentLocationId()
