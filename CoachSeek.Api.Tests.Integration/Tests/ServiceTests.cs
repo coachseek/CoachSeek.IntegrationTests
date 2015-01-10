@@ -58,7 +58,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiServiceSaveCommand
             {
-                businessId = BusinessId,
                 name = name,
                 description = description,
                 timing = new ApiServiceTiming { duration = 45 },
@@ -86,17 +85,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenEmptyServiceSaveCommand();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "service.businessId" }, 
-                                                        { "The name field is required.", "service.name" },
+                AssertMultipleErrors(response, new[,] { { "The name field is required.", "service.name" },
                                                         { "The repetition field is required.", "service.repetition" } });
-            }
-
-            [Test]
-            public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdError()
-            {
-                var command = GivenNonExistentBusinessId();
-                var response = WhenPost(command);
-                AssertSingleError(response, "This business does not exist.", "service.businessId");
             }
 
 
@@ -108,17 +98,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             private string GivenEmptyServiceSaveCommand()
             {
                 return "{}";
-            }
-
-            private ApiServiceSaveCommand GivenNonExistentBusinessId()
-            {
-                return new ApiServiceSaveCommand
-                {
-                    businessId = Guid.Empty,
-                    name = RandomString,
-                    description = RandomString,
-                    repetition = new ApiServiceRepetition { sessionCount = 1 }
-                };
             }
         }
 
@@ -280,7 +259,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiServiceSaveCommand
                 {
-                    businessId = BusinessId,
                     name = "Mini Orange",
                     description = "Mini Orange Service",
                     repetition = new ApiServiceRepetition { sessionCount = 1 }
@@ -461,7 +439,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiServiceSaveCommand
                 {
-                    businessId = BusinessId,
                     name = "Mini Green",
                     description = "Mini Green Service",
                     timing = new ApiServiceTiming { duration = 45 },
@@ -480,7 +457,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiServiceSaveCommand
                 {
-                    businessId = BusinessId,
                     name = "Mini Green",
                     description = "Mini Green Service", 
                     timing = new ApiServiceTiming { duration = 45 },
@@ -696,7 +672,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiServiceSaveCommand
                 {
-                    businessId = BusinessId,
                     id = MiniRedId,
                     name = MINI_RED_NAME,
                     description = "Mini Red Service",

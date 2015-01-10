@@ -150,7 +150,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiServiceSaveCommand
             {
-                businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
                 repetition = new ApiServiceRepetition { sessionCount = 1 },
@@ -164,7 +163,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiServiceSaveCommand
             {
-                businessId = BusinessId,
                 name = name,
                 description = string.Format("{0} Service", name),
                 timing = new ApiServiceTiming { duration = 75 },
