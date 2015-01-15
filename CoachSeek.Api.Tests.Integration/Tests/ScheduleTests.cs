@@ -220,7 +220,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiSessionSaveCommand
             {
-                businessId = BusinessId,
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
@@ -234,7 +233,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiSessionSaveCommand
             {
-                businessId = BusinessId,
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
@@ -248,7 +246,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var service = new ApiSessionSaveCommand
             {
-                businessId = BusinessId,
                 location = new ApiLocationKey { id = RemueraId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },

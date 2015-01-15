@@ -35,19 +35,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 var command = GivenEmptySessionSaveCommand();
                 var response = WhenPost(command);
-                AssertMultipleErrors(response, new[,] { { "The businessId field is required.", "session.businessId" }, 
-                                                        { "The service field is required.", "session.service" },
+                AssertMultipleErrors(response, new[,] { { "The service field is required.", "session.service" },
                                                         { "The location field is required.", "session.location" },
                                                         { "The coach field is required.", "session.coach" },
                                                         { "The timing field is required.", "session.timing" } });
-            }
-
-            [Test]
-            public void GivenNonExistentBusinessId_WhenPost_ThenReturnInvalidBusinessIdError()
-            {
-                var command = GivenNonExistentBusinessId();
-                var response = WhenPost(command);
-                AssertSingleError(response, "This business does not exist.", "session.businessId");
             }
 
             private string GivenNoSessionSaveCommand()
@@ -58,18 +49,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             private string GivenEmptySessionSaveCommand()
             {
                 return "{}";
-            }
-
-            private ApiSessionSaveCommand GivenNonExistentBusinessId()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    businessId = Guid.Empty,
-                    service = new ApiServiceKey { id = Guid.NewGuid() },
-                    location = new ApiLocationKey { id = Guid.NewGuid() },
-                    coach = new ApiCoachKey { id = Guid.NewGuid() },
-                    timing = new ApiSessionTiming { startDate = RandomString, startTime = RandomString }
-                };
             }
         }
 
@@ -130,7 +109,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     service = new ApiServiceKey { id = MiniRedId },
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
@@ -160,7 +138,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     service = new ApiServiceKey { id = MiniRedId },
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
@@ -176,7 +153,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = OrakeiId },
                     service = new ApiServiceKey { id = MiniBlueId },
@@ -202,7 +178,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = OrakeiId },
                     service = new ApiServiceKey { id = MiniBlueId },
@@ -228,7 +203,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = OrakeiId },
                     service = new ApiServiceKey { id = MiniBlueId },
@@ -263,7 +237,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     id = AaronOrakei2To3SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
@@ -377,7 +350,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     id = AaronOrakei2To3SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
@@ -391,7 +363,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 // Should clash with AaronOrakei4To5Session
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     id = AaronOrakei2To3SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
@@ -404,7 +375,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     id = AaronOrakei2To3SessionId,
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = RemueraId },
@@ -431,7 +401,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return new ApiSessionSaveCommand
                 {
-                    businessId = BusinessId,
                     id = AaronOrakei2To3SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
