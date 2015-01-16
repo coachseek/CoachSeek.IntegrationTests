@@ -4,9 +4,9 @@ using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace CoachSeek.Api.Tests.Integration.Tests
+namespace CoachSeek.Api.Tests.Integration.Tests.Service
 {
-    public abstract class ServiceTests : WebIntegrationTest
+    public abstract class ServicePostTests : WebIntegrationTest
     {
         private const string MINI_RED_NAME = "Mini Red";
         private const string MINI_RED_DESCRIPTION = "Mini Red Service";
@@ -70,7 +70,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
 
         [TestFixture]
-        public class ServiceCommandTests : ServiceTests
+        public class ServiceCommandTests : ServicePostTests
         {
             [Test]
             public void GivenNoServiceSaveCommand_WhenPost_ThenReturnNoDataError()
@@ -103,7 +103,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
 
         [TestFixture]
-        public class ServiceNewTests : ServiceTests
+        public class ServiceNewTests : ServicePostTests
         {
             [Test]
             public void GivenAnAlreadyExistingServiceName_WhenPost_ThenReturnDuplicateServiceError()
@@ -609,7 +609,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
 
         [TestFixture]
-        public class ServiceExistingTests : ServiceTests
+        public class ServiceExistingTests : ServicePostTests
         {
             [Test]
             public void GivenNonExistentServiceId_WhenPost_ThenReturnInvalidServiceIdError()
