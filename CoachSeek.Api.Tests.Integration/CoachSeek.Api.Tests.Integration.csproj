@@ -84,7 +84,8 @@
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\CoachTests.cs" />
-    <Compile Include="Tests\LocationTests.cs" />
+    <Compile Include="Tests\Location\LocationGetTests.cs" />
+    <Compile Include="Tests\Location\LocationPostTests.cs" />
     <Compile Include="Models\ApiBusinessAdmin.cs" />
     <Compile Include="Models\ApiBusinessRegistrationCommand.cs" />
     <Compile Include="Models\ApiCoachSaveCommand.cs" />

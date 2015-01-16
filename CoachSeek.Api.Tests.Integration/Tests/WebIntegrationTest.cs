@@ -64,6 +64,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<TResponse>(json, http);
         }
 
+        protected Response Get<TResponse>(string url)
+        {
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Get<TResponse>(http);
+        }
+
         protected Response Post<TResponse>(string json, string relativePath)
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
@@ -75,19 +83,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected Response Post<TResponse>(string json, HttpWebRequest request)
         {
-            PrepareRequest(request);
+            PreparePostRequest(request);
+            SendData(json, request);
 
-            var encoding = new ASCIIEncoding();
-            var bytes = encoding.GetBytes(json);
+            return HandleResponse<TResponse>(request);
+        }
 
-            var newStream = request.GetRequestStream();
-            newStream.Write(bytes, 0, bytes.Length);
-            newStream.Close();
-
+        private static Response HandleResponse<TResponse>(HttpWebRequest request)
+        {
             try
             {
                 var response = request.GetResponse();
-                var status = ((HttpWebResponse)response).StatusCode;
+                var status = ((HttpWebResponse) response).StatusCode;
                 var stream = response.GetResponseStream();
                 var sr = new StreamReader(stream);
                 var content = sr.ReadToEnd();
@@ -97,7 +104,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
             catch (WebException ex)
             {
-                var status = ((HttpWebResponse)ex.Response).StatusCode;
+                var status = ((HttpWebResponse) ex.Response).StatusCode;
                 using (var stream = ex.Response.GetResponseStream())
                 {
                     using (var reader = new StreamReader(stream))
@@ -111,6 +118,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
         }
 
+        private static void SendData(string json, HttpWebRequest request)
+        {
+            var encoding = new ASCIIEncoding();
+            var bytes = encoding.GetBytes(json);
+
+            var newStream = request.GetRequestStream();
+            newStream.Write(bytes, 0, bytes.Length);
+            newStream.Close();
+        }
+
+        protected Response Get<TResponse>(HttpWebRequest request)
+        {
+            PrepareGetRequest(request);
+
+            return HandleResponse<TResponse>(request);
+        }
+
         private void SetBasicAuthHeader(WebRequest request, string username, string password)
         {
             var authInfo = string.Format("{0}:{1}", username, password);
@@ -118,11 +142,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             request.Headers["Authorization"] = "Basic " + authInfo;
         }
 
-        private static void PrepareRequest(HttpWebRequest request)
+        private static void PreparePostRequest(HttpWebRequest request)
         {
             request.Accept = "application/json";
             request.ContentType = "application/json";
             request.Method = "POST";
+        }
+
+        private static void PrepareGetRequest(HttpWebRequest request)
+        {
+            request.Accept = "application/json";
+            request.Method = "GET";
         }
 
         protected void AssertStatusCode(HttpStatusCode actualStatusCode, HttpStatusCode expectedStatusCode)
