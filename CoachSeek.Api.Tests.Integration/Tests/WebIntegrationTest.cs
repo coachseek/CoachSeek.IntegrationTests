@@ -236,5 +236,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             get { return Guid.NewGuid().ToString().ToLower().Replace("-", ""); }
         }
+
+
+        protected string BuildGetByIdUrl(Guid id)
+        {
+            return string.Format("{0}/{1}/{2}", BaseUrl, RelativePath, id);
+        }
     }
 }

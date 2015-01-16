@@ -4,10 +4,10 @@ using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace CoachSeek.Api.Tests.Integration.Tests
+namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 {
     [TestFixture]
-    public class CoachTests : WebIntegrationTest
+    public class CoachPostTests : WebIntegrationTest
     {
         private const string AARON_FIRST_NAME = "Aaron";
         private const string BOBBY_FIRST_NAME = "Bobby";
