@@ -236,7 +236,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "16:00", duration = 60 }
+                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 }
             };
 
             return JsonConvert.SerializeObject(service);
@@ -249,21 +249,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 location = new ApiLocationKey { id = RemueraId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "9:00", duration = 60 },
+                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
                 repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" }
             };
 
             return JsonConvert.SerializeObject(service);
         }
 
-        protected string GetDateFormatOneWeekOut()
+        protected string GetFormattedDateToday()
+        {
+            return GetDateFormatNumberOfWeeksOut(0);
+        }
+
+        protected string GetFormattedDateOneWeekOut()
         {
             return GetDateFormatNumberOfWeeksOut(1);
         }
 
-        protected string GetDateFormatTwoWeeksOut()
+        protected string GetFormattedDateTwoWeeksOut()
         {
             return GetDateFormatNumberOfWeeksOut(2);
+        }
+
+        protected string GetFormattedDateThreeWeeksOut()
+        {
+            return GetDateFormatNumberOfWeeksOut(3);
         }
 
         protected string GetDateFormatNumberOfWeeksOut(int numberOfWeeks)

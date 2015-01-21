@@ -20,18 +20,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             get { return "Sessions"; }
         }
 
-        private string BuildSearchUrl(string startDate, string endDate)
+        private string BuildSearchUrl(string startDate, string endDate, Guid? coachId, Guid? locationId)
         {
-            return string.Format("{0}/{1}?startDate={2}&endDate={3}", BaseUrl, RelativePath, startDate, endDate);
+            var baseSearchUrl = string.Format("{0}/{1}?startDate={2}&endDate={3}", BaseUrl, RelativePath, startDate, endDate);
+
+            if (coachId.HasValue)
+                baseSearchUrl = string.Format("{0}&coachId={1}", baseSearchUrl, coachId.Value);
+
+            if (locationId.HasValue)
+                baseSearchUrl = string.Format("{0}&locationId={1}", baseSearchUrl, locationId.Value);
+
+            return baseSearchUrl;
         }
 
 
         [Test]
-        public void GivenInvalidSearchCriteria_WhenSearch_ThenReturnErrorResponse()
+        public void GivenInvalidSearchPeriod_WhenSearch_ThenReturnInvalidSearchPeriodErrorResponse()
         {
-            var criteria = GivenInvalidSearchCriteria();
+            var criteria = GivenInvalidSearchPeriod();
             var response = WhenSearch(criteria);
-            ThenReturnErrorResponse(response);
+            ThenReturnInvalidSearchPeriodErrorResponse(response);
         }
 
         [Test]
@@ -42,27 +50,79 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             ThenReturnNoSessionResponse(response);
         }
 
-
-        private Tuple<string, string> GivenInvalidSearchCriteria()
+        [Test]
+        public void GivenInvalidCoachId_WhenSearch_ThenReturnInvalidCoachIdErrorResponse()
         {
-            return new Tuple<string, string>("blah", "2015-02-30");
+            var criteria = GivenInvalidCoachId();
+            var response = WhenSearch(criteria);
+            ThenReturnInvalidCoachIdErrorResponse(response);
         }
 
-        private Tuple<string, string> GivenNoSessionInSearchPeriod()
+        [Test]
+        public void GivenValidCoachId_WhenSearch_ThenReturnSessionsForCoachResponse()
         {
-            return new Tuple<string, string>("2015-01-01", "2015-01-02");
+            var criteria = GivenValidCoachId();
+            var response = WhenSearch(criteria);
+            ThenReturnSessionsForCoachResponse(response);
+        }
+
+        [Test]
+        public void GivenInvalidLocationId_WhenSearch_ThenReturnInvalidLocationIdErrorResponse()
+        {
+            var criteria = GivenInvalidLocationId();
+            var response = WhenSearch(criteria);
+            ThenReturnInvalidLocationIdErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenValidLocationId_WhenSearch_ThenReturnSessionsForLocationResponse()
+        {
+            var criteria = GivenValidLocationId();
+            var response = WhenSearch(criteria);
+            ThenReturnSessionsForLocationResponse(response);
         }
 
 
-        private Response WhenSearch(Tuple<string, string> criteria)
+        private Tuple<string, string, Guid?, Guid?> GivenInvalidSearchPeriod()
         {
-            var url = BuildSearchUrl(criteria.Item1, criteria.Item2);
+            return new Tuple<string, string, Guid?, Guid?>("blah", "2015-02-30", null, null);
+        }
+
+        private Tuple<string, string, Guid?, Guid?> GivenNoSessionInSearchPeriod()
+        {
+            return new Tuple<string, string, Guid?, Guid?>("2015-01-01", "2015-01-02", null, null);
+        }
+
+        private Tuple<string, string, Guid?, Guid?> GivenInvalidCoachId()
+        {
+            return new Tuple<string, string, Guid?, Guid?>("2015-01-01", "2015-01-02", Guid.NewGuid(), null);
+        }
+
+        private Tuple<string, string, Guid?, Guid?> GivenValidCoachId()
+        {
+            return new Tuple<string, string, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), AaronId, null);
+        }
+
+        private Tuple<string, string, Guid?, Guid?> GivenInvalidLocationId()
+        {
+            return new Tuple<string, string, Guid?, Guid?>("2015-01-01", "2015-01-02", null, Guid.NewGuid());
+        }
+
+        private Tuple<string, string, Guid?, Guid?> GivenValidLocationId()
+        {
+            return new Tuple<string, string, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, OrakeiId);
+        }
+
+
+        private Response WhenSearch(Tuple<string, string, Guid?, Guid?> criteria)
+        {
+            var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4);
 
             return Get<List<SessionData>>(url);
         }
+         
 
-
-        private void ThenReturnErrorResponse(Response response)
+        private void ThenReturnInvalidSearchPeriodErrorResponse(Response response)
         {
             AssertMultipleErrors(response, new[,] { { "The startDate is not a valid date.", "startDate" },
                                                     { "The endDate is not a valid date.", "endDate" } });
@@ -75,6 +135,38 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(response.Payload, Is.Not.Null);
             var sessions = (List<SessionData>)response.Payload;
             Assert.That(sessions.Count, Is.EqualTo(0));
+        }
+
+        private void ThenReturnInvalidCoachIdErrorResponse(Response response)
+        {
+            AssertMultipleErrors(response, new[,] { { "Not a valid coachId.", "coachId" } });
+        }
+
+        private void ThenReturnSessionsForCoachResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Payload, Is.Not.Null);
+            var sessions = (List<SessionData>)response.Payload;
+            Assert.That(sessions.Count, Is.EqualTo(3));
+            foreach(var session in sessions)
+                Assert.That(session.coach.id, Is.EqualTo(AaronId));
+        }
+
+        private void ThenReturnInvalidLocationIdErrorResponse(Response response)
+        {
+            AssertMultipleErrors(response, new[,] { { "Not a valid locationId.", "locationId" } });
+        }
+
+        private void ThenReturnSessionsForLocationResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Payload, Is.Not.Null);
+            var sessions = (List<SessionData>)response.Payload;
+            Assert.That(sessions.Count, Is.EqualTo(2));
+            foreach (var session in sessions)
+                Assert.That(session.location.id, Is.EqualTo(OrakeiId));
         }
     }
 }

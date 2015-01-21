@@ -158,7 +158,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     service = new ApiServiceKey { id = MiniBlueId },
                     timing = new ApiSessionTiming
                     {
-                        startDate = GetDateFormatOneWeekOut(),
+                        startDate = GetFormattedDateOneWeekOut(),
                         startTime = "16:30",
                         duration = 60
                     },
@@ -183,7 +183,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     service = new ApiServiceKey { id = MiniBlueId },
                     timing = new ApiSessionTiming
                     {
-                        startDate = GetDateFormatTwoWeeksOut(),
+                        startDate = GetFormattedDateTwoWeeksOut(),
                         startTime = "9:30",
                         duration = 30
                     },
@@ -241,7 +241,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = startTime, duration = 60 }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = startTime, duration = 60 }
                 };
             }
 
@@ -265,7 +265,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 var timing = session.timing;
                 Assert.That(timing, Is.Not.Null);
-                Assert.That(timing.startDate, Is.EqualTo(GetDateFormatOneWeekOut()));
+                Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
                 Assert.That(timing.startTime, Is.EqualTo(startTime));
                 Assert.That(timing.duration, Is.EqualTo(60));
 
@@ -354,7 +354,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "14:00", duration = 60 }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 }
                 };
             }
 
@@ -367,7 +367,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = "15:30", duration = 60 }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "15:30", duration = 60 }
                 };
             }
 
@@ -405,7 +405,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetDateFormatOneWeekOut(), startTime = startTime, duration = 60 }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = startTime, duration = 60 }
                 };
             }
 
@@ -429,7 +429,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 var timing = session.timing;
                 Assert.That(timing, Is.Not.Null);
-                Assert.That(timing.startDate, Is.EqualTo(GetDateFormatOneWeekOut()));
+                Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
                 Assert.That(timing.startTime, Is.EqualTo(startTime));
                 Assert.That(timing.duration, Is.EqualTo(60));
 
