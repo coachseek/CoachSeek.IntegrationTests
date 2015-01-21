@@ -4,9 +4,9 @@ using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace CoachSeek.Api.Tests.Integration.Tests
+namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
-    public abstract class SessionTests : ScheduleTests
+    public abstract class SessionPostTests : ScheduleTests
     {
         [SetUp]
         public void Setup()
@@ -20,7 +20,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
         [TestFixture]
-        public class SessionCommandTests : SessionTests
+        public class SessionCommandTests : SessionPostTests
         {
             [Test]
             public void GivenNoSessionSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
@@ -54,7 +54,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
 
         [TestFixture]
-        public class SessionNewTests : SessionTests
+        public class SessionNewTests : SessionPostTests
         {
             [Test]
             public void GivenSessionWithValues_WhenPost_ThenOverrideServiceDefaults()
@@ -294,7 +294,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
 
         [TestFixture]
-        public class SessionExistingTests : SessionTests
+        public class SessionExistingTests : SessionPostTests
         {
             [Test]
             public void GivenNonExistentSessionId_WhenPost_ThenReturnInvalidSessionIdError()
