@@ -57,11 +57,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             return JsonConvert.SerializeObject(location);
         }
 
-        private string BuildGetByIdUrl(Guid locationId)
-        {
-            return string.Format("{0}/{1}/{2}", BaseUrl, RelativePath, locationId);
-        }
-
 
         [Test]
         public void GivenInvalidLocationId_WhenGetById_ThenReturnNotFoundResponse()
