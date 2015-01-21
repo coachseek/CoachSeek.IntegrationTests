@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
@@ -59,6 +60,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
 
         [Test]
+        public void WhenGetAll_ThenReturnAllLocationsResponse()
+        {
+            var response = WhenGetAll();
+            ThenReturnAllLocationsResponse(response);
+        }
+
+        [Test]
         public void GivenInvalidLocationId_WhenGetById_ThenReturnNotFoundResponse()
         {
             var locationId = GivenInvalidLocationId();
@@ -87,12 +95,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
+        private Response WhenGetAll()
+        {
+            var url = BuildGetAllUrl();
+            return Get<List<LocationData>>(url);
+        }
+
         private Response WhenGetById(Guid locationId)
         {
             var url = BuildGetByIdUrl(locationId);
             return Get<LocationData>(url);
         }
 
+
+        private void ThenReturnAllLocationsResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Payload, Is.Not.Null);
+            var locations = (List<LocationData>)response.Payload;
+            Assert.That(locations.Count, Is.EqualTo(2));
+            var locationOne = locations[0];
+            Assert.That(locationOne.id, Is.EqualTo(OrakeiId));
+            Assert.That(locationOne.name, Is.EqualTo(ORAKEI_NAME));
+            var locationTwo = locations[1];
+            Assert.That(locationTwo.id, Is.EqualTo(RemueraId));
+            Assert.That(locationTwo.name, Is.EqualTo(REMUERA_NAME));
+        }
 
         private void ThenReturnNotFoundResponse(Response response)
         {

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
@@ -83,6 +83,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
 
         [Test]
+        public void WhenGetAll_ThenReturnAllCoachesResponse()
+        {
+            var response = WhenGetAll();
+            ThenReturnAllCoachesResponse(response);
+        }
+
+        [Test]
         public void GivenInvalidCoachId_WhenGetById_ThenReturnNotFoundResponse()
         {
             var id = GivenInvalidCoachId();
@@ -111,12 +118,37 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         }
 
 
+        private Response WhenGetAll()
+        {
+            var url = BuildGetAllUrl();
+            return Get<List<CoachData>>(url);
+        }
+
         private Response WhenGetById(Guid coachId)
         {
             var url = BuildGetByIdUrl(coachId);
             return Get<CoachData>(url);
         }
 
+
+        private void ThenReturnAllCoachesResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Payload, Is.Not.Null);
+            var coaches = (List<CoachData>)response.Payload;
+            Assert.That(coaches.Count, Is.EqualTo(2));
+
+            var coachOne = coaches[0];
+            Assert.That(coachOne.id, Is.EqualTo(AaronId));
+            Assert.That(coachOne.firstName, Is.EqualTo(AARON_FIRST_NAME));
+            Assert.That(coachOne.lastName, Is.EqualTo(SMITH_LAST_NAME));
+            
+            var coachTwo = coaches[1];
+            Assert.That(coachTwo.id, Is.EqualTo(BobbyId));
+            Assert.That(coachTwo.firstName, Is.EqualTo(BOBBY_FIRST_NAME));
+            Assert.That(coachTwo.lastName, Is.EqualTo(SMITH_LAST_NAME));
+        }
 
         private void ThenReturnNotFoundResponse(Response response)
         {
