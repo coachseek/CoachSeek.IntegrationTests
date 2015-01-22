@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
@@ -71,6 +72,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
 
         [Test]
+        public void WhenGetAll_ThenReturnAllServicesResponse()
+        {
+            var response = WhenGetAll();
+            ThenReturnAllServicesResponse(response);
+        }
+
+        [Test]
         public void GivenInvalidServiceId_WhenGetById_ThenReturnNotFoundResponse()
         {
             var id = GivenInvalidServiceId();
@@ -99,12 +107,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         }
 
 
+        private Response WhenGetAll()
+        {
+            var url = BuildGetAllUrl();
+            return Get<List<ServiceData>>(url);
+        }
+
         private Response WhenGetById(Guid serviceId)
         {
             var url = BuildGetByIdUrl(serviceId);
             return Get<ServiceData>(url);
         }
 
+
+        private void ThenReturnAllServicesResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Payload, Is.Not.Null);
+            var services = (List<ServiceData>)response.Payload;
+            Assert.That(services.Count, Is.EqualTo(2));
+            var serviceOne = services[0];
+            Assert.That(serviceOne.id, Is.EqualTo(MiniBlueId));
+            Assert.That(serviceOne.name, Is.EqualTo(MINI_BLUE_NAME));
+            var serviceTwo = services[1];
+            Assert.That(serviceTwo.id, Is.EqualTo(MiniRedId));
+            Assert.That(serviceTwo.name, Is.EqualTo(MINI_RED_NAME));
+        }
 
         private void ThenReturnNotFoundResponse(Response response)
         {
