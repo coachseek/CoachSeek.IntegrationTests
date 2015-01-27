@@ -48,9 +48,11 @@
   <ItemGroup>
     <Compile Include="Models\ApiBusiness.cs" />
     <Compile Include="Models\ApiCoachKey.cs" />
+    <Compile Include="Models\ApiCustomerSaveCommand.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
     <Compile Include="Models\ApiServiceBooking.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
+    <Compile Include="Models\CustomerData.cs" />
     <Compile Include="Models\CoachKeyData.cs" />
     <Compile Include="Models\DailyWorkingHoursData.cs" />
     <Compile Include="Models\KeyData.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
+    <Compile Include="Tests\Customer\CustomerPostTests.cs" />
     <Compile Include="Tests\Location\LocationGetTests.cs" />
     <Compile Include="Tests\Location\LocationPostTests.cs" />
     <Compile Include="Models\ApiBusinessAdmin.cs" />
