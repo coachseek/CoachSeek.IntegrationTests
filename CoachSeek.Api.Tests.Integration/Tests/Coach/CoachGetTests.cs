@@ -34,7 +34,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         private void RegisterTestCoaches()
         {
             RegisterAaronCoach();
-            RegisterBobbyLocation();
+            RegisterBobbyCoach();
         }
 
         private void RegisterAaronCoach()
@@ -46,7 +46,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             AaronId = ((CoachData)response.Payload).id;
         }
 
-        private void RegisterBobbyLocation()
+        private void RegisterBobbyCoach()
         {
             var json = CreateNewCoachSaveCommand(BOBBY_FIRST_NAME, SMITH_LAST_NAME, RandomEmail, RandomString);
             var response = Post<CoachData>(json);

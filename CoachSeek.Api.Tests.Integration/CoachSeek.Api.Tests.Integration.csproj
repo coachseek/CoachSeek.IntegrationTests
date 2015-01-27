@@ -87,6 +87,7 @@
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
+    <Compile Include="Tests\Customer\CustomerGetTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
     <Compile Include="Tests\Location\LocationGetTests.cs" />
     <Compile Include="Tests\Location\LocationPostTests.cs" />
