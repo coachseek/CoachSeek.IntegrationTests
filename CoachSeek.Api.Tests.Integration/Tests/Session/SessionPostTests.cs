@@ -104,6 +104,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 ThenSessionWasCreatedResponse(response, "10:45");
             }
 
+            [Test]
+            public void GivenNewCourseWithZeroSessionPrice_WhenPost_ThenCourseWasUpdatedResponse()
+            {
+                var command = GivenNewCourseWithZeroSessionPrice();
+                var response = WhenPost(command);
+                ThenCourseWasCreatedResponse(response);
+            }
+
 
             private ApiSessionSaveCommand GivenSessionWithValues()
             {
@@ -233,6 +241,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 };
             }
 
+            private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    service = new ApiServiceKey { id = MiniGreenId },
+                    location = new ApiLocationKey { id = RemueraId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "01:30", duration = 60 },
+                    pricing = new ApiPricing { sessionPrice = 0 },
+                    repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
+                    booking = new ApiSessionBooking { studentCapacity = 51, isOnlineBookable = false },
+                };
+            }
+
             private ApiSessionSaveCommand CreateSessionCoachedByAaronAt(string startTime)
             {
                 return new ApiSessionSaveCommand
@@ -287,6 +309,52 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var presentation = session.presentation;
                 Assert.That(presentation, Is.Not.Null);
                 Assert.That(presentation.colour, Is.EqualTo("red"));
+
+                return session;
+            }
+
+            private SessionData ThenCourseWasCreatedResponse(Response response)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<SessionData>());
+                var session = (SessionData)response.Payload;
+
+                Assert.That(session, Is.Not.Null);
+
+                Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
+                Assert.That(session.location, Is.Not.Null);
+                Assert.That(session.location.id, Is.EqualTo(RemueraId));
+                Assert.That(session.coach, Is.Not.Null);
+                Assert.That(session.coach.id, Is.EqualTo(AaronId));
+                Assert.That(session.service, Is.Not.Null);
+                Assert.That(session.service.id, Is.EqualTo(MiniGreenId));
+
+                var timing = session.timing;
+                Assert.That(timing, Is.Not.Null);
+                Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
+                Assert.That(timing.startTime, Is.EqualTo("1:30"));
+                Assert.That(timing.duration, Is.EqualTo(60));
+
+                var booking = session.booking;
+                Assert.That(booking, Is.Not.Null);
+                Assert.That(booking.studentCapacity, Is.EqualTo(51));
+                Assert.That(booking.isOnlineBookable, Is.False);
+
+                var pricing = session.pricing;
+                Assert.That(pricing, Is.Not.Null);
+                Assert.That(pricing.sessionPrice, Is.EqualTo(0));
+                Assert.That(pricing.coursePrice, Is.EqualTo(60));
+
+                var repetition = session.repetition;
+                Assert.That(repetition, Is.Not.Null);
+                Assert.That(repetition.sessionCount, Is.EqualTo(2));
+                Assert.That(repetition.repeatFrequency, Is.EqualTo("d"));
+
+                var presentation = session.presentation;
+                Assert.That(presentation, Is.Not.Null);
+                Assert.That(presentation.colour, Is.EqualTo("green"));
 
                 return session;
             }

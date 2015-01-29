@@ -13,6 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private const string SMITH_LAST_NAME = "Smith";
         private const string MINI_RED_NAME = "Mini Red";
         private const string MINI_BLUE_NAME = "Mini Blue";
+        private const string MINI_GREEN_NAME = "Mini Green";
 
         protected Guid OrakeiId { get; set; }
         protected Guid RemueraId { get; set; }
@@ -20,8 +21,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid BobbyId { get; set; }
         protected Guid MiniRedId { get; set; }
         protected Guid MiniBlueId { get; set; }
+        protected Guid MiniGreenId { get; set; }
         protected Guid AaronOrakei2To3SessionId { get; set; }
         protected Guid AaronOrakei4To5SessionId { get; set; }
+        protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
 
         protected void SetupFullTestBusiness()
         {
@@ -125,6 +128,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             RegisterMiniRedService();
             RegisterMiniBlueService();
+            RegisterMiniGreenService();
         }
 
         private void RegisterMiniRedService()
@@ -139,6 +143,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateNewServiceSaveCommandWithoutDefaults(MINI_BLUE_NAME, "blue");
             var response = PostService(json);
             MiniBlueId = ((ServiceData)response.Payload).id;
+        }
+
+        private void RegisterMiniGreenService()
+        {
+            var json = CreateMiniGreenServiceSaveCommand();
+            var response = PostService(json);
+            MiniGreenId = ((ServiceData)response.Payload).id;
         }
 
         private Response PostService(string json)
@@ -179,6 +190,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(service);
         }
 
+        private string CreateMiniGreenServiceSaveCommand()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                name = MINI_GREEN_NAME,
+                timing = new ApiServiceTiming { duration = 60 },
+                booking = new ApiServiceBooking { studentCapacity = 51 },
+                pricing = new ApiPricing { sessionPrice = 35, coursePrice = 60 },
+                repetition = new ApiServiceRepetition { sessionCount = 2, repeatFrequency = "d" },
+                presentation = new ApiPresentation { colour = "green" }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
         private void RegisterTestSessions()
         {
             RegisterAaronOrakei2To3();
@@ -208,7 +234,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
             var response = PostSession(json);
-            AaronOrakei4To5SessionId = ((SessionData)response.Payload).id;
+            AaronRemuera9To10For8WeeksCourseId = ((SessionData)response.Payload).id;
         }
 
         private Response PostSession(string json)
