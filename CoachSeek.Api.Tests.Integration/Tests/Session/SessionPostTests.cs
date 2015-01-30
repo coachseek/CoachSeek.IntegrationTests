@@ -77,7 +77,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 var command = GivenSessionClashesWithExistingSession();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more session(s).");
+                AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
             [Test]
@@ -85,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 var command = GivenSessionClashesWithExistingCourse();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more session(s).");
+                AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
             [Test]
@@ -93,7 +93,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 var command = GivenCourseClashesWithExistingSession();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more session(s).");
+                AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
             [Test]
@@ -393,7 +393,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 var command = GivenSessionClashesWithAnotherSession();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more session(s).");
+                AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
             [Test]
@@ -401,7 +401,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 var command = GivenSessionClashesWithAnotherSessionInCourse();
                 var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more session(s).");
+                AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
 
