@@ -47,11 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\ApiBusiness.cs" />
+    <Compile Include="Models\ApiCustomerKey.cs" />
     <Compile Include="Models\ApiCoachKey.cs" />
+    <Compile Include="Models\ApiBookingSaveCommand.cs" />
     <Compile Include="Models\ApiCustomerSaveCommand.cs" />
     <Compile Include="Models\ApiLocationKey.cs" />
     <Compile Include="Models\ApiServiceBooking.cs" />
+    <Compile Include="Models\ApiSessionKey.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
+    <Compile Include="Models\SessionKeyData.cs" />
+    <Compile Include="Models\CustomerKeyData.cs" />
     <Compile Include="Models\CustomerData.cs" />
     <Compile Include="Models\CoachKeyData.cs" />
     <Compile Include="Models\DailyWorkingHoursData.cs" />
@@ -74,6 +79,7 @@
     <Compile Include="Models\SessionBookingData.cs" />
     <Compile Include="Models\ApiSessionBooking.cs" />
     <Compile Include="Models\ApiSessionSaveCommand.cs" />
+    <Compile Include="Models\BookingData.cs" />
     <Compile Include="Models\SessionTimingData.cs" />
     <Compile Include="Models\ApiSessionTiming.cs" />
     <Compile Include="Models\SessionData.cs" />
@@ -84,6 +90,7 @@
     <Compile Include="Models\ServiceRepetition.cs" />
     <Compile Include="Models\UserData.cs" />
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
+    <Compile Include="Tests\Booking\BookingPostTests.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />

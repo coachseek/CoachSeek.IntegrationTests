@@ -14,6 +14,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private const string MINI_RED_NAME = "Mini Red";
         private const string MINI_BLUE_NAME = "Mini Blue";
         private const string MINI_GREEN_NAME = "Mini Green";
+        private const string FRED_FIRST_NAME = "Fred";
+        private const string FLINTSTONE_LAST_NAME = "Flintstone";
 
         protected Guid OrakeiId { get; set; }
         protected Guid RemueraId { get; set; }
@@ -25,6 +27,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid AaronOrakei2To3SessionId { get; set; }
         protected Guid AaronOrakei4To5SessionId { get; set; }
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
+        protected Guid FredId { get; set; }
 
         protected void SetupFullTestBusiness()
         {
@@ -34,6 +37,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestServices();
             RegisterTestSessions();
             RegisterTestCourses();
+            RegisterTestCustomers();
         }
 
         private void RegisterTestLocations()
@@ -281,6 +285,37 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             return JsonConvert.SerializeObject(service);
         }
+
+        private void RegisterTestCustomers()
+        {
+            RegisterFredFlintstoneCustomer();
+        }
+
+        private void RegisterFredFlintstoneCustomer()
+        {
+            var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME);
+            var response = PostCustomer(json);
+            FredId = ((CustomerData)response.Payload).id;
+        }
+
+        private Response PostCustomer(string json)
+        {
+            return Post<CustomerData>(json, "Customers");
+        }
+
+        private string CreateNewCustomerSaveCommand(string firstName, string lastName)
+        {
+            var customer = new ApiCustomerSaveCommand
+            {
+                firstName = firstName,
+                lastName = lastName,
+                email = RandomEmail,
+                phone = RandomString
+            };
+
+            return JsonConvert.SerializeObject(customer);
+        }
+
 
         protected string GetFormattedDateToday()
         {
