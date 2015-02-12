@@ -729,7 +729,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 service.repetition = new ApiServiceRepetition
                 {
                     sessionCount = 15,
-                    repeatFrequency = "2d"
+                    repeatFrequency = "d"
                 };
 
                 return service;
@@ -800,7 +800,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var repetition = service.repetition;
                 Assert.That(repetition.sessionCount, Is.EqualTo(15));
-                Assert.That(repetition.repeatFrequency, Is.EqualTo("2d"));
+                Assert.That(repetition.repeatFrequency, Is.EqualTo("d"));
             }
 
             private void ThenReturnExistingServiceWithPricingSuccessResponse(Response response)

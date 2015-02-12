@@ -112,6 +112,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 ThenCourseWasCreatedResponse(response);
             }
 
+            [Test]
+            public void GivenNewCourseWithTooManySessions_WhenPost_ThenCourseWasUpdatedResponse()
+            {
+                var command = GivenNewCourseWithTooManySessions();
+                var response = WhenPost(command);
+                AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
+            }
+
 
             private ApiSessionSaveCommand GivenSessionWithValues()
             {
@@ -232,7 +240,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     repetition = new ApiRepetition
                     {
                         sessionCount = 6,
-                        repeatFrequency = "2w"
+                        repeatFrequency = "w"
                     },
                     pricing = new ApiPricing
                     {
@@ -252,6 +260,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     pricing = new ApiPricing { sessionPrice = 0 },
                     repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
                     booking = new ApiSessionBooking { studentCapacity = 51, isOnlineBookable = false },
+                };
+            }
+
+            private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    service = new ApiServiceKey { id = MiniGreenId },
+                    location = new ApiLocationKey { id = RemueraId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
+                    pricing = new ApiPricing { sessionPrice = 20 },
+                    repetition = new ApiRepetition { sessionCount = 100, repeatFrequency = "d" },
+                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
                 };
             }
 

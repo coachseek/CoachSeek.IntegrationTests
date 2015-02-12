@@ -61,6 +61,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 var response = WhenPost(command);
                 ThenReturNonExistentSessionError(response);
             }
+            [Test]
+            public void GivenNonExistentCustomer_WhenPost_ThenReturNonExistentCustomerError()
+            {
+                var command = GivenNonExistentCustomer();
+                var response = WhenPost(command);
+                ThenReturNonExistentCustomerError(response);
+            }
 
 
 
@@ -74,9 +81,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 };
             }
 
+            private ApiBookingSaveCommand GivenNonExistentCustomer()
+            {
+                return new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = AaronOrakei2To3SessionId },
+                    customer = new ApiCustomerKey { id = Guid.NewGuid() }
+                };
+            }
+
             private void ThenReturNonExistentSessionError(Response response)
             {
-                AssertSingleError(response, "This session does not exist.");
+                AssertSingleError(response, "This session does not exist.", "booking.session.id");
+            }
+
+            private void ThenReturNonExistentCustomerError(Response response)
+            {
+                AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
             }
         }
 
