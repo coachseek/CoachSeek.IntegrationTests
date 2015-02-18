@@ -148,7 +148,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Payload, Is.Not.Null);
             var sessions = (List<SessionData>)response.Payload;
-            Assert.That(sessions.Count, Is.EqualTo(3));
+            Assert.That(sessions.Count, Is.EqualTo(5));
             foreach(var session in sessions)
                 Assert.That(session.coach.id, Is.EqualTo(AaronId));
         }
