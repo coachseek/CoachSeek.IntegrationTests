@@ -85,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             {
                 return new ApiBookingSaveCommand
                 {
-                    session = new ApiSessionKey { id = AaronOrakei2To3SessionId },
+                    session = new ApiSessionKey { id = AaronOrakei14To15SessionId },
                     customer = new ApiCustomerKey { id = Guid.NewGuid() }
                 };
             }

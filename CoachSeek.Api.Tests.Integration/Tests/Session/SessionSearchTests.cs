@@ -149,8 +149,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(response.Payload, Is.Not.Null);
             var sessions = (List<SessionData>)response.Payload;
             Assert.That(sessions.Count, Is.EqualTo(5));
-            foreach(var session in sessions)
-                Assert.That(session.coach.id, Is.EqualTo(AaronId));
+
+            var firstSession = sessions[0];
+            Assert.That(firstSession.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
+            Assert.That(firstSession.coach.id, Is.EqualTo(AaronId));
+            Assert.That(firstSession.timing.startTime, Is.EqualTo("9:00"));
+
+            var secondSession = sessions[1];
+            Assert.That(secondSession.id, Is.EqualTo(AaronOrakei16To17SessionId));
+            Assert.That(secondSession.parentId, Is.Null);
+            Assert.That(secondSession.coach.id, Is.EqualTo(AaronId));
+            Assert.That(secondSession.timing.startTime, Is.EqualTo("16:00"));
+
+            var thirdSession = sessions[2];
+            Assert.That(thirdSession.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
+            Assert.That(thirdSession.coach.id, Is.EqualTo(AaronId));
+            Assert.That(thirdSession.timing.startTime, Is.EqualTo("9:00"));
+
+            var fourthSession = sessions[3];
+            Assert.That(fourthSession.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
+            Assert.That(fourthSession.coach.id, Is.EqualTo(AaronId));
+            Assert.That(fourthSession.timing.startTime, Is.EqualTo("9:00"));
+
+            var fifthSession = sessions[4];
+            Assert.That(fifthSession.id, Is.EqualTo(AaronOrakei14To15SessionId));
+            Assert.That(fifthSession.parentId, Is.Null);
+            Assert.That(fifthSession.coach.id, Is.EqualTo(AaronId));
+            Assert.That(fifthSession.timing.startTime, Is.EqualTo("14:00"));
         }
 
         private void ThenReturnInvalidLocationIdErrorResponse(Response response)

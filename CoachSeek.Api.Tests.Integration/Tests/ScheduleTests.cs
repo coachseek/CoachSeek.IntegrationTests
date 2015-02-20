@@ -24,8 +24,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid MiniRedId { get; set; }
         protected Guid MiniBlueId { get; set; }
         protected Guid MiniGreenId { get; set; }
-        protected Guid AaronOrakei2To3SessionId { get; set; }
-        protected Guid AaronOrakei4To5SessionId { get; set; }
+        protected Guid AaronOrakei14To15SessionId { get; set; }
+        protected Guid AaronOrakei16To17SessionId { get; set; }
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
         protected Guid FredId { get; set; }
 
@@ -211,22 +211,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestSessions()
         {
-            RegisterAaronOrakei2To3();
-            RegisterAaronOrakei4To5();
+            RegisterAaronOrakei14To15();
+            RegisterAaronOrakei16To17();
         }
 
-        private void RegisterAaronOrakei2To3()
+        private void RegisterAaronOrakei14To15()
         {
-            var json = CreateSessionSaveCommandAaronOrakei2To3(GetDateFormatNumberOfWeeksOut(3));
+            var json = CreateSessionSaveCommandAaronOrakei14To15Json();
             var response = PostSession(json);
-            AaronOrakei2To3SessionId = ((SessionData)response.Payload).id;
+            AaronOrakei14To15SessionId = ((SessionData)response.Payload).id;
         }
 
-        private void RegisterAaronOrakei4To5()
+        private void RegisterAaronOrakei16To17()
         {
-            var json = CreateSessionSaveCommandAaronOrakei4To5();
+            var json = CreateSessionSaveCommandAaronOrakei16To17Json();
             var response = PostSession(json);
-            AaronOrakei4To5SessionId = ((SessionData)response.Payload).id;
+            AaronOrakei16To17SessionId = ((SessionData)response.Payload).id;
         }
 
         private void RegisterTestCourses()
@@ -236,7 +236,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterAaronRemuera9To10For8Weeks()
         {
-            var json = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+            var json = CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson();
             var response = PostSession(json);
             AaronRemuera9To10For8WeeksCourseId = ((SessionData)response.Payload).id;
         }
@@ -246,35 +246,41 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<SessionData>(json, "Sessions");
         }
 
-        private string CreateSessionSaveCommandAaronOrakei2To3(string startDate)
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronOrakei14To15()
         {
-            var service = new ApiSessionSaveCommand
+            return new ApiSessionSaveCommand
             {
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = startDate, startTime = "14:00", duration = 60 }
+                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "14:00", duration = 60 }
             };
-
-            return JsonConvert.SerializeObject(service);
         }
 
-        private string CreateSessionSaveCommandAaronOrakei4To5()
+        private string CreateSessionSaveCommandAaronOrakei14To15Json()
         {
-            var service = new ApiSessionSaveCommand
+            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronOrakei14To15());
+        }
+
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronOrakei16To17()
+        {
+            return new ApiSessionSaveCommand
             {
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 }
             };
-
-            return JsonConvert.SerializeObject(service);
         }
 
-        private string CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        private string CreateSessionSaveCommandAaronOrakei16To17Json()
         {
-            var service = new ApiSessionSaveCommand
+            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronOrakei16To17());
+        }
+
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        {
+            return new ApiSessionSaveCommand
             {
                 location = new ApiLocationKey { id = RemueraId },
                 coach = new ApiCoachKey { id = AaronId },
@@ -282,8 +288,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
                 repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" }
             };
+        }
 
-            return JsonConvert.SerializeObject(service);
+        private string CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson()
+        {
+            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronRemuera9To10For8Weeks());
         }
 
         private void RegisterTestCustomers()
@@ -340,9 +349,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string GetDateFormatNumberOfWeeksOut(int numberOfWeeks)
         {
             var today = DateTime.Today;
-            var twoWeeksFromToday = today.AddDays(7 * numberOfWeeks);
+            var weeksFromToday = today.AddDays(7 * numberOfWeeks);
 
-            return twoWeeksFromToday.ToString("yyyy-MM-dd");
+            return weeksFromToday.ToString("yyyy-MM-dd");
         }
     }
 }

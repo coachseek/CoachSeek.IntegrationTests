@@ -4,6 +4,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
 {
     public class SessionData
     {
+        public Guid? parentId { get; set; }
         public Guid id { get; set; }
 
         public LocationKeyData location { get; set; }

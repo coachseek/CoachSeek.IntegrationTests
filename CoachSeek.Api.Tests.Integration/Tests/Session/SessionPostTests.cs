@@ -89,35 +89,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             }
 
             [Test]
-            public void GivenCourseClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
-            {
-                var command = GivenCourseClashesWithExistingSession();
-                var response = WhenPost(command);
-                AssertSingleError(response, "This session clashes with one or more sessions.");
-            }
-
-            [Test]
             public void GivenSessionWillNotClash_WhenPost_ThenSessionWasUpdatedResponse()
             {
                 var command = CreateSessionCoachedByAaronAt("10:45");
                 var response = WhenPost(command);
                 ThenSessionWasCreatedResponse(response, "10:45");
-            }
-
-            [Test]
-            public void GivenNewCourseWithZeroSessionPrice_WhenPost_ThenCourseWasUpdatedResponse()
-            {
-                var command = GivenNewCourseWithZeroSessionPrice();
-                var response = WhenPost(command);
-                ThenCourseWasCreatedResponse(response);
-            }
-
-            [Test]
-            public void GivenNewCourseWithTooManySessions_WhenPost_ThenCourseWasUpdatedResponse()
-            {
-                var command = GivenNewCourseWithTooManySessions();
-                var response = WhenPost(command);
-                AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
             }
 
 
@@ -215,73 +191,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 };
             }
 
-            private ApiSessionSaveCommand GivenCourseClashesWithExistingSession()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    coach = new ApiCoachKey { id = AaronId },
-                    location = new ApiLocationKey { id = OrakeiId },
-                    service = new ApiServiceKey { id = MiniBlueId },
-                    timing = new ApiSessionTiming
-                    {
-                        startDate = GetDateFormatNumberOfWeeksOut(1),
-                        startTime = "13:30",
-                        duration = 60
-                    },
-                    booking = new ApiSessionBooking
-                    {
-                        studentCapacity = 4,
-                        isOnlineBookable = false
-                    },
-                    presentation = new ApiPresentation
-                    {
-                        colour = "blue" 
-                    },
-                    repetition = new ApiRepetition
-                    {
-                        sessionCount = 6,
-                        repeatFrequency = "w"
-                    },
-                    pricing = new ApiPricing
-                    {
-                        sessionPrice = 30
-                    }
-                };
-            }
-
-            private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    service = new ApiServiceKey { id = MiniGreenId },
-                    location = new ApiLocationKey { id = RemueraId },
-                    coach = new ApiCoachKey { id = AaronId },
-                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "01:30", duration = 60 },
-                    pricing = new ApiPricing { sessionPrice = 0 },
-                    repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
-                    booking = new ApiSessionBooking { studentCapacity = 51, isOnlineBookable = false },
-                };
-            }
-
-            private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    service = new ApiServiceKey { id = MiniGreenId },
-                    location = new ApiLocationKey { id = RemueraId },
-                    coach = new ApiCoachKey { id = AaronId },
-                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
-                    pricing = new ApiPricing { sessionPrice = 20 },
-                    repetition = new ApiRepetition { sessionCount = 100, repeatFrequency = "d" },
-                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
-                };
-            }
-
             private ApiSessionSaveCommand CreateSessionCoachedByAaronAt(string startTime)
             {
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei2To3SessionId,
+                    id = AaronOrakei14To15SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
@@ -299,7 +213,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 Assert.That(session, Is.Not.Null);
 
-                Assert.That(session.id, Is.EqualTo(AaronOrakei2To3SessionId));
+                Assert.That(session.parentId, Is.Null);
+                Assert.That(session.id, Is.EqualTo(AaronOrakei14To15SessionId));
                 Assert.That(session.location, Is.Not.Null);
                 Assert.That(session.location.id, Is.EqualTo(OrakeiId));
                 Assert.That(session.coach, Is.Not.Null);
@@ -334,6 +249,99 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 return session;
             }
+        }
+
+        [TestFixture]
+        public class CourseNewTests : SessionPostTests
+        {
+
+            [Test]
+            public void GivenCourseClashesWithExistingSession_WhenPost_ThenReturnSessionClashErrorResponse()
+            {
+                var command = GivenCourseClashesWithExistingSession();
+                var response = WhenPost(command);
+                AssertSingleError(response, "This session clashes with one or more sessions.");
+            }
+
+            [Test]
+            public void GivenNewCourseWithTooManySessions_WhenPost_ThenCourseWasUpdatedResponse()
+            {
+                var command = GivenNewCourseWithTooManySessions();
+                var response = WhenPost(command);
+                AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
+            }
+
+            [Test]
+            public void GivenNewCourseWithZeroSessionPrice_WhenPost_ThenCourseWasUpdatedResponse()
+            {
+                var command = GivenNewCourseWithZeroSessionPrice();
+                var response = WhenPost(command);
+                ThenCourseWasCreatedResponse(response);
+            }
+
+
+            private ApiSessionSaveCommand GivenCourseClashesWithExistingSession()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    coach = new ApiCoachKey { id = AaronId },
+                    location = new ApiLocationKey { id = OrakeiId },
+                    service = new ApiServiceKey { id = MiniBlueId },
+                    timing = new ApiSessionTiming
+                    {
+                        startDate = GetDateFormatNumberOfWeeksOut(1),
+                        startTime = "13:30",
+                        duration = 60
+                    },
+                    booking = new ApiSessionBooking
+                    {
+                        studentCapacity = 4,
+                        isOnlineBookable = false
+                    },
+                    presentation = new ApiPresentation
+                    {
+                        colour = "blue"
+                    },
+                    repetition = new ApiRepetition
+                    {
+                        sessionCount = 6,
+                        repeatFrequency = "w"
+                    },
+                    pricing = new ApiPricing
+                    {
+                        sessionPrice = 30
+                    }
+                };
+            }
+
+            private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    service = new ApiServiceKey { id = MiniGreenId },
+                    location = new ApiLocationKey { id = RemueraId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
+                    pricing = new ApiPricing { sessionPrice = 20 },
+                    repetition = new ApiRepetition { sessionCount = 100, repeatFrequency = "d" },
+                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
+                };
+            }
+
+            private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    service = new ApiServiceKey { id = MiniGreenId },
+                    location = new ApiLocationKey { id = RemueraId },
+                    coach = new ApiCoachKey { id = AaronId },
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "01:30", duration = 60 },
+                    pricing = new ApiPricing { sessionPrice = 0 },
+                    repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
+                    booking = new ApiSessionBooking { studentCapacity = 51, isOnlineBookable = false },
+                };
+            }
+
 
             private SessionData ThenCourseWasCreatedResponse(Response response)
             {
@@ -426,6 +434,29 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 AssertSingleError(response, "This session clashes with one or more sessions.");
             }
 
+            [Test]
+            public void GivenWantTurnSessionIntoCourse_WhenPost_ThenReturnsCannotChangeSessionToCourseError()
+            {
+                var command = GivenWantTurnSessionIntoCourse();
+                var response = WhenPost(command);
+                ThenReturnsCannotChangeSessionToCourseError(response);
+            }
+
+
+            private ApiSessionSaveCommand GivenWantTurnSessionIntoCourse()
+            {
+                var sessionCommand = CreateSessionSaveCommandAaronOrakei16To17();
+
+                sessionCommand.id = AaronOrakei16To17SessionId;
+                sessionCommand.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "w" };
+
+                return sessionCommand;
+            }
+
+            private void ThenReturnsCannotChangeSessionToCourseError(Response response)
+            {
+                AssertSingleError(response, "Cannot change from a standalone session to a course.");
+            }
 
 
             private ApiSessionSaveCommand GivenNonExistentSessionId()
@@ -440,7 +471,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei2To3SessionId,
+                    id = AaronOrakei14To15SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
@@ -453,7 +484,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 // Should clash with AaronOrakei4To5Session
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei2To3SessionId,
+                    id = AaronOrakei14To15SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
@@ -465,7 +496,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei2To3SessionId,
+                    id = AaronOrakei14To15SessionId,
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = RemueraId },
                     service = new ApiServiceKey { id = MiniBlueId },
@@ -491,7 +522,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei2To3SessionId,
+                    id = AaronOrakei14To15SessionId,
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
@@ -509,7 +540,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 Assert.That(session, Is.Not.Null);
 
-                Assert.That(session.id, Is.EqualTo(AaronOrakei2To3SessionId));
+                Assert.That(session.id, Is.EqualTo(AaronOrakei14To15SessionId));
                 Assert.That(session.location, Is.Not.Null);
                 Assert.That(session.location.id, Is.EqualTo(OrakeiId));
                 Assert.That(session.coach, Is.Not.Null);
@@ -546,6 +577,75 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             }
         }
 
+        [TestFixture]
+        public class CourseExistingTests : SessionPostTests
+        {
+            [Test]
+            public void GivenWantTurnCourseIntoSession_WhenPost_ThenReturnsCannotUpdateRepetitionOfCourseError()
+            {
+                var command = GivenWantToTurnCourseIntoSession();
+                var response = WhenPost(command);
+                ThenReturnsCannotUpdateRepetitionOfCourseError(response);
+            }
+
+            [Test]
+            public void GivenWantToChangeRepetitionOfCourse_WhenPost_ThenReturnsCannotUpdateRepetitionOfCourseError()
+            {
+                var command = GivenWantToChangeRepetitionOfCourse();
+                var response = WhenPost(command);
+                ThenReturnsCannotUpdateRepetitionOfCourseError(response);
+            }
+
+            [Test]
+            public void GivenWantToUpdateCourse_WhenPost_ThenReturnsCannotUpdateCourseError()
+            {
+                var command = GivenWantToUpdateCourse();
+                var response = WhenPost(command);
+                ThenReturnsCannotUpdateCourseError(response);
+            }
+
+
+            private ApiSessionSaveCommand GivenWantToTurnCourseIntoSession()
+            {
+                var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+
+                courseCommand.id = AaronRemuera9To10For8WeeksCourseId;
+                courseCommand.repetition = new ApiRepetition {sessionCount = 1};
+
+                return courseCommand;
+            }
+
+            private ApiSessionSaveCommand GivenWantToChangeRepetitionOfCourse()
+            {
+                var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+
+                courseCommand.id = AaronRemuera9To10For8WeeksCourseId;
+                courseCommand.repetition = new ApiRepetition { sessionCount = 5, repeatFrequency = "d" };
+
+                return courseCommand;
+            }
+
+            private ApiSessionSaveCommand GivenWantToUpdateCourse()
+            {
+                var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+
+                courseCommand.id = AaronRemuera9To10For8WeeksCourseId;
+                courseCommand.location = new ApiLocationKey {id = RemueraId};
+
+                return courseCommand;
+            }
+
+            private void ThenReturnsCannotUpdateRepetitionOfCourseError(Response response)
+            {
+                AssertSingleError(response, "Cannot change the repetition of a course.");
+            }
+
+            private void ThenReturnsCannotUpdateCourseError(Response response)
+            {
+                AssertSingleError(response, "Course updates are not working yet.");
+            }
+        }
+
 
         private Response WhenPost(string json)
         {
@@ -569,6 +669,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = (SessionData)response.Payload;
 
             Assert.That(session, Is.Not.Null);
+            Assert.That(session.parentId, Is.Null);
             Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(session.location, Is.Not.Null);
             Assert.That(session.location.id, Is.EqualTo(OrakeiId));
@@ -614,6 +715,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = (SessionData)response.Payload;
 
             Assert.That(session, Is.Not.Null);
+            Assert.That(session.parentId, Is.Null);
             Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(session.location, Is.Not.Null);
             Assert.That(session.location.id, Is.EqualTo(OrakeiId));
