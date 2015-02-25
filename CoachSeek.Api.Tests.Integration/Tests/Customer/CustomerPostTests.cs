@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -9,6 +8,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
     [TestFixture]
     public class CustomerPostTests : WebIntegrationTest
     {
+        private Guid FredId { get; set; }
+
+
         protected override string RelativePath
         {
             get { return "Customers"; }
@@ -19,7 +21,40 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         public void Setup()
         {
             RegisterTestBusiness();
-            //RegisterTestCustomers();
+            RegisterTestCustomers();
+        }
+
+        private void RegisterTestCustomers()
+        {
+            RegisterCustomerFredFlintstone();
+        }
+
+        private void RegisterCustomerFredFlintstone()
+        {
+            var customer = CreateNewCustomerSaveCommand("Fred", "Flintstone", "fred@flintstones.net", "021 123 123");
+            var json = JsonConvert.SerializeObject(customer);
+            var response = Post<CustomerData>(json);
+            FredId = ((CustomerData)response.Payload).id;
+
+        }
+
+        private ApiCustomerSaveCommand CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
+        {
+            return new ApiCustomerSaveCommand
+            {
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                phone = phone
+            };
+        }
+
+        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, string firstName, string lastName, string email, string phone)
+        {
+            var command = CreateNewCustomerSaveCommand(firstName, lastName, email, phone);
+            command.id = id;
+
+            return command;
         }
 
 
@@ -47,14 +82,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             ThenReturnNewCustomerResponse(response);
         }
 
-
-
         [Test]
         public void GivenNonExistentCustomerId_WhenPost_ThenReturnInvalidCustomerIdErrorResponse()
         {
             var command = GivenNonExistentCustomerId();
             var response = WhenPost(command);
             ThenReturnInvalidCustomerIdErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenWantToUpdateExistingCustomer_WhenPost_ThenReturnUpdatedCustomerResponse()
+        {
+            var command = GivenWantToUpdateExistingCustomer();
+            var response = WhenPost(command);
+            ThenReturnUpdatedCustomerResponse(response);
         }
 
 
@@ -81,8 +122,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return JsonConvert.SerializeObject(customer);
         }
 
-
-
         private string GivenNonExistentCustomerId()
         {
             var coach = new ApiCustomerSaveCommand
@@ -97,29 +136,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return JsonConvert.SerializeObject(coach);
         }
 
+        private ApiCustomerSaveCommand GivenWantToUpdateExistingCustomer()
+        {
+            return CreateExistingCustomerSaveCommand(FredId, "Barney", "Rubble", "barney@rubbles.net", "09 456 456");
+        }
+
 
         private Response WhenPost(string json)
         {
             return Post<CustomerData>(json);
         }
 
+        private Response WhenPost(ApiCustomerSaveCommand command)
+        {
+            var json = JsonConvert.SerializeObject(command);
+            return Post<CustomerData>(json);
+        }
+
 
         private void ThenReturnNoDataErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+            var errors = AssertErrorResponse(response);
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], null, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+            var errors = AssertErrorResponse(response);
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(2));
             AssertApplicationError(errors[0], "customer.firstName", "The firstName field is required.");
             AssertApplicationError(errors[1], "customer.lastName", "The lastName field is required.");
@@ -127,11 +173,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void ThenReturnNewCustomerResponse(Response response)
         {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<CustomerData>());
-            var customer = (CustomerData)response.Payload;
+            var customer = AssertSuccessResponse<CustomerData>(response);
 
             Assert.That(customer.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(customer.firstName, Is.EqualTo("Bob"));
@@ -140,17 +182,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.phone, Is.EqualTo("012 3456 7890"));
         }
 
-
-
         private void ThenReturnInvalidCustomerIdErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
+            var errors = AssertErrorResponse(response);
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "customer.id", "This customer does not exist.");
+        }
+
+        private void ThenReturnUpdatedCustomerResponse(Response response)
+        {
+            var customer = AssertSuccessResponse<CustomerData>(response);
+
+            Assert.That(customer.id, Is.EqualTo(FredId));
+            Assert.That(customer.firstName, Is.EqualTo("Barney"));
+            Assert.That(customer.lastName, Is.EqualTo("Rubble"));
+            Assert.That(customer.email, Is.EqualTo("barney@rubbles.net"));
+            Assert.That(customer.phone, Is.EqualTo("09 456 456"));
         }
     }
 }

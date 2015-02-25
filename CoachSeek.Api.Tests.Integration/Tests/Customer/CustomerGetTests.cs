@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -11,9 +10,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
     public class CustomerGetTests : WebIntegrationTest
     {
         private const string FRED_FIRST_NAME = "Fred";
+        private const string WILMA_FIRST_NAME = "Wilma";
         private const string FLINTSTONE_LAST_NAME = "Flintstone";
 
         private Guid FredId { get; set; }
+        private Guid WilmaId { get; set; }
         private string FredEmail { get; set; }
         private string FredPhone { get; set; }
 
@@ -21,6 +22,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         {
             get { return "Customers"; }
         }
+
 
         [SetUp]
         public void Setup()
@@ -32,7 +34,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         private void RegisterTestCustomers()
         {
             RegisterFredCustomer();
-            //RegisterBobbyLocation();
+            RegisterWilmaCustomer();
         }
 
         private void RegisterFredCustomer()
@@ -44,12 +46,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             FredId = ((CustomerData)response.Payload).id;
         }
 
-        //private void RegisterBobbyLocation()
-        //{
-        //    var json = CreateNewCoachSaveCommand(BOBBY_FIRST_NAME, SMITH_LAST_NAME, RandomEmail, RandomString);
-        //    var response = Post<CoachData>(json);
-        //    BobbyId = ((CoachData)response.Payload).id;
-        //}
+        private void RegisterWilmaCustomer()
+        {
+            var json = CreateNewCustomerSaveCommand(WILMA_FIRST_NAME, FLINTSTONE_LAST_NAME, "wilma@flintstones.net", "2");
+            var response = Post<CustomerData>(json);
+            WilmaId = ((CustomerData)response.Payload).id;
+        }
+
 
         private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
         {
@@ -106,34 +109,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         }
 
 
-        //private void ThenReturnAllCoachesResponse(Response response)
-        //{
-        //    Assert.That(response, Is.Not.Null);
-        //    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        //    Assert.That(response.Payload, Is.Not.Null);
-        //    var coaches = (List<CoachData>)response.Payload;
-        //    Assert.That(coaches.Count, Is.EqualTo(2));
-
-        //    var coachOne = coaches[0];
-        //    Assert.That(coachOne.id, Is.EqualTo(AaronId));
-        //    Assert.That(coachOne.firstName, Is.EqualTo(AARON_FIRST_NAME));
-        //    Assert.That(coachOne.lastName, Is.EqualTo(SMITH_LAST_NAME));
-
-        //    var coachTwo = coaches[1];
-        //    Assert.That(coachTwo.id, Is.EqualTo(BobbyId));
-        //    Assert.That(coachTwo.firstName, Is.EqualTo(BOBBY_FIRST_NAME));
-        //    Assert.That(coachTwo.lastName, Is.EqualTo(SMITH_LAST_NAME));
-        //}
-
         private void ThenReturnNotFoundResponse(Response response)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            AssertNotFound(response);
         }
 
         private void ThenReturnCustomerResponse(Response response)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            var customer = (CustomerData)response.Payload;
+            var customer = AssertSuccessResponse<CustomerData>(response);
+
             Assert.That(customer.id, Is.EqualTo(FredId));
             Assert.That(customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
             Assert.That(customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));

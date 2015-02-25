@@ -158,14 +158,38 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             request.Method = "GET";
         }
 
+
         protected void AssertStatusCode(HttpStatusCode actualStatusCode, HttpStatusCode expectedStatusCode)
         {
             Assert.That(actualStatusCode, Is.EqualTo(expectedStatusCode));
         }
 
+        protected void AssertNotFound(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
+        protected T AssertSuccessResponse<T>(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<T>());
+            return (T)response.Payload;
+        }
+
+        protected ApplicationError[] AssertErrorResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
+            return (ApplicationError[])response.Payload;
+        }
+
         protected void AssertSingleError(Response response, string message, string field = null)
         {
-            var errors = AssertErrors(response);
+            var errors = AssertErrorResponse(response);
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], field, message);
@@ -173,7 +197,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected void AssertMultipleErrors(Response response, string[,] expectedErrors)
         {
-            var errors = AssertErrors(response);
+            var errors = AssertErrorResponse(response);
             Assert.That(errors.GetLength(0), Is.EqualTo(expectedErrors.GetLength(0)));
 
             var i = 0;
@@ -182,17 +206,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 AssertApplicationError(error, expectedErrors[i, 1], expectedErrors[i, 0]);
                 i++;
             }
-        }
-
-        private ApplicationError[] AssertErrors(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            return errors;
         }
 
         protected void AssertApplicationError(ApplicationError error, string field, string message)

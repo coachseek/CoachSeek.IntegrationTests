@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
     [TestFixture]
-    public class LocationTests : WebIntegrationTest
+    public class LocationPostTests : WebIntegrationTest
     {
         private const string ORAKEI_NAME = "Orakei Tennis Club";
         private const string REMUERA_NAME = "Remuera Racquets Club";
