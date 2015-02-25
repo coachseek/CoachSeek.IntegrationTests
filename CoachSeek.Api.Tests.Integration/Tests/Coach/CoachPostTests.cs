@@ -122,6 +122,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             ThenReturnNewCoachResponse(response);
         }
 
+        [Test]
+        public void GivenWantToUpdateExistingCoach_WhenPost_ThenReturnUpdatedCoachResponse()
+        {
+            var command = GivenWantToUpdateExistingCoach();
+            var response = WhenPost(command);
+            ThenReturnUpdatedCoachResponse(response);
+        }
+
 
         private string GivenNoCoachSaveCommand()
         {
@@ -144,6 +152,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                 friday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
                 saturday = new ApiDailyWorkingHours(),
                 sunday = new ApiDailyWorkingHours()
+            };
+        }
+
+        private ApiWeeklyWorkingHours SetupWeekendWorkingHours()
+        {
+            return new ApiWeeklyWorkingHours
+            {
+                monday = new ApiDailyWorkingHours(),
+                tuesday = new ApiDailyWorkingHours(),
+                wednesday = new ApiDailyWorkingHours(),
+                thursday = new ApiDailyWorkingHours(),
+                friday = new ApiDailyWorkingHours(),
+                saturday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
+                sunday = new ApiDailyWorkingHours(true, "9:00", "17:00")
             };
         }
 
@@ -231,6 +253,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             };
 
             coach.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
+
+            return JsonConvert.SerializeObject(coach);
+        }
+
+        private string GivenWantToUpdateExistingCoach()
+        {
+            var coach = new ApiCoachSaveCommand
+            {
+                id = AaronId,
+                firstName = "Adam",
+                lastName = "Ant",
+                email = "Adam@ant.net",
+                phone = "021 0123456",
+                workingHours = SetupWeekendWorkingHours()
+            };
 
             return JsonConvert.SerializeObject(coach);
         }
@@ -335,6 +372,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             AssertStandardWorkingDay(coach.workingHours.friday);
             AssertStandardWeekendDay(coach.workingHours.saturday);
             AssertWorkingHours(coach.workingHours.sunday, false, "10:30", "15:45");
+        }
+
+        private void ThenReturnUpdatedCoachResponse(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<CoachData>());
+            var coach = (CoachData)response.Payload;
+
+            Assert.That(coach.id, Is.EqualTo(AaronId));
+            Assert.That(coach.firstName, Is.EqualTo("Adam"));
+            Assert.That(coach.lastName, Is.EqualTo("Ant"));
+            Assert.That(coach.email, Is.EqualTo("adam@ant.net"));
+            Assert.That(coach.phone, Is.EqualTo("021 0123456"));
+
+            Assert.That(coach.workingHours, Is.Not.Null);
+            AssertStandardWeekendDay(coach.workingHours.monday);
+            AssertStandardWeekendDay(coach.workingHours.tuesday);
+            AssertStandardWeekendDay(coach.workingHours.wednesday);
+            AssertStandardWeekendDay(coach.workingHours.thursday);
+            AssertStandardWeekendDay(coach.workingHours.friday);
+            AssertStandardWorkingDay(coach.workingHours.saturday);
+            AssertStandardWorkingDay(coach.workingHours.sunday);
         }
 
         private void AssertStandardWorkingDay(DailyWorkingHoursData workingDay)

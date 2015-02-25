@@ -11,6 +11,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         private const string MINI_RED_NAME = "Mini Red";
         private const string MINI_RED_DESCRIPTION = "Mini Red Service";
         private const string MINI_BLUE_NAME = "Mini Blue";
+        private const string MINI_BLUE_DESCRIPTION = "Mini Blue Service";
 
         private Guid MiniRedId { get; set; }
         private Guid MiniBlueId { get; set; }
@@ -42,32 +43,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private void RegisterMiniRedService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, MINI_RED_DESCRIPTION);
+            var json = CreateNewFullServiceSaveCommand(MINI_RED_NAME, MINI_RED_DESCRIPTION, "red");
             var response = Post<ServiceData>(json);
             MiniRedId = ((ServiceData)response.Payload).id;
         }
 
         private void RegisterMiniBlueService()
         {
-            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME, "Mini Blue Description");
+            var json = CreateNewPartialServiceSaveCommand(MINI_BLUE_NAME, MINI_BLUE_DESCRIPTION, "blue");
             var response = Post<ServiceData>(json);
             MiniBlueId = ((ServiceData)response.Payload).id;
         }
 
-        private string CreateNewServiceSaveCommand(string name, string description)
+        private string CreateNewFullServiceSaveCommand(string name, string description, string colour)
         {
             var service = new ApiServiceSaveCommand
             {
                 name = name,
                 description = description,
                 timing = new ApiServiceTiming { duration = 45 },
-                repetition = new ApiServiceRepetition { sessionCount = 1 },
-                presentation = new ApiPresentation { colour = "orange" }
+                booking = new ApiServiceBooking { studentCapacity = 8, isOnlineBookable = false },
+                presentation = new ApiPresentation { colour = colour },
+                repetition = new ApiServiceRepetition { sessionCount = 10, repeatFrequency = "w" },
+                pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = 100 }
             };
 
             return JsonConvert.SerializeObject(service);
         }
 
+        private string CreateNewPartialServiceSaveCommand(string name, string description, string colour)
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                name = name,
+                description = description,
+                repetition = new ApiServiceRepetition { sessionCount = 1 },
+                presentation = new ApiPresentation { colour = colour }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
 
         [TestFixture]
         public class ServiceCommandTests : ServicePostTests
@@ -137,9 +152,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 AssertNewServiceWithBookingSuccess(response, 12, true);
             }
 
-
-
-
             [Test]
             public void GivenNewServiceWithInvalidDefaults_WhenPost_ThenReturnInvalidDefaultsErrors()
             {
@@ -189,6 +201,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 var command = GivenServiceWithoutRepetition();
                 var response = WhenPost(command);
                 AssertSingleError(response, "The repetition field is required.", "service.repetition");
+            }
+
+            [Test]
+            public void GivenServiceWithoutColour_WhenPost_ThenReturnServiceColourError()
+            {
+                var command = GivenServiceWithoutColour();
+                var response = WhenPost(command);
+                AssertSingleError(response, "The colour field is required.", "service.presentation.colour");
             }
 
             [Test]
@@ -254,6 +274,52 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 AssertNewCourseServiceWithAllDefaultValuesSuccess(response);
             }
 
+            [Test]
+            public void GivenWantToUpdateExistingService_WhenPost_ThenReturnUpdatedServiceResponse()
+            {
+                var command = GivenWantToUpdateExistingService();
+                var response = WhenPost(command);
+                ThenReturnUpdatedServiceResponse(response);
+            }
+
+
+            private string GivenWantToUpdateExistingService()
+            {
+                var service = new ApiServiceSaveCommand
+                {
+                    id = MiniRedId,
+                    name = "Mini Yellow",
+                    description = "Mini Yellow Service",
+                    timing = new ApiServiceTiming { duration = 60 },
+                    booking = new ApiServiceBooking { studentCapacity = 12, isOnlineBookable = true },
+                    presentation = new ApiPresentation { colour = "Yellow" },
+                    repetition = new ApiServiceRepetition { sessionCount = 9, repeatFrequency = "d" },
+                    pricing = new ApiPricing {sessionPrice = 10, coursePrice = 80}
+                };
+
+                return JsonConvert.SerializeObject(service);
+            }
+
+            private void ThenReturnUpdatedServiceResponse(Response response)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
+                var service = (ServiceData)response.Payload;
+
+                Assert.That(service.id, Is.EqualTo(MiniRedId));
+                Assert.That(service.name, Is.EqualTo("Mini Yellow"));
+                Assert.That(service.description, Is.EqualTo("Mini Yellow Service"));
+                Assert.That(service.timing.duration, Is.EqualTo(60));
+                Assert.That(service.booking.studentCapacity, Is.EqualTo(12));
+                Assert.That(service.booking.isOnlineBookable, Is.EqualTo(true));
+                Assert.That(service.presentation.colour, Is.EqualTo("yellow"));
+                Assert.That(service.repetition.sessionCount, Is.EqualTo(9));
+                Assert.That(service.repetition.repeatFrequency, Is.EqualTo("d"));
+                Assert.That(service.pricing.sessionPrice, Is.EqualTo(10));
+                Assert.That(service.pricing.coursePrice, Is.EqualTo(80));
+            }
 
             private ApiServiceSaveCommand GivenNewSessionService()
             {
@@ -261,7 +327,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 {
                     name = "Mini Orange",
                     description = "Mini Orange Service",
-                    repetition = new ApiServiceRepetition { sessionCount = 1 }
+                    repetition = new ApiServiceRepetition { sessionCount = 1 },
+                    presentation = new ApiPresentation { colour = "orange" }
                 };
             }
 
@@ -329,6 +396,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 var service = GivenNewSessionService();
 
                 service.repetition = null;
+
+                return service;
+            }
+
+            private ApiServiceSaveCommand GivenServiceWithoutColour()
+            {
+                var service = GivenNewSessionService();
+
+                service.presentation = null;
 
                 return service;
             }
@@ -437,37 +513,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
             private ApiServiceSaveCommand GivenSessionServiceWithAllDefaultValuesSpecified()
             {
+                var miniGreenService = GivenBaseMiniGreenService();
+
+                miniGreenService.repetition = new ApiServiceRepetition { sessionCount = 1 };
+                miniGreenService.pricing = new ApiPricing { sessionPrice = 15 };
+
+                return miniGreenService;
+            }
+
+            private ApiServiceSaveCommand GivenCourseServiceWithAllDefaultValuesSpecified()
+            {
+                var miniGreenService = GivenBaseMiniGreenService();
+
+                miniGreenService.repetition = new ApiServiceRepetition { sessionCount = 12, repeatFrequency = "w" };
+                miniGreenService.pricing = new ApiPricing {sessionPrice = 15, coursePrice = 150};
+
+                return miniGreenService;
+            }
+
+            private ApiServiceSaveCommand GivenBaseMiniGreenService()
+            {
                 return new ApiServiceSaveCommand
                 {
                     name = "Mini Green",
                     description = "Mini Green Service",
                     timing = new ApiServiceTiming { duration = 45 },
-                    booking = new ApiServiceBooking
-                    {
-                        studentCapacity = 8,
-                        isOnlineBookable = false
-                    },
-                    presentation = new ApiPresentation { colour = "Green" },
-                    repetition = new ApiServiceRepetition { sessionCount = 1 },
-                    pricing = new ApiPricing { sessionPrice = 15 }
-                };
-            }
-
-            private ApiServiceSaveCommand GivenCourseServiceWithAllDefaultValuesSpecified()
-            {
-                return new ApiServiceSaveCommand
-                {
-                    name = "Mini Green",
-                    description = "Mini Green Service", 
-                    timing = new ApiServiceTiming { duration = 45 },
-                    booking = new ApiServiceBooking
-                    {
-                        studentCapacity = 8,
-                        isOnlineBookable = false
-                    },
-                    presentation = new ApiPresentation { colour = "Green" },
-                    repetition = new ApiServiceRepetition { sessionCount = 12, repeatFrequency = "w" },
-                    pricing = new ApiPricing { sessionPrice = 15, coursePrice = 150 }
+                    booking = new ApiServiceBooking { studentCapacity = 8, isOnlineBookable = false },
+                    presentation = new ApiPresentation { colour = "Green" }
                 };
             }
 
@@ -513,41 +585,35 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
             private void AssertNewSessionServiceWithAllDefaultValuesSuccess(Response response)
             {
-                Assert.That(response, Is.Not.Null);
-                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+                var miniGreenService = AssertMiniGreenServiceSuccess(response);
 
-                Assert.That(response.Payload, Is.InstanceOf<ServiceData>());
-                var service = (ServiceData)response.Payload;
-
-                Assert.That(service.id, Is.Not.EqualTo(Guid.Empty));
-                Assert.That(service.name, Is.EqualTo("Mini Green"));
-                Assert.That(service.description, Is.EqualTo("Mini Green Service"));
-
-                var timing = service.timing;
-                Assert.That(timing, Is.Not.Null);
-                Assert.That(timing.duration, Is.EqualTo(45));
-
-                var booking = service.booking;
-                Assert.That(booking, Is.Not.Null);
-                Assert.That(booking.studentCapacity, Is.EqualTo(8));
-                Assert.That(booking.isOnlineBookable, Is.EqualTo(false));
-
-                var presentation = service.presentation;
-                Assert.That(presentation, Is.Not.Null);
-                Assert.That(presentation.colour, Is.EqualTo("green"));
-
-                var repetition = service.repetition;
+                var repetition = miniGreenService.repetition;
                 Assert.That(repetition, Is.Not.Null);
                 Assert.That(repetition.sessionCount, Is.EqualTo(1));
                 Assert.That(repetition.repeatFrequency, Is.Null);
 
-                var pricing = service.pricing;
+                var pricing = miniGreenService.pricing;
                 Assert.That(pricing, Is.Not.Null);
                 Assert.That(pricing.sessionPrice, Is.EqualTo(15));
                 Assert.That(pricing.coursePrice, Is.Null);
             }
 
             private void AssertNewCourseServiceWithAllDefaultValuesSuccess(Response response)
+            {
+                var miniGreenService = AssertMiniGreenServiceSuccess(response);
+
+                var repetition = miniGreenService.repetition;
+                Assert.That(repetition, Is.Not.Null);
+                Assert.That(repetition.sessionCount, Is.EqualTo(12));
+                Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
+
+                var pricing = miniGreenService.pricing;
+                Assert.That(pricing, Is.Not.Null);
+                Assert.That(pricing.sessionPrice, Is.EqualTo(15));
+                Assert.That(pricing.coursePrice, Is.EqualTo(150));
+            }
+
+            private ServiceData AssertMiniGreenServiceSuccess(Response response)
             {
                 Assert.That(response, Is.Not.Null);
                 AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
@@ -572,15 +638,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 Assert.That(presentation, Is.Not.Null);
                 Assert.That(presentation.colour, Is.EqualTo("green"));
 
-                var repetition = service.repetition;
-                Assert.That(repetition, Is.Not.Null);
-                Assert.That(repetition.sessionCount, Is.EqualTo(12));
-                Assert.That(repetition.repeatFrequency, Is.EqualTo("w"));
-
-                var pricing = service.pricing;
-                Assert.That(pricing, Is.Not.Null);
-                Assert.That(pricing.sessionPrice, Is.EqualTo(15));
-                Assert.That(pricing.coursePrice, Is.EqualTo(150));
+                return service;
             }
 
             private void AssertDefaults(ServiceData service)
