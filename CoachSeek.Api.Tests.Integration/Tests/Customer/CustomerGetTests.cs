@@ -48,13 +48,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void RegisterWilmaCustomer()
         {
-            var json = CreateNewCustomerSaveCommand(WILMA_FIRST_NAME, FLINTSTONE_LAST_NAME, "wilma@flintstones.net", "2");
+            var json = CreateNewCustomerSaveCommand(WILMA_FIRST_NAME, FLINTSTONE_LAST_NAME);
             var response = Post<CustomerData>(json);
             WilmaId = ((CustomerData)response.Payload).id;
         }
 
 
-        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
+        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email = null, string phone = null)
         {
             var coach = new ApiCustomerSaveCommand
             {

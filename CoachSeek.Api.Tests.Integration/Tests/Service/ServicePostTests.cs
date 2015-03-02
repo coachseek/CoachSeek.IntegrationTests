@@ -50,7 +50,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private void RegisterMiniBlueService()
         {
-            var json = CreateNewPartialServiceSaveCommand(MINI_BLUE_NAME, MINI_BLUE_DESCRIPTION, "blue");
+            var json = CreateNewPartialServiceSaveCommand(MINI_BLUE_NAME, "blue");
             var response = Post<ServiceData>(json);
             MiniBlueId = ((ServiceData)response.Payload).id;
         }
@@ -71,12 +71,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             return JsonConvert.SerializeObject(service);
         }
 
-        private string CreateNewPartialServiceSaveCommand(string name, string description, string colour)
+        private string CreateNewPartialServiceSaveCommand(string name, string colour)
         {
             var service = new ApiServiceSaveCommand
             {
                 name = name,
-                description = description,
                 repetition = new ApiServiceRepetition { sessionCount = 1 },
                 presentation = new ApiPresentation { colour = colour }
             };
@@ -733,7 +732,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                     id = MiniRedId,
                     name = MINI_RED_NAME,
                     description = "Mini Red Service",
-                    repetition = new ApiServiceRepetition { sessionCount = 1 }
+                    repetition = new ApiServiceRepetition { sessionCount = 1 },
+                    presentation = new ApiPresentation { colour = "red" }
                 };
             }
 

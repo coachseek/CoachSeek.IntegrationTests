@@ -94,7 +94,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         {
             var id = GivenInvalidCoachId();
             var response = WhenGetById(id);
-            ThenReturnNotFoundResponse(response);
+            AssertNotFound(response);
         }
 
         [Test]
@@ -148,11 +148,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             Assert.That(coachTwo.id, Is.EqualTo(BobbyId));
             Assert.That(coachTwo.firstName, Is.EqualTo(BOBBY_FIRST_NAME));
             Assert.That(coachTwo.lastName, Is.EqualTo(SMITH_LAST_NAME));
-        }
-
-        private void ThenReturnNotFoundResponse(Response response)
-        {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         private void ThenReturnCoachResponse(Response response)

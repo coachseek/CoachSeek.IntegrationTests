@@ -187,12 +187,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return (ApplicationError[])response.Payload;
         }
 
-        protected void AssertSingleError(Response response, string message, string field = null)
+        protected ApplicationError AssertSingleError(Response response, string message, string field = null)
         {
             var errors = AssertErrorResponse(response);
 
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], field, message);
+
+            return errors[0];
         }
 
         protected void AssertMultipleErrors(Response response, string[,] expectedErrors)

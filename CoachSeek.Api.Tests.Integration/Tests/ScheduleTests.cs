@@ -27,6 +27,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid AaronOrakei14To15SessionId { get; set; }
         protected Guid AaronOrakei16To17SessionId { get; set; }
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
+        protected Guid[] AaronRemuera9To10For8WeeksSessionIds { get; set; }
         protected Guid FredId { get; set; }
 
         protected void SetupFullTestBusiness()
@@ -237,13 +238,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void RegisterAaronRemuera9To10For8Weeks()
         {
             var json = CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson();
-            var response = PostSession(json);
-            AaronRemuera9To10For8WeeksCourseId = ((SessionData)response.Payload).id;
+            var response = PostCourse(json);
+            var course = (CourseData)response.Payload;
+            AaronRemuera9To10For8WeeksCourseId = course.id;
+            AaronRemuera9To10For8WeeksSessionIds = new Guid[8];
+            for(var i = 0; i < 8; i++)
+                AaronRemuera9To10For8WeeksSessionIds[i] = course.sessions[i].id;
         }
 
         private Response PostSession(string json)
         {
             return Post<SessionData>(json, "Sessions");
+        }
+
+        private Response PostCourse(string json)
+        {
+            return Post<CourseData>(json, "Sessions");
         }
 
         protected ApiSessionSaveCommand CreateSessionSaveCommandAaronOrakei14To15()
