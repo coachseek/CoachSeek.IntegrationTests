@@ -121,6 +121,7 @@
     <Compile Include="Tests\Session\SessionPostTests.cs" />
     <Compile Include="Tests\Session\SessionSearchTests.cs" />
     <Compile Include="Tests\WebIntegrationTest.cs" />
+    <Compile Include="UnitTests\PostTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

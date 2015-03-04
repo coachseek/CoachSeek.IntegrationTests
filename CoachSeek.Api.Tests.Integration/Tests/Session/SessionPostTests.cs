@@ -734,10 +734,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(session.location, Is.Not.Null);
             Assert.That(session.location.id, Is.EqualTo(OrakeiId));
+            Assert.That(session.location.name, Is.EqualTo("Orakei Tennis Club"));
             Assert.That(session.coach, Is.Not.Null);
             Assert.That(session.coach.id, Is.EqualTo(AaronId));
+            Assert.That(session.coach.name, Is.EqualTo("Aaron Smith"));
             Assert.That(session.service, Is.Not.Null);
             Assert.That(session.service.id, Is.EqualTo(MiniRedId));
+            Assert.That(session.service.name, Is.EqualTo("Mini Red"));
 
             var timing = session.timing;
             Assert.That(timing, Is.Not.Null);
@@ -780,10 +783,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(session.location, Is.Not.Null);
             Assert.That(session.location.id, Is.EqualTo(OrakeiId));
+            Assert.That(session.location.name, Is.EqualTo("Orakei Tennis Club"));
             Assert.That(session.coach, Is.Not.Null);
             Assert.That(session.coach.id, Is.EqualTo(AaronId));
+            Assert.That(session.coach.name, Is.EqualTo("Aaron Smith"));
             Assert.That(session.service, Is.Not.Null);
             Assert.That(session.service.id, Is.EqualTo(MiniRedId));
+            Assert.That(session.service.name, Is.EqualTo("Mini Red"));
 
             var timing = session.timing;
             Assert.That(timing, Is.Not.Null);

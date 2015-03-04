@@ -8,7 +8,7 @@ using System.Text;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
-    public abstract class WebIntegrationTest
+    public class WebIntegrationTest
     {
         private string _email;
 
@@ -23,7 +23,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 #endif
         }
 
-        protected abstract string RelativePath { get; }
+        protected virtual string RelativePath { get { return string.Empty; } }
 
         protected string Url
         {
@@ -44,7 +44,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string Password { get; set; }
 
 
-        protected Response PostAnonymously<TResponse>(string json)
+        public Response PostAnonymously<TResponse>(string json)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
 
@@ -67,14 +67,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<TResponse>(json, http);
         }
 
-        protected Response Get<TResponse>(string url)
-        {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Username, Password);
-
-            return Get<TResponse>(http);
-        }
-
         protected Response Post<TResponse>(string json, string relativePath)
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
@@ -84,9 +76,29 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<TResponse>(json, http);
         }
 
+        protected Response Get<TResponse>(string url)
+        {
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Get<TResponse>(http);
+        }
+
+        private Response Get<TResponse>(HttpWebRequest request)
+        {
+            PrepareGetRequest(request);
+
+            // NOTE: DO NOT REMOVE THIS CHECK!!
+            // We do not want to send heaps of testing data to our production database!!
+            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
+
+            return HandleResponse<TResponse>(request);
+        }
+
         protected Response Post<TResponse>(string json, HttpWebRequest request)
         {
             PreparePostRequest(request);
+
             SendData(json, request);
 
             return HandleResponse<TResponse>(request);
@@ -126,16 +138,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var encoding = new ASCIIEncoding();
             var bytes = encoding.GetBytes(json);
 
+            // NOTE: DO NOT REMOVE THIS CHECK!!
+            // We do not want to send heaps of testing data to our production database!!
+            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
+
             var newStream = request.GetRequestStream();
             newStream.Write(bytes, 0, bytes.Length);
             newStream.Close();
-        }
-
-        protected Response Get<TResponse>(HttpWebRequest request)
-        {
-            PrepareGetRequest(request);
-
-            return HandleResponse<TResponse>(request);
         }
 
         private void SetBasicAuthHeader(WebRequest request, string username, string password)
@@ -145,17 +154,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             request.Headers["Authorization"] = "Basic " + authInfo;
         }
 
+        private static void SetTestingHeader(WebRequest request)
+        {
+            request.Headers["Testing"] = "true";
+        }
+
         private static void PreparePostRequest(HttpWebRequest request)
         {
             request.Accept = "application/json";
             request.ContentType = "application/json";
             request.Method = "POST";
+
+            SetTestingHeader(request);
         }
 
         private static void PrepareGetRequest(HttpWebRequest request)
         {
             request.Accept = "application/json";
             request.Method = "GET";
+
+            SetTestingHeader(request);
         }
 
 
