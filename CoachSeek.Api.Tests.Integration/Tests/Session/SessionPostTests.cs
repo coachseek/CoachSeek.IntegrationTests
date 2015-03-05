@@ -38,7 +38,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 AssertMultipleErrors(response, new[,] { { "The service field is required.", "session.service" },
                                                         { "The location field is required.", "session.location" },
                                                         { "The coach field is required.", "session.coach" },
-                                                        { "The timing field is required.", "session.timing" } });
+                                                        { "The timing field is required.", "session.timing" },
+                                                        { "The booking field is required.", "session.booking" },
+                                                        { "The pricing field is required.", "session.pricing" },
+                                                        { "The repetition field is required.", "session.repetition" },
+                                                        { "The presentation field is required.", "session.presentation" } });
             }
 
             private string GivenNoSessionSaveCommand()
@@ -75,70 +79,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             }
 
             [Test]
-            public void GivenNewSessionWithValues_WhenPost_ThenCreateSessionAndOverrideServiceDefaults()
+            public void GivenNewSessionWithZeroSessionCount_WhenPost_ThenReturnInvalidSessionCountErrorResponse()
             {
-                var command = GivenNewSessionWithValues();
+                var command = GivenNewSessionWithZeroSessionCount();
                 var response = WhenPost(command);
-                ThenOverrideServiceDefaults(response);
+                AssertSingleError(response, "The sessionCount field is not valid.", "session.repetition.sessionCount");
             }
 
             [Test]
-            public void GivenNewSessionWithMissingValues_WhenPost_ThenCreateSessionAndUseServiceDefaults()
+            public void GivenNewValidSession_WhenPost_ThenCreateSession()
             {
-                var command = GivenNewSessionWithMissingValues();
+                var command = GivenNewValidSession();
                 var response = WhenPost(command);
-                ThenGetServiceDefaults(response);
+                ThenCreateSession(response);
             }
 
-
-            private ApiSessionSaveCommand GivenNewSessionWithValues()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    service = new ApiServiceKey { id = MiniRedId },
-                    location = new ApiLocationKey { id = OrakeiId },
-                    coach = new ApiCoachKey { id = AaronId },
-                    timing = new ApiSessionTiming
-                    {
-                        startDate = "2014-11-09",
-                        startTime = "15:30",
-                        duration = 45
-                    },
-                    booking = new ApiSessionBooking
-                    {
-                        studentCapacity = 10,
-                        isOnlineBookable = true
-                    },
-                    pricing = new ApiPricing
-                    {
-                        sessionPrice = 12
-                    },
-                    presentation = new ApiPresentation
-                    {
-                        colour = "Red"
-                    }
-                };
-            }
-
-            private ApiSessionSaveCommand GivenNewSessionWithMissingValues()
-            {
-                return new ApiSessionSaveCommand
-                {
-                    service = new ApiServiceKey { id = MiniRedId },
-                    location = new ApiLocationKey { id = OrakeiId },
-                    coach = new ApiCoachKey { id = AaronId },
-                    timing = new ApiSessionTiming
-                    {
-                        startDate = "2014-11-11",
-                        startTime = "16:45"
-                    }
-                };
-            }
 
             private ApiSessionSaveCommand GivenNewSessionClashesWithStandaloneSession()
             {
                 var command = CreateSessionSaveCommandAaronOrakei16To17();
-
                 command.timing.startTime = "16:30";
 
                 return command;
@@ -151,81 +110,35 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = OrakeiId },
                     service = new ApiServiceKey { id = MiniBlueId },
-                    timing = new ApiSessionTiming
-                    {
-                        startDate = GetFormattedDateTwoWeeksOut(),
-                        startTime = "9:30",
-                        duration = 30
-                    },
-                    booking = new ApiSessionBooking
-                    {
-                        studentCapacity = 9,
-                        isOnlineBookable = true
-                    },
-                    pricing = new ApiPricing
-                    {
-                        sessionPrice = 25
-                    }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateTwoWeeksOut(), startTime = "9:30", duration = 30 },
+                    booking = new ApiSessionBooking { studentCapacity = 9, isOnlineBookable = true },
+                    pricing = new ApiPricing { sessionPrice = 25 },
+                    repetition = new ApiRepetition { sessionCount = 1 },
+                    presentation = new ApiPresentation { colour = "blue" }
                 };
             }
 
-            private ApiSessionSaveCommand CreateSessionCoachedByAaronAt(string startTime)
+            private ApiSessionSaveCommand GivenNewValidSession()
             {
                 return new ApiSessionSaveCommand
                 {
-                    id = AaronOrakei14To15SessionId,
+                    service = new ApiServiceKey { id = MiniRedId },
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
-                    service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = startTime, duration = 60 }
+                    timing = new ApiSessionTiming { startDate = "2018-11-09", startTime = "15:30", duration = 45 },
+                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = true },
+                    repetition = new ApiRepetition { sessionCount = 1 },
+                    pricing = new ApiPricing { sessionPrice = 12 },
+                    presentation = new ApiPresentation { colour = "Red" }
                 };
             }
 
-            private SessionData ThenSessionWasCreatedResponse(Response response, string startTime)
+            private ApiSessionSaveCommand GivenNewSessionWithZeroSessionCount()
             {
-                Assert.That(response, Is.Not.Null);
-                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+                var command = GivenNewValidSession();
+                command.repetition.sessionCount = 0;
 
-                Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-                var session = (SessionData)response.Payload;
-
-                Assert.That(session, Is.Not.Null);
-
-                Assert.That(session.parentId, Is.Null);
-                Assert.That(session.id, Is.EqualTo(AaronOrakei14To15SessionId));
-                Assert.That(session.location, Is.Not.Null);
-                Assert.That(session.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(session.coach, Is.Not.Null);
-                Assert.That(session.coach.id, Is.EqualTo(AaronId));
-                Assert.That(session.service, Is.Not.Null);
-                Assert.That(session.service.id, Is.EqualTo(MiniRedId));
-
-                var timing = session.timing;
-                Assert.That(timing, Is.Not.Null);
-                Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
-                Assert.That(timing.startTime, Is.EqualTo(startTime));
-                Assert.That(timing.duration, Is.EqualTo(60));
-
-                var booking = session.booking;
-                Assert.That(booking, Is.Not.Null);
-                Assert.That(booking.studentCapacity, Is.EqualTo(13));
-                Assert.That(booking.isOnlineBookable, Is.True);
-
-                var pricing = session.pricing;
-                Assert.That(pricing, Is.Not.Null);
-                Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
-                Assert.That(pricing.coursePrice, Is.Null);
-
-                var repetition = session.repetition;
-                Assert.That(repetition, Is.Not.Null);
-                Assert.That(repetition.sessionCount, Is.EqualTo(1));
-                Assert.That(repetition.repeatFrequency, Is.Null);
-
-                var presentation = session.presentation;
-                Assert.That(presentation, Is.Not.Null);
-                Assert.That(presentation.colour, Is.EqualTo("red"));
-
-                return session;
+                return command;
             }
         }
 
@@ -241,12 +154,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 Assert.That(error.data, Is.StringContaining(AaronOrakei14To15SessionId.ToString()));
             }
 
+            // TODO: Course clashes with course session.
+
             [Test]
-            public void GivenNewCourseWithTooManySessions_WhenPost_ThenTooManySessionInCourseErrorResponse()
+            public void GivenNewCourseWithTooManySessions_WhenPost_ThenReturnTooManySessionInCourseErrorResponse()
             {
                 var command = GivenNewCourseWithTooManySessions();
                 var response = WhenPost(command);
                 AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
+            }
+
+            [Test]
+            public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenPost_ThenReturnWithNoPriceErrorResponse()
+            {
+                var command = GivenNewCourseWithNeitherSessionNorCoursePrice();
+                var response = WhenPost(command);
+                AssertSingleError(response, "At least a session or course price must be specified.", "session.pricing");
+            }
+
+            [Test]
+            public void GivenNewCourseWithCoursePriceOnly_WhenPost_ThenCreatesCourseWithCoursePriceOnly()
+            {
+                var command = GivenNewCourseWithCoursePriceOnly();
+                var response = WhenPost(command);
+                ThenCreatesCourseWithCoursePriceOnly(response);
+            }
+
+            [Test]
+            public void GivenNewCourseWithSessionPriceOnly_WhenPost_ThenCreatesCourseWithSessionPriceOnly()
+            {
+                var command = GivenNewCourseWithSessionPriceOnly();
+                var response = WhenPost(command);
+                ThenCreatesCourseWithSessionPriceOnly(response);
+            }
+
+            [Test]
+            public void GivenNewCourseWithBothSessionPriceAndCoursePrice_WhenPost_ThenCreatesCourseWithSessionPriceAndCoursePrice()
+            {
+                var command = GivenNewCourseWithBothSessionPriceAndCoursePrice();
+                var response = WhenPost(command);
+                ThenCreatesCourseWithSessionPriceAndCoursePrice(response);
             }
 
             [Test]
@@ -290,9 +237,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = RemueraId },
                     coach = new ApiCoachKey { id = AaronId },
                     timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
+                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
                     pricing = new ApiPricing { sessionPrice = 20 },
                     repetition = new ApiRepetition { sessionCount = 100, repeatFrequency = "d" },
-                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
+                    presentation = new ApiPresentation { colour = "green" }
                 };
             }
 
@@ -304,17 +252,48 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = RemueraId },
                     coach = new ApiCoachKey { id = AaronId },
                     timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "2:00", duration = 60 },
+                    booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
                     pricing = new ApiPricing { sessionPrice = 12 },
                     repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
-                    booking = new ApiSessionBooking { studentCapacity = 51, isOnlineBookable = false },
+                    presentation = new ApiPresentation { colour = "green" }
                 };
+            }
+
+            private ApiSessionSaveCommand GivenNewCourseWithNeitherSessionNorCoursePrice()
+            {
+                var command = GivenNewCourseCommand();
+                command.pricing = new ApiPricing { sessionPrice = null, coursePrice = null };
+
+                return command;
+            }
+
+            private ApiSessionSaveCommand GivenNewCourseWithCoursePriceOnly()
+            {
+                var command = GivenNewCourseCommand();
+                command.pricing = new ApiPricing {sessionPrice = null, coursePrice = 50};
+
+                return command;
+            }
+            
+            private ApiSessionSaveCommand GivenNewCourseWithSessionPriceOnly()
+            {
+                var command = GivenNewCourseCommand();
+                command.pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = null };
+
+                return command;
+            }
+            private ApiSessionSaveCommand GivenNewCourseWithBothSessionPriceAndCoursePrice()
+            {
+                var command = GivenNewCourseCommand();
+                command.pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = 75 };
+
+                return command;
             }
 
             private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice()
             {
                 var command = GivenNewCourseCommand();
-
-                command.pricing = new ApiPricing {sessionPrice = 0};
+                command.pricing = new ApiPricing { sessionPrice = 0 };
 
                 return command;
             }
@@ -322,49 +301,39 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             private ApiSessionSaveCommand GivenNewCourseWith24HourStartTime()
             {
                 var command = GivenNewCourseCommand();
-
                 command.timing.startTime = "21:30";
 
                 return command;
             }
 
 
+            private SessionData ThenCreatesCourseWithCoursePriceOnly(Response response)
+            {
+                var session = AssertSuccessResponse<SessionData>(response);
+                AssertSessionPricing(session.pricing, null, 50);
+
+                return session;
+            }
+            
+            private SessionData ThenCreatesCourseWithSessionPriceOnly(Response response)
+            {
+                var session = AssertSuccessResponse<SessionData>(response);
+                AssertSessionPricing(session.pricing, 12.5m, null);
+
+                return session;
+            }
+            private SessionData ThenCreatesCourseWithSessionPriceAndCoursePrice(Response response)
+            {
+                var session = AssertSuccessResponse<SessionData>(response);
+                AssertSessionPricing(session.pricing, 12.5m, 75);
+
+                return session;
+            }
+
             private SessionData ThenCreatesCourseWithZeroSessionPrice(Response response)
             {
                 var session = AssertSuccessResponse<SessionData>(response);
-
-                Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-                Assert.That(session.location, Is.Not.Null);
-                Assert.That(session.location.id, Is.EqualTo(RemueraId));
-                Assert.That(session.coach, Is.Not.Null);
-                Assert.That(session.coach.id, Is.EqualTo(AaronId));
-                Assert.That(session.service, Is.Not.Null);
-                Assert.That(session.service.id, Is.EqualTo(MiniGreenId));
-
-                var timing = session.timing;
-                Assert.That(timing, Is.Not.Null);
-                Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
-                Assert.That(timing.startTime, Is.EqualTo("2:00"));
-                Assert.That(timing.duration, Is.EqualTo(60));
-
-                var booking = session.booking;
-                Assert.That(booking, Is.Not.Null);
-                Assert.That(booking.studentCapacity, Is.EqualTo(51));
-                Assert.That(booking.isOnlineBookable, Is.False);
-
-                var pricing = session.pricing;
-                Assert.That(pricing, Is.Not.Null);
-                Assert.That(pricing.sessionPrice, Is.EqualTo(0));
-                Assert.That(pricing.coursePrice, Is.EqualTo(60));
-
-                var repetition = session.repetition;
-                Assert.That(repetition, Is.Not.Null);
-                Assert.That(repetition.sessionCount, Is.EqualTo(2));
-                Assert.That(repetition.repeatFrequency, Is.EqualTo("d"));
-
-                var presentation = session.presentation;
-                Assert.That(presentation, Is.Not.Null);
-                Assert.That(presentation.colour, Is.EqualTo("green"));
+                AssertSessionPricing(session.pricing, 0, null);
 
                 return session;
             }
@@ -389,13 +358,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 var booking = session.booking;
                 Assert.That(booking, Is.Not.Null);
-                Assert.That(booking.studentCapacity, Is.EqualTo(51));
+                Assert.That(booking.studentCapacity, Is.EqualTo(10));
                 Assert.That(booking.isOnlineBookable, Is.False);
 
-                var pricing = session.pricing;
-                Assert.That(pricing, Is.Not.Null);
-                Assert.That(pricing.sessionPrice, Is.EqualTo(12));
-                Assert.That(pricing.coursePrice, Is.EqualTo(60));
+                AssertSessionPricing(session.pricing, 12, null);
 
                 var repetition = session.repetition;
                 Assert.That(repetition, Is.Not.Null);
@@ -511,7 +477,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     location = new ApiLocationKey { id = OrakeiId },
                     coach = new ApiCoachKey { id = AaronId },
                     service = new ApiServiceKey { id = MiniRedId },
-                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 }
+                    timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 },
+                    booking = new ApiSessionBooking { studentCapacity = 12, isOnlineBookable = false },
+                    pricing = new ApiPricing { sessionPrice = 10, coursePrice = 80 },
+                    repetition = new ApiRepetition { sessionCount = 10, repeatFrequency = "w" },
+                    presentation = new ApiPresentation { colour = "red" }
                 };
             }
 
@@ -543,21 +513,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                     coach = new ApiCoachKey { id = AaronId },
                     location = new ApiLocationKey { id = RemueraId },
                     service = new ApiServiceKey { id = MiniBlueId },
-                    timing = new ApiSessionTiming
-                    {
-                        startDate = GetDateFormatNumberOfWeeksOut(3),
-                        startTime = "9:45",
-                        duration = 60
-                    },
-                    booking = new ApiSessionBooking
-                    {
-                        studentCapacity = 1,
-                        isOnlineBookable = false
-                    },
-                    pricing = new ApiPricing
-                    {
-                        sessionPrice = 60
-                    }
+                    timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "9:45", duration = 60 },
+                    booking = new ApiSessionBooking { studentCapacity = 1, isOnlineBookable = false },
+                    repetition = new ApiRepetition { sessionCount = 1 },
+                    pricing = new ApiPricing { sessionPrice = 60 },
+                    presentation = new ApiPresentation { colour = "blue "}
                 };
             }
 
@@ -577,11 +537,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             private SessionData ThenSessionWasUpdatedResponse(Response response, string startDate, string startTime)
             {
-                Assert.That(response, Is.Not.Null);
-                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-                Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-                var session = (SessionData)response.Payload;
+                var session = AssertSuccessResponse<SessionData>(response);
 
                 Assert.That(session, Is.Not.Null);
 
@@ -604,10 +560,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 Assert.That(booking.studentCapacity, Is.EqualTo(13));
                 Assert.That(booking.isOnlineBookable, Is.True);
 
-                var pricing = session.pricing;
-                Assert.That(pricing, Is.Not.Null);
-                Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
-                Assert.That(pricing.coursePrice, Is.Null);
+                AssertSessionPricing(session.pricing, 19.95m, null);
 
                 var repetition = session.repetition;
                 Assert.That(repetition, Is.Not.Null);
@@ -721,13 +674,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        private SessionData ThenOverrideServiceDefaults(Response response)
+        private SessionData ThenCreateSession(Response response)
         {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-            var session = (SessionData)response.Payload;
+            var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
             Assert.That(session.parentId, Is.Null);
@@ -744,7 +693,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var timing = session.timing;
             Assert.That(timing, Is.Not.Null);
-            Assert.That(timing.startDate, Is.EqualTo("2014-11-09"));
+            Assert.That(timing.startDate, Is.EqualTo("2018-11-09"));
             Assert.That(timing.startTime, Is.EqualTo("15:30"));
             Assert.That(timing.duration, Is.EqualTo(45));
 
@@ -753,59 +702,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(booking.studentCapacity, Is.EqualTo(10));
             Assert.That(booking.isOnlineBookable, Is.True);
 
-            var pricing = session.pricing;
-            Assert.That(pricing, Is.Not.Null);
-            Assert.That(pricing.sessionPrice, Is.EqualTo(12));
-            Assert.That(pricing.coursePrice, Is.Null);
-
-            var repetition = session.repetition;
-            Assert.That(repetition, Is.Not.Null);
-            Assert.That(repetition.sessionCount, Is.EqualTo(1));
-            Assert.That(repetition.repeatFrequency, Is.Null);
-
-            var presentation = session.presentation;
-            Assert.That(presentation, Is.Not.Null);
-            Assert.That(presentation.colour, Is.EqualTo("red"));
-
-            return session;
-        }
-
-        private SessionData ThenGetServiceDefaults(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-            var session = (SessionData)response.Payload;
-
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session.parentId, Is.Null);
-            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(session.location, Is.Not.Null);
-            Assert.That(session.location.id, Is.EqualTo(OrakeiId));
-            Assert.That(session.location.name, Is.EqualTo("Orakei Tennis Club"));
-            Assert.That(session.coach, Is.Not.Null);
-            Assert.That(session.coach.id, Is.EqualTo(AaronId));
-            Assert.That(session.coach.name, Is.EqualTo("Aaron Smith"));
-            Assert.That(session.service, Is.Not.Null);
-            Assert.That(session.service.id, Is.EqualTo(MiniRedId));
-            Assert.That(session.service.name, Is.EqualTo("Mini Red"));
-
-            var timing = session.timing;
-            Assert.That(timing, Is.Not.Null);
-            Assert.That(timing.startDate, Is.EqualTo("2014-11-11"));
-            Assert.That(timing.startTime, Is.EqualTo("16:45"));
-            Assert.That(timing.duration, Is.EqualTo(75));
-
-            var booking = session.booking;
-            Assert.That(booking, Is.Not.Null);
-            Assert.That(booking.studentCapacity, Is.EqualTo(13));
-            Assert.That(booking.isOnlineBookable, Is.True);
-
-            var pricing = session.pricing;
-            Assert.That(pricing, Is.Not.Null);
-            Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
-            Assert.That(pricing.coursePrice, Is.Null);
+            AssertSessionPricing(session.pricing, 12, null);
 
             var repetition = session.repetition;
             Assert.That(repetition, Is.Not.Null);

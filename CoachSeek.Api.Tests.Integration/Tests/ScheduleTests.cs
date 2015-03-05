@@ -1,6 +1,7 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
@@ -14,6 +15,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private const string MINI_RED_NAME = "Mini Red";
         private const string MINI_BLUE_NAME = "Mini Blue";
         private const string MINI_GREEN_NAME = "Mini Green";
+        private const string MINI_ORANGE_NAME = "Mini Orange";
         private const string FRED_FIRST_NAME = "Fred";
         private const string FLINTSTONE_LAST_NAME = "Flintstone";
 
@@ -24,6 +26,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid MiniRedId { get; set; }
         protected Guid MiniBlueId { get; set; }
         protected Guid MiniGreenId { get; set; }
+        protected Guid MiniOrangeId { get; set; }
         protected Guid AaronOrakei14To15SessionId { get; set; }
         protected Guid AaronOrakei16To17SessionId { get; set; }
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
@@ -134,6 +137,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterMiniRedService();
             RegisterMiniBlueService();
             RegisterMiniGreenService();
+            RegisterMiniOrangeService();
         }
 
         private void RegisterMiniRedService()
@@ -155,6 +159,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateMiniGreenServiceSaveCommand();
             var response = PostService(json);
             MiniGreenId = ((ServiceData)response.Payload).id;
+        }
+
+        private void RegisterMiniOrangeService()
+        {
+            var json = CreateMiniOrangeServiceSaveCommand();
+            var response = PostService(json);
+            MiniOrangeId = ((ServiceData)response.Payload).id;
         }
 
         private Response PostService(string json)
@@ -205,6 +216,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 pricing = new ApiPricing { sessionPrice = 35, coursePrice = 60 },
                 repetition = new ApiServiceRepetition { sessionCount = 2, repeatFrequency = "d" },
                 presentation = new ApiPresentation { colour = "green" }
+            };
+
+            return JsonConvert.SerializeObject(service);
+        }
+
+        private string CreateMiniOrangeServiceSaveCommand()
+        {
+            var service = new ApiServiceSaveCommand
+            {
+                name = MINI_ORANGE_NAME,
+                timing = new ApiServiceTiming { duration = 75 },
+                booking = new ApiServiceBooking { studentCapacity = 6 },
+                pricing = new ApiPricing { coursePrice = 125 },
+                repetition = new ApiServiceRepetition { sessionCount = 5, repeatFrequency = "w" },
+                presentation = new ApiPresentation { colour = "orange" }
             };
 
             return JsonConvert.SerializeObject(service);
@@ -263,7 +289,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "14:00", duration = 60 }
+                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "14:00", duration = 60 },
+                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
+                repetition = new ApiRepetition { sessionCount = 1 },
+                pricing = new ApiPricing { sessionPrice = 19.95m },
+                presentation = new ApiPresentation { colour = "red" }
             };
         }
 
@@ -279,7 +309,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
-                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 }
+                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 },
+                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
+                repetition = new ApiRepetition { sessionCount = 1 },
+                pricing = new ApiPricing { sessionPrice = 19.95m },
+                presentation = new ApiPresentation { colour = "red" }
             };
         }
 
@@ -296,7 +330,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
-                repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" }
+                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
+                repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" },
+                pricing = new ApiPricing { sessionPrice = 19.95m },
+                presentation = new ApiPresentation { colour = "red" }
             };
         }
 
@@ -333,6 +370,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
 
             return JsonConvert.SerializeObject(customer);
+        }
+
+
+        protected void AssertSessionPricing(PricingData pricing, decimal? sessionPrice, decimal? coursePrice)
+        {
+            Assert.That(pricing, Is.Not.Null);
+            Assert.That(pricing.sessionPrice, Is.EqualTo(sessionPrice));
+            Assert.That(pricing.coursePrice, Is.EqualTo(coursePrice));
         }
 
 
