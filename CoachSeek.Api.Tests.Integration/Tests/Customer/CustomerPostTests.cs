@@ -75,6 +75,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         }
 
         [Test]
+        public void GivenEmptyStringForEmailAddress_WhenPost_ThenReturnInvalidEmailAddressErrorResponse()
+        {
+            var command = GivenEmptyStringForEmailAddress();
+            var response = WhenPost(command);
+            ThenReturnInvalidEmailAddressErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenEmailIsNotAnEmailAddress_WhenPost_ThenReturnInvalidEmailAddressErrorResponse()
+        {
+            var command = GivenEmailIsNotAnEmailAddress();
+            var response = WhenPost(command);
+            ThenReturnInvalidEmailAddressErrorResponse(response);
+        }
+
+        [Test]
         public void GivenValidNewCustomer_WhenPost_ThenReturnNewCustomerResponse()
         {
             var command = GivenValidNewCustomer();
@@ -109,17 +125,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return "{}";
         }
 
-        private string GivenValidNewCustomer()
+        private ApiCustomerSaveCommand GivenEmptyStringForEmailAddress()
         {
-            var customer = new ApiCustomerSaveCommand
+            var command = CreateNewCustomerSaveCommand();
+            command.email = string.Empty;
+
+            return command;
+        }
+
+        private ApiCustomerSaveCommand GivenEmailIsNotAnEmailAddress()
+        {
+            var command = CreateNewCustomerSaveCommand();
+            command.email = "abc123";
+
+            return command;
+        }
+
+        private ApiCustomerSaveCommand CreateNewCustomerSaveCommand()
+        {
+            return new ApiCustomerSaveCommand
             {
                 firstName = "Bob",
                 lastName = "Saget",
                 email = "bob@fullhouse.com",
                 phone = "012 3456 7890",
             };
+        }
 
-            return JsonConvert.SerializeObject(customer);
+        private string GivenValidNewCustomer()
+        {
+            return JsonConvert.SerializeObject(CreateNewCustomerSaveCommand());
         }
 
         private string GivenNonExistentCustomerId()
@@ -169,6 +204,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(errors.GetLength(0), Is.EqualTo(2));
             AssertApplicationError(errors[0], "customer.firstName", "The firstName field is required.");
             AssertApplicationError(errors[1], "customer.lastName", "The lastName field is required.");
+        }
+
+        private void ThenReturnInvalidEmailAddressErrorResponse(Response response)
+        {
+            var errors = AssertErrorResponse(response);
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], "customer.email", "The email address is not valid.");
         }
 
         private void ThenReturnNewCustomerResponse(Response response)
