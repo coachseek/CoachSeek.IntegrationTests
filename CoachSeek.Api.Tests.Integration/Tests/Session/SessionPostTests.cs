@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -405,6 +404,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             }
 
             [Test]
+            public void GivenCompletelyChangedNonClashingSession_WhenPost_ThenReturnCompletelyChangedSessionWasUpdatedResponse()
+            {
+                var command = GivenCompletelyChangedNonClashingSession();
+                var response = WhenPost(command);
+                ThenReturnCompletelyChangedSessionWasUpdatedResponse(response);
+            }
+
+            [Test]
             public void GivenSessionClashesWithAnotherSession_WhenPost_ThenReturnSessionClashErrorResponse()
             {
                 var command = GivenSessionClashesWithAnotherSession();
@@ -535,6 +542,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 return command;
             }
 
+            private ApiSessionSaveCommand GivenCompletelyChangedNonClashingSession()
+            {
+                return new ApiSessionSaveCommand
+                {
+                    id = AaronOrakei14To15SessionId,
+                    location = new ApiLocationKey { id = RemueraId },
+                    coach = new ApiCoachKey { id = BobbyId },
+                    service = new ApiServiceKey { id = MiniGreenId },
+                    timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(2), startTime = "22:00", duration = 30 },
+                    booking = new ApiSessionBooking { studentCapacity = 7, isOnlineBookable = false },
+                    repetition = new ApiRepetition { sessionCount = 1 },
+                    pricing = new ApiPricing { sessionPrice = 15m },
+                    presentation = new ApiPresentation { colour = "green" }
+                };
+            }
+
             private SessionData ThenSessionWasUpdatedResponse(Response response, string startDate, string startTime)
             {
                 var session = AssertSuccessResponse<SessionData>(response);
@@ -573,7 +596,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 return session;
             }
+
+            private void ThenReturnCompletelyChangedSessionWasUpdatedResponse(Response response)
+            {
+                var session = AssertSuccessResponse<SessionData>(response);
+
+                Assert.That(session, Is.Not.Null);
+                Assert.That(session.id, Is.EqualTo(AaronOrakei14To15SessionId));
+
+                AssertSessionLocation(session.location, RemueraId, REMUERA_NAME);
+                AssertSessionCoach(session.coach, BobbyId, "Bobby Smith");
+                AssertSessionService(session.service, MiniGreenId, "Mini Green");
+                AssertSessionTiming(session.timing, GetFormattedDateTwoWeeksOut(), "22:00", 30);
+                AssertSessionBooking(session.booking, 7, false);
+                AssertSessionPricing(session.pricing, 15, null);
+                AssertSessionRepetition(session.repetition, 1, null);
+                AssertSessionPresentation(session.presentation, "green");
+            }
         }
+
 
         [TestFixture]
         public class CourseExistingTests : SessionPostTests

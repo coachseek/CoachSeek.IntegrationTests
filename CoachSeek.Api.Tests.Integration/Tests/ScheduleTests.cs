@@ -7,17 +7,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class ScheduleTests : WebIntegrationTest
     {
-        private const string ORAKEI_NAME = "Orakei Tennis Club";
-        private const string REMUERA_NAME = "Remuera Racquets Club";
-        private const string AARON_FIRST_NAME = "Aaron";
-        private const string BOBBY_FIRST_NAME = "Bobby";
-        private const string SMITH_LAST_NAME = "Smith";
-        private const string MINI_RED_NAME = "Mini Red";
-        private const string MINI_BLUE_NAME = "Mini Blue";
-        private const string MINI_GREEN_NAME = "Mini Green";
-        private const string MINI_ORANGE_NAME = "Mini Orange";
-        private const string FRED_FIRST_NAME = "Fred";
-        private const string FLINTSTONE_LAST_NAME = "Flintstone";
+        protected const string ORAKEI_NAME = "Orakei Tennis Club";
+        protected const string REMUERA_NAME = "Remuera Racquets Club";
+        protected const string AARON_FIRST_NAME = "Aaron";
+        protected const string BOBBY_FIRST_NAME = "Bobby";
+        protected const string SMITH_LAST_NAME = "Smith";
+        protected const string MINI_RED_NAME = "Mini Red";
+        protected const string MINI_BLUE_NAME = "Mini Blue";
+        protected const string MINI_GREEN_NAME = "Mini Green";
+        protected const string MINI_ORANGE_NAME = "Mini Orange";
+        protected const string FRED_FIRST_NAME = "Fred";
+        protected const string FLINTSTONE_LAST_NAME = "Flintstone";
 
         protected Guid OrakeiId { get; set; }
         protected Guid RemueraId { get; set; }
@@ -373,11 +373,60 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
+        protected void AssertSessionLocation(LocationKeyData location, Guid locationId, string locationName)
+        {
+            Assert.That(location, Is.Not.Null);
+            Assert.That(location.id, Is.EqualTo(locationId));
+            Assert.That(location.name, Is.EqualTo(locationName));
+        }
+
+        protected void AssertSessionCoach(CoachKeyData coach, Guid coachId, string coachName)
+        {
+            Assert.That(coach, Is.Not.Null);
+            Assert.That(coach.id, Is.EqualTo(coachId));
+            Assert.That(coach.name, Is.EqualTo(coachName));
+        }
+
+        protected void AssertSessionService(ServiceKeyData service, Guid serviceId, string serviceName)
+        {
+            Assert.That(service, Is.Not.Null);
+            Assert.That(service.id, Is.EqualTo(serviceId));
+            Assert.That(service.name, Is.EqualTo(serviceName));
+        }
+
+        protected void AssertSessionTiming(SessionTimingData timing, string startDate, string startTime, int duration)
+        {
+            Assert.That(timing, Is.Not.Null);
+            Assert.That(timing.startDate, Is.EqualTo(startDate));
+            Assert.That(timing.startTime, Is.EqualTo(startTime));
+            Assert.That(timing.duration, Is.EqualTo(duration));
+        }
+
+        protected void AssertSessionBooking(SessionBookingData booking, int? studentCapacity, bool isOnlineBookable)
+        {
+            Assert.That(booking, Is.Not.Null);
+            Assert.That(booking.studentCapacity, Is.EqualTo(studentCapacity));
+            Assert.That(booking.isOnlineBookable, Is.EqualTo(isOnlineBookable));
+        }
+
         protected void AssertSessionPricing(PricingData pricing, decimal? sessionPrice, decimal? coursePrice)
         {
             Assert.That(pricing, Is.Not.Null);
             Assert.That(pricing.sessionPrice, Is.EqualTo(sessionPrice));
             Assert.That(pricing.coursePrice, Is.EqualTo(coursePrice));
+        }
+
+        protected void AssertSessionRepetition(RepetitionData repetition, int sessionCount, string repeatFrequency)
+        {
+            Assert.That(repetition, Is.Not.Null);
+            Assert.That(repetition.sessionCount, Is.EqualTo(sessionCount));
+            Assert.That(repetition.repeatFrequency, Is.EqualTo(repeatFrequency));
+        }
+
+        protected void AssertSessionPresentation(PresentationData presentation, string colour)
+        {
+            Assert.That(presentation, Is.Not.Null);
+            Assert.That(presentation.colour, Is.EqualTo(colour));
         }
 
 
