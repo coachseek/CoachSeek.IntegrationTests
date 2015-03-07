@@ -118,8 +118,12 @@
     <Compile Include="Tests\ScheduleTests.cs" />
     <Compile Include="Tests\Service\ServicePostTests.cs" />
     <Compile Include="Tests\Service\ServiceGetTests.cs" />
-    <Compile Include="Tests\Session\SessionPostTests.cs" />
+    <Compile Include="Tests\Session\CourseCreateNewTests.cs" />
+    <Compile Include="Tests\Session\CourseUpdateExistingTests.cs" />
+    <Compile Include="Tests\Session\SessionCreateNewTests.cs" />
+    <Compile Include="Tests\Session\SessionSaveCommandTests.cs" />
     <Compile Include="Tests\Session\SessionSearchTests.cs" />
+    <Compile Include="Tests\Session\SessionUpdateExistingTests.cs" />
     <Compile Include="Tests\WebIntegrationTest.cs" />
     <Compile Include="UnitTests\PostTests.cs" />
   </ItemGroup>

@@ -15,11 +15,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             SetupFullTestBusiness();
         }
 
-        protected override string RelativePath
-        {
-            get { return "Sessions"; }
-        }
-
         private string BuildSearchUrl(string startDate, string endDate, Guid? coachId, Guid? locationId)
         {
             var baseSearchUrl = string.Format("{0}/{1}?startDate={2}&endDate={3}", BaseUrl, RelativePath, startDate, endDate);

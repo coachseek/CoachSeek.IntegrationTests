@@ -8,7 +8,7 @@ using System.Text;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
-    public class WebIntegrationTest
+    public abstract class WebIntegrationTest
     {
         private string _email;
 
@@ -23,7 +23,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 #endif
         }
 
-        protected virtual string RelativePath { get { return string.Empty; } }
+        protected abstract string RelativePath { get; }
 
         protected string Url
         {

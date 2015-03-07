@@ -33,6 +33,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid[] AaronRemuera9To10For8WeeksSessionIds { get; set; }
         protected Guid FredId { get; set; }
 
+        protected override string RelativePath
+        {
+            get { return "Sessions"; }
+        }
+
+
         protected void SetupFullTestBusiness()
         {
             RegisterTestBusiness();
@@ -271,6 +277,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             for(var i = 0; i < 8; i++)
                 AaronRemuera9To10For8WeeksSessionIds[i] = course.sessions[i].id;
         }
+
+
+
+        protected Response WhenPost(string json)
+        {
+            return Post<SessionData>(json);
+        }
+
+        protected Response WhenPost(ApiSessionSaveCommand command)
+        {
+            var json = JsonConvert.SerializeObject(command);
+
+            return WhenPost(json);
+        }
+
 
         private Response PostSession(string json)
         {

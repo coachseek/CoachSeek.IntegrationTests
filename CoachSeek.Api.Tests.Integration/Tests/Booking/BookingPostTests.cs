@@ -268,107 +268,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         //}
 
 
-        private Response WhenPost(string json)
-        {
-            return Post<BookingData>(json);
-        }
-
         private Response WhenPost(ApiBookingSaveCommand command)
         {
             var json = JsonConvert.SerializeObject(command);
 
             return WhenPost(json);
-        }
-
-
-        private SessionData ThenOverrideServiceDefaults(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-            var session = (SessionData)response.Payload;
-
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(session.location, Is.Not.Null);
-            Assert.That(session.location.id, Is.EqualTo(OrakeiId));
-            Assert.That(session.coach, Is.Not.Null);
-            Assert.That(session.coach.id, Is.EqualTo(AaronId));
-            Assert.That(session.service, Is.Not.Null);
-            Assert.That(session.service.id, Is.EqualTo(MiniRedId));
-
-            var timing = session.timing;
-            Assert.That(timing, Is.Not.Null);
-            Assert.That(timing.startDate, Is.EqualTo("2014-11-09"));
-            Assert.That(timing.startTime, Is.EqualTo("15:30"));
-            Assert.That(timing.duration, Is.EqualTo(45));
-
-            var booking = session.booking;
-            Assert.That(booking, Is.Not.Null);
-            Assert.That(booking.studentCapacity, Is.EqualTo(10));
-            Assert.That(booking.isOnlineBookable, Is.True);
-
-            var pricing = session.pricing;
-            Assert.That(pricing, Is.Not.Null);
-            Assert.That(pricing.sessionPrice, Is.EqualTo(12));
-            Assert.That(pricing.coursePrice, Is.Null);
-
-            var repetition = session.repetition;
-            Assert.That(repetition, Is.Not.Null);
-            Assert.That(repetition.sessionCount, Is.EqualTo(1));
-            Assert.That(repetition.repeatFrequency, Is.Null);
-
-            var presentation = session.presentation;
-            Assert.That(presentation, Is.Not.Null);
-            Assert.That(presentation.colour, Is.EqualTo("red"));
-
-            return session;
-        }
-
-        private SessionData ThenGetServiceDefaults(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-            var session = (SessionData)response.Payload;
-
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(session.location, Is.Not.Null);
-            Assert.That(session.location.id, Is.EqualTo(OrakeiId));
-            Assert.That(session.coach, Is.Not.Null);
-            Assert.That(session.coach.id, Is.EqualTo(AaronId));
-            Assert.That(session.service, Is.Not.Null);
-            Assert.That(session.service.id, Is.EqualTo(MiniRedId));
-
-            var timing = session.timing;
-            Assert.That(timing, Is.Not.Null);
-            Assert.That(timing.startDate, Is.EqualTo("2014-11-11"));
-            Assert.That(timing.startTime, Is.EqualTo("16:45"));
-            Assert.That(timing.duration, Is.EqualTo(75));
-
-            var booking = session.booking;
-            Assert.That(booking, Is.Not.Null);
-            Assert.That(booking.studentCapacity, Is.EqualTo(13));
-            Assert.That(booking.isOnlineBookable, Is.True);
-
-            var pricing = session.pricing;
-            Assert.That(pricing, Is.Not.Null);
-            Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
-            Assert.That(pricing.coursePrice, Is.Null);
-
-            var repetition = session.repetition;
-            Assert.That(repetition, Is.Not.Null);
-            Assert.That(repetition.sessionCount, Is.EqualTo(1));
-            Assert.That(repetition.repeatFrequency, Is.Null);
-
-            var presentation = session.presentation;
-            Assert.That(presentation, Is.Not.Null);
-            Assert.That(presentation.colour, Is.EqualTo("red"));
-
-            return session;
         }
     }
 }
