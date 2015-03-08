@@ -85,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private void ThenReturnsCannotChangeSessionToCourseError(Response response)
         {
-            AssertSingleError(response, "Cannot change from a standalone session to a course.");
+            AssertSingleError(response, "Cannot change a session to a course.");
         }
 
 
