@@ -76,6 +76,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<TResponse>(json, http);
         }
 
+        protected Response Delete<TResponse>(string relativePath, Guid id)
+        {
+            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Delete<TResponse>(http);
+        }
+
+        protected Response Get<TResponse>(string relativePath, Guid id)
+        {
+            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, Username, Password);
+
+            return Get<TResponse>(url);
+        }
+
         protected Response Get<TResponse>(string url)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
@@ -103,6 +121,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             return HandleResponse<TResponse>(request);
         }
+
+        private Response Delete<TResponse>(HttpWebRequest request)
+        {
+            PrepareDeleteRequest(request);
+
+            // NOTE: DO NOT REMOVE THIS CHECK!!
+            // We do not want to delete data to our production database!!
+            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
+
+            return HandleResponse<TResponse>(request);
+        }
+
 
         private static Response HandleResponse<TResponse>(HttpWebRequest request)
         {
@@ -172,6 +202,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             request.Accept = "application/json";
             request.Method = "GET";
+
+            SetTestingHeader(request);
+        }
+
+        private static void PrepareDeleteRequest(HttpWebRequest request)
+        {
+            request.Accept = "application/json";
+            request.Method = "DELETE";
 
             SetTestingHeader(request);
         }

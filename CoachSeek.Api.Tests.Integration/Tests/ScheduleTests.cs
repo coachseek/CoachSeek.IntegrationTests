@@ -32,6 +32,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
         protected Guid[] AaronRemuera9To10For8WeeksSessionIds { get; set; }
         protected Guid FredId { get; set; }
+        protected string FredEmail { get; set; }
+        protected string FredPhone { get; set; }
 
         protected override string RelativePath
         {
@@ -343,7 +345,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronOrakei16To17());
         }
 
-        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10()
         {
             return new ApiSessionSaveCommand
             {
@@ -352,10 +354,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
                 booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
-                repetition = new ApiRepetition { sessionCount = 8, repeatFrequency = "w" },
+                repetition = new ApiRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 19.95m },
                 presentation = new ApiPresentation { colour = "red" }
             };
+        }
+
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        {
+            var command = CreateSessionSaveCommandAaronRemuera9To10();
+            command.repetition = new ApiRepetition {sessionCount = 8, repeatFrequency = "w"};
+
+            return command;
         }
 
         private string CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson()
@@ -370,7 +380,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterFredFlintstoneCustomer()
         {
-            var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME);
+            FredEmail = RandomEmail;
+            FredPhone = RandomString;
+            var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME, FredEmail, FredPhone);
             var response = PostCustomer(json);
             FredId = ((CustomerData)response.Payload).id;
         }
@@ -380,14 +392,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<CustomerData>(json, "Customers");
         }
 
-        private string CreateNewCustomerSaveCommand(string firstName, string lastName)
+        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
         {
             var customer = new ApiCustomerSaveCommand
             {
                 firstName = firstName,
                 lastName = lastName,
-                email = RandomEmail,
-                phone = RandomString
+                email = email,
+                phone = phone
             };
 
             return JsonConvert.SerializeObject(customer);

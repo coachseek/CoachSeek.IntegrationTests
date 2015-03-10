@@ -55,6 +55,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
+        public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself_WhenPost_ThenReturnsSessionTimeUpdatedResponse()
+        {
+            var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself();
+            var response = WhenPost(command);
+            ThenReturnsSessionTimeUpdatedResponse(response);
+        }
+
+        [Test]
+        public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse_WhenPost_ThenReturnsSessionClashingErrorResponse()
+        {
+            var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse();
+            var response = WhenPost(command);
+            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
+            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For8WeeksSessionIds[6].ToString()));
+        }
+
+        [Test]
         public void GivenWantToUpdateSessionInCourseWithSessionCountGreaterThanOne_WhenPost_ThenReturnsInvalidRepetitionErrorResponse()
         {
             var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(5);
@@ -133,6 +150,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             };
         }
 
+        private ApiSessionSaveCommand GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself()
+        {
+            var command = CreateSessionSaveCommandAaronRemuera9To10();
+            command.id = AaronRemuera9To10For8WeeksSessionIds[2];
+            command.timing.startDate = GetDateFormatNumberOfWeeksOut(3);
+            command.timing.startTime = "9:15";
+
+            return command;
+        }
+
+        private ApiSessionSaveCommand GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse()
+        {
+            var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself();
+            command.id = AaronRemuera9To10For8WeeksSessionIds[2];
+            command.timing.startDate = GetDateFormatNumberOfWeeksOut(7);
+            command.timing.startTime = "9:45";
+
+            return command;
+        }
+
         private ApiSessionSaveCommand GivenWantToUpdateSessionInCourseWithInvalidSessionCount(int sessionCount)
         {
             var command = GivenWantToUpdateSessionInCourse();
@@ -158,6 +195,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private void ThenReturnsCannotUpdateCourseError(Response response)
         {
             AssertSingleError(response, "Course updates are not working yet.");
+        }
+
+        private void ThenReturnsSessionTimeUpdatedResponse(Response response)
+        {
+            var session = AssertSuccessResponse<SessionData>(response);
+
+            Assert.That(session, Is.Not.Null);
+            Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
+            Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For8WeeksSessionIds[2]));
+
+            AssertSessionLocation(session.location, RemueraId, "Remuera Racquets Club");
+            AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
+            AssertSessionService(session.service, MiniRedId, "Mini Red");
+
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "9:15", 60);
+            AssertSessionBooking(session.booking, 13, true);
+            AssertSessionRepetition(session.repetition, 1, null);
+            AssertSessionPricing(session.pricing, 19.95m, null);
+            AssertSessionPresentation(session.presentation, "red");
         }
 
         private void ThenReturnsSessionUpdatedResponse(Response response)

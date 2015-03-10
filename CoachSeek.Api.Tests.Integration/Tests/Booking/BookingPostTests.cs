@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -55,21 +54,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public class BookingNewTests : BookingPostTests
         {
             [Test]
-            public void GivenNonExistentSession_WhenPost_ThenReturNonExistentSessionError()
+            public void GivenNonExistentSession_WhenTryBook_ThenReturnNonExistentSessionError()
             {
                 var command = GivenNonExistentSession();
-                var response = WhenPost(command);
+                var response = WhenTryBook(command);
                 ThenReturNonExistentSessionError(response);
             }
+
             [Test]
-            public void GivenNonExistentCustomer_WhenPost_ThenReturNonExistentCustomerError()
+            public void GivenNonExistentCustomer_WhenTryBook_ThenReturnNonExistentCustomerError()
             {
                 var command = GivenNonExistentCustomer();
-                var response = WhenPost(command);
+                var response = WhenTryBook(command);
                 ThenReturNonExistentCustomerError(response);
             }
 
+            [Test]
+            public void GivenNonExistentSessionAndCustomer_WhenTryBook_ThenReturnNonExistentSessionAndCustomerErrors()
+            {
+                var command = GivenNonExistentSessionAndCustomer();
+                var response = WhenTryBook(command);
+                ThenReturnNonExistentSessionAndCustomerErrors(response);
+            }
 
+            [Test]
+            public void GivenACustomerWhoIsNotInASession_WhenTryBook_ThenReturnSuccessfulBookingResponse()
+            {
+                var command = GivenACustomerWhoIsNotInASession();
+                var response = WhenTryBook(command);
+                ThenReturnSuccessfulBookingResponse(response);
+            }
 
 
             private ApiBookingSaveCommand GivenNonExistentSession()
@@ -90,6 +104,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 };
             }
 
+            private ApiBookingSaveCommand GivenNonExistentSessionAndCustomer()
+            {
+                return new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = Guid.NewGuid() },
+                    customer = new ApiCustomerKey { id = Guid.NewGuid() }
+                };
+            }
+
+            private ApiBookingSaveCommand GivenACustomerWhoIsNotInASession()
+            {
+                return new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = AaronOrakei14To15SessionId },
+                    customer = new ApiCustomerKey { id = FredId }
+                };
+            }
+
+
             private void ThenReturNonExistentSessionError(Response response)
             {
                 AssertSingleError(response, "This session does not exist.", "booking.session.id");
@@ -99,180 +132,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             {
                 AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
             }
+
+            private void ThenReturnNonExistentSessionAndCustomerErrors(Response response)
+            {
+                AssertMultipleErrors(response, new[,] { { "This session does not exist.", "booking.session.id" },
+                                                        { "This customer does not exist.", "booking.customer.id" } });
+            }
+
+            private void ThenReturnSuccessfulBookingResponse(Response response)
+            {
+                var booking = AssertSuccessResponse<BookingData>(response);
+
+                Assert.That(booking.id, Is.InstanceOf<Guid>());
+                var bookingId = booking.id;
+                Assert.That(booking.session.id, Is.EqualTo(AaronOrakei14To15SessionId));
+                Assert.That(booking.session.name, Is.EqualTo(string.Format("Mini Red at Orakei Tennis Club with Aaron Smith on {0} at 14:00", 
+                                                                           GetFormattedDateThreeWeeksOut())));
+                Assert.That(booking.customer.id, Is.EqualTo(FredId));
+                Assert.That(booking.customer.name, Is.EqualTo(string.Format("{0} {1}", FRED_FIRST_NAME, FLINTSTONE_LAST_NAME)));
+
+                var sessionResponse = Get<SessionData>("Sessions", booking.session.id);
+                var session = AssertSuccessResponse<SessionData>(sessionResponse);
+
+                Assert.That(session.booking.bookings.Count, Is.EqualTo(1));
+                var bookingOne = session.booking.bookings[0];
+                Assert.That(bookingOne.bookingId, Is.EqualTo(bookingId));
+                var bookingCustomer = bookingOne.customer;
+                Assert.That(bookingCustomer.id, Is.EqualTo(FredId));
+                Assert.That(bookingCustomer.firstName, Is.EqualTo(FRED_FIRST_NAME));
+                Assert.That(bookingCustomer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+                Assert.That(bookingCustomer.email, Is.EqualTo(FredEmail));
+                Assert.That(bookingCustomer.phone, Is.EqualTo(FredPhone.ToUpper()));
+            }
         }
 
 
-
-
-        //[TestFixture]
-        //public class SessionExistingTests : SessionPostTests
-        //{
-        //    [Test]
-        //    public void GivenNonExistentSessionId_WhenPost_ThenReturnInvalidSessionIdError()
-        //    {
-        //        var command = GivenNonExistentSessionId();
-        //        var response = WhenPost(command);
-        //        AssertSingleError(response, "This session does not exist.", "session.id");
-        //    }
-
-        //    [Test]
-        //    public void GivenSessionClashesWithItself_WhenPost_ThenSessionWasUpdatedResponse()
-        //    {
-        //        var command = ChangeTimeForSessionCoachedByAaronTo("14:30");
-        //        var response = WhenPost(command);
-        //        ThenSessionWasUpdatedResponse(response, "14:30");
-        //    }
-
-        //    [Test]
-        //    public void GivenSessionWillNotClash_WhenPost_ThenSessionWasUpdatedResponse()
-        //    {
-        //        var command = ChangeTimeForSessionCoachedByAaronTo("11:30");
-        //        var response = WhenPost(command);
-        //        ThenSessionWasUpdatedResponse(response, "11:30");
-        //    }
-
-        //    [Test]
-        //    public void GivenSessionClashesWithAnotherSession_WhenPost_ThenReturnSessionClashErrorResponse()
-        //    {
-        //        var command = GivenSessionClashesWithAnotherSession();
-        //        var response = WhenPost(command);
-        //        AssertSingleError(response, "This session clashes with one or more sessions.");
-        //    }
-
-        //    [Test]
-        //    public void GivenSessionClashesWithAnotherSessionInCourse_WhenPost_ThenReturnSessionClashErrorResponse()
-        //    {
-        //        var command = GivenSessionClashesWithAnotherSessionInCourse();
-        //        var response = WhenPost(command);
-        //        AssertSingleError(response, "This session clashes with one or more sessions.");
-        //    }
-
-
-
-        //    private ApiSessionSaveCommand GivenNonExistentSessionId()
-        //    {
-        //        var session = GivenExistingSession();
-        //        session.id = Guid.NewGuid();
-
-        //        return session;
-        //    }
-
-        //    private ApiSessionSaveCommand GivenExistingSession()
-        //    {
-        //        return new ApiSessionSaveCommand
-        //        {
-        //            id = AaronOrakei2To3SessionId,
-        //            location = new ApiLocationKey { id = OrakeiId },
-        //            coach = new ApiCoachKey { id = AaronId },
-        //            service = new ApiServiceKey { id = MiniRedId },
-        //            timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 }
-        //        };
-        //    }
-
-        //    private ApiSessionSaveCommand GivenSessionClashesWithAnotherSession()
-        //    {
-        //        // Should clash with AaronOrakei4To5Session
-        //        return new ApiSessionSaveCommand
-        //        {
-        //            id = AaronOrakei2To3SessionId,
-        //            location = new ApiLocationKey { id = OrakeiId },
-        //            coach = new ApiCoachKey { id = AaronId },
-        //            service = new ApiServiceKey { id = MiniRedId },
-        //            timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "15:30", duration = 60 }
-        //        };
-        //    }
-
-        //    private ApiSessionSaveCommand GivenSessionClashesWithAnotherSessionInCourse()
-        //    {
-        //        return new ApiSessionSaveCommand
-        //        {
-        //            id = AaronOrakei2To3SessionId,
-        //            coach = new ApiCoachKey { id = AaronId },
-        //            location = new ApiLocationKey { id = RemueraId },
-        //            service = new ApiServiceKey { id = MiniBlueId },
-        //            timing = new ApiSessionTiming
-        //            {
-        //                startDate = GetDateFormatNumberOfWeeksOut(3),
-        //                startTime = "9:45",
-        //                duration = 60
-        //            },
-        //            booking = new ApiSessionBooking
-        //            {
-        //                studentCapacity = 1,
-        //                isOnlineBookable = false
-        //            },
-        //            pricing = new ApiPricing
-        //            {
-        //                sessionPrice = 60
-        //            }
-        //        };
-        //    }
-
-        //    private ApiSessionSaveCommand ChangeTimeForSessionCoachedByAaronTo(string startTime)
-        //    {
-        //        return new ApiSessionSaveCommand
-        //        {
-        //            id = AaronOrakei2To3SessionId,
-        //            location = new ApiLocationKey { id = OrakeiId },
-        //            coach = new ApiCoachKey { id = AaronId },
-        //            service = new ApiServiceKey { id = MiniRedId },
-        //            timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = startTime, duration = 60 }
-        //        };
-        //    }
-
-        //    private SessionData ThenSessionWasUpdatedResponse(Response response, string startTime)
-        //    {
-        //        Assert.That(response, Is.Not.Null);
-        //        AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-        //        Assert.That(response.Payload, Is.InstanceOf<SessionData>());
-        //        var session = (SessionData)response.Payload;
-
-        //        Assert.That(session, Is.Not.Null);
-
-        //        Assert.That(session.id, Is.EqualTo(AaronOrakei2To3SessionId));
-        //        Assert.That(session.location, Is.Not.Null);
-        //        Assert.That(session.location.id, Is.EqualTo(OrakeiId));
-        //        Assert.That(session.coach, Is.Not.Null);
-        //        Assert.That(session.coach.id, Is.EqualTo(AaronId));
-        //        Assert.That(session.service, Is.Not.Null);
-        //        Assert.That(session.service.id, Is.EqualTo(MiniRedId));
-
-        //        var timing = session.timing;
-        //        Assert.That(timing, Is.Not.Null);
-        //        Assert.That(timing.startDate, Is.EqualTo(GetFormattedDateOneWeekOut()));
-        //        Assert.That(timing.startTime, Is.EqualTo(startTime));
-        //        Assert.That(timing.duration, Is.EqualTo(60));
-
-        //        var booking = session.booking;
-        //        Assert.That(booking, Is.Not.Null);
-        //        Assert.That(booking.studentCapacity, Is.EqualTo(13));
-        //        Assert.That(booking.isOnlineBookable, Is.True);
-
-        //        var pricing = session.pricing;
-        //        Assert.That(pricing, Is.Not.Null);
-        //        Assert.That(pricing.sessionPrice, Is.EqualTo(19.95));
-        //        Assert.That(pricing.coursePrice, Is.Null);
-
-        //        var repetition = session.repetition;
-        //        Assert.That(repetition, Is.Not.Null);
-        //        Assert.That(repetition.sessionCount, Is.EqualTo(1));
-        //        Assert.That(repetition.repeatFrequency, Is.Null);
-
-        //        var presentation = session.presentation;
-        //        Assert.That(presentation, Is.Not.Null);
-        //        Assert.That(presentation.colour, Is.EqualTo("red"));
-
-        //        return session;
-        //    }
-        //}
-
-
-        private Response WhenPost(ApiBookingSaveCommand command)
+        private Response WhenTryBook(ApiBookingSaveCommand command)
         {
             var json = JsonConvert.SerializeObject(command);
 
-            return WhenPost(json);
+            return Post<BookingData>(json);
         }
     }
 }

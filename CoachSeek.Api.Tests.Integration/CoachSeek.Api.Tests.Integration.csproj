@@ -56,6 +56,7 @@
     <Compile Include="Models\ApiSessionKey.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
     <Compile Include="Models\CourseData.cs" />
+    <Compile Include="Models\CustomerBookingData.cs" />
     <Compile Include="Models\SessionKeyData.cs" />
     <Compile Include="Models\CustomerKeyData.cs" />
     <Compile Include="Models\CustomerData.cs" />
@@ -95,8 +96,10 @@
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
+    <Compile Include="Tests\Coach\CoachDeleteTests.cs" />
     <Compile Include="Tests\Customer\CustomerGetTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
+    <Compile Include="Tests\Location\LocationDeleteTests.cs" />
     <Compile Include="Tests\Location\LocationGetTests.cs" />
     <Compile Include="Tests\Location\LocationPostTests.cs" />
     <Compile Include="Models\ApiBusinessAdmin.cs" />
@@ -116,10 +119,12 @@
     <Compile Include="Models\WebError.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ScheduleTests.cs" />
+    <Compile Include="Tests\Service\ServiceDeleteTests.cs" />
     <Compile Include="Tests\Service\ServicePostTests.cs" />
     <Compile Include="Tests\Service\ServiceGetTests.cs" />
     <Compile Include="Tests\Session\CourseCreateNewTests.cs" />
     <Compile Include="Tests\Session\CourseUpdateExistingTests.cs" />
+    <Compile Include="Tests\Session\SessionGetTests.cs" />
     <Compile Include="Tests\Session\SessionCreateNewTests.cs" />
     <Compile Include="Tests\Session\SessionSaveCommandTests.cs" />
     <Compile Include="Tests\Session\SessionSearchTests.cs" />
