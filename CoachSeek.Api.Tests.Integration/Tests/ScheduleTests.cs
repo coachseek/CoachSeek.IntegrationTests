@@ -18,6 +18,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected const string MINI_ORANGE_NAME = "Mini Orange";
         protected const string FRED_FIRST_NAME = "Fred";
         protected const string FLINTSTONE_LAST_NAME = "Flintstone";
+        protected const string BARNEY_FIRST_NAME = "Barney";
+        protected const string RUBBLE_LAST_NAME = "Rubble";
 
         protected Guid OrakeiId { get; set; }
         protected Guid RemueraId { get; set; }
@@ -32,8 +34,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
         protected Guid[] AaronRemuera9To10For8WeeksSessionIds { get; set; }
         protected Guid FredId { get; set; }
+        protected Guid BarneyId { get; set; }
         protected string FredEmail { get; set; }
         protected string FredPhone { get; set; }
+        protected Guid FredOnAaronOrakei14To15SessionId { get; set; }
 
         protected override string RelativePath
         {
@@ -50,6 +54,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestSessions();
             RegisterTestCourses();
             RegisterTestCustomers();
+            BookCustomersOntoSessions();
         }
 
         private void RegisterTestLocations()
@@ -376,6 +381,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void RegisterTestCustomers()
         {
             RegisterFredFlintstoneCustomer();
+            RegisterBarneyRubbleCustomer();
         }
 
         private void RegisterFredFlintstoneCustomer()
@@ -387,12 +393,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             FredId = ((CustomerData)response.Payload).id;
         }
 
+        private void RegisterBarneyRubbleCustomer()
+        {
+            var json = CreateNewCustomerSaveCommand(BARNEY_FIRST_NAME, RUBBLE_LAST_NAME);
+            var response = PostCustomer(json);
+            BarneyId = ((CustomerData)response.Payload).id;
+        }
+
         private Response PostCustomer(string json)
         {
             return Post<CustomerData>(json, "Customers");
         }
 
-        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
+        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email = null, string phone = null)
         {
             var customer = new ApiCustomerSaveCommand
             {
@@ -403,6 +416,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
 
             return JsonConvert.SerializeObject(customer);
+        }
+
+        private void BookCustomersOntoSessions()
+        {
+            BookFredFlintstoneOntoAaronOrakei14To15();
+        }
+
+        private void BookFredFlintstoneOntoAaronOrakei14To15()
+        {
+            var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, FredId);
+            var response = PostBooking(json);
+            FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
+        }
+
+        private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)
+        {
+            var booking = new ApiBookingSaveCommand
+            {
+                session = new ApiSessionKey { id = sessionId },
+                customer = new ApiCustomerKey { id = customerId }
+            };
+
+            return JsonConvert.SerializeObject(booking);
+        }
+
+        private Response PostBooking(string json)
+        {
+            return Post<BookingData>(json, "Bookings");
         }
 
 

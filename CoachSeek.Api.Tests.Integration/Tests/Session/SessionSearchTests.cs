@@ -176,6 +176,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(fifthSession.coach.id, Is.EqualTo(AaronId));
             Assert.That(fifthSession.coach.name, Is.EqualTo("Aaron Smith"));
             Assert.That(fifthSession.timing.startTime, Is.EqualTo("14:00"));
+            Assert.That(fifthSession.booking.bookings.Count, Is.EqualTo(1));
+            var booking = fifthSession.booking.bookings[0];
+            Assert.That(booking.bookingId, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
+            var bookingCustomer = booking.customer;
+            Assert.That(bookingCustomer.id, Is.EqualTo(FredId));
+            Assert.That(bookingCustomer.firstName, Is.EqualTo(FRED_FIRST_NAME));
+            Assert.That(bookingCustomer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+            Assert.That(bookingCustomer.email, Is.EqualTo(FredEmail));
+            Assert.That(bookingCustomer.phone, Is.EqualTo(FredPhone.ToUpper()));
         }
 
         private void ThenReturnInvalidLocationIdErrorResponse(Response response)
