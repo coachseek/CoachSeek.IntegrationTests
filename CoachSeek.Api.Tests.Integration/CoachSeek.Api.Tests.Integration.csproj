@@ -93,6 +93,7 @@
     <Compile Include="Models\UserData.cs" />
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Tests\Booking\BookingPostTests.cs" />
+    <Compile Include="Tests\Booking\BookingDeleteTests.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />

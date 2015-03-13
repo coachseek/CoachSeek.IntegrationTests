@@ -23,6 +23,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(error.data, Is.StringContaining(AaronOrakei14To15SessionId.ToString()));
         }
 
+        [Test]
+        public void GivenNewCourseClashesWithAnotherCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+        {
+            var command = GivenNewCourseClashesWithAnotherCourse();
+            var response = WhenPost(command);
+            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
+            Assert.That(error.data, Is.StringContaining(BobbyRemueraHolidayCampFor2DaysSessionIds[0].ToString()));
+        }
+
         // TODO: Course clashes with course session.
 
         [Test]
@@ -96,6 +105,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             command.pricing = new ApiPricing { sessionPrice = 15 };
 
             return command;
+        }
+
+        private ApiSessionSaveCommand GivenNewCourseClashesWithAnotherCourse()
+        {
+            return CreateSessionSaveCommandBobbyRemueraHolidayCampFor2Days();
         }
 
         private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()

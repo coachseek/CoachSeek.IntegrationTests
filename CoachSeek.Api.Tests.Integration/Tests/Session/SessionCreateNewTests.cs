@@ -24,7 +24,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
-        public void GivenNewSessionClashesWithExistingCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void  GivenNewSessionClashesWithExistingCourse_WhenPost_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenNewSessionClashesWithExistingCourse();
             var response = WhenPost(command);
@@ -71,7 +71,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 presentation = new ApiPresentation { colour = "blue" }
             };
         }
-
+         
         private ApiSessionSaveCommand GivenNewValidSession()
         {
             return new ApiSessionSaveCommand
