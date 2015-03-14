@@ -78,7 +78,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             }
 
             [Test]
-            public void GivenACustomerWhoIsNotInASession_WhenTryBook_ThenReturnSuccessfulBookingResponse()
+            public void  GivenACustomerWhoIsNotInASession_WhenTryBook_ThenReturnSuccessfulBookingResponse()
             {
                 var command = GivenACustomerWhoIsNotInASession();
                 var response = WhenTryBook(command);

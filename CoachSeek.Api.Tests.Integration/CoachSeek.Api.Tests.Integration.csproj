@@ -123,6 +123,7 @@
     <Compile Include="Tests\Service\ServiceDeleteTests.cs" />
     <Compile Include="Tests\Service\ServicePostTests.cs" />
     <Compile Include="Tests\Service\ServiceGetTests.cs" />
+    <Compile Include="Tests\Session\SessionDeleteTests.cs" />
     <Compile Include="Tests\Session\CourseCreateNewTests.cs" />
     <Compile Include="Tests\Session\CourseUpdateExistingTests.cs" />
     <Compile Include="Tests\Session\SessionGetTests.cs" />
