@@ -16,7 +16,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenNonExistentSessionId_WhenTryDelete_ThenReturnNotFoundErrorResponse()
+        public void GivenNonExistentSessionId_WhenTryDelete_ThenReturnNotFound()
         {
             var id = GivenNonExistentSessionId();
             var response = WhenTryDelete(id);
@@ -24,35 +24,62 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
-        public void GivenExistingStandaloneSessionWithoutBookings_WhenTryDelete_ThenStandaloneSessionIsDeleted()
+        public void GivenStandaloneSessionWithoutBookings_WhenTryDelete_ThenStandaloneSessionIsDeleted()
         {
-            var id = GivenExistingStandaloneSessionWithoutBookings();
+            var id = GivenStandaloneSessionWithoutBookings();
             var response = WhenTryDelete(id);
             ThenStandaloneSessionIsDeleted(response);
         }
 
         [Test]
-        public void GivenExistingCourse_WhenTryDelete_ThenCourseIsDeleted()
+        public void GivenStandaloneSessionWithBookings_WhenTryDelete_ThenReturnCannotDeleteSessionError()
         {
-            var id = GivenExistingCourse();
+            var id = GivenStandaloneSessionWithBookings();
+            var response = WhenTryDelete(id);
+            AssertSingleError(response, "Cannot delete session as it has one or more bookings.");
+        }
+
+        [Test]
+        public void GivenCourseWithoutBookings_WhenTryDelete_ThenCourseIsDeleted()
+        {
+            var id = GivenCourseWithoutBookings();
             var response = WhenTryDelete(id);
             ThenCourseIsDeleted(response);
         }
 
+        [Test]
+        public void GivenSessionInCourseWithoutBookings_WhenTryDelete_ThenSessionInCourseIsDeleted()
+        {
+            var id = GivenSessionInCourseWithoutBookings();
+            var response = WhenTryDelete(id);
+            ThenSessionInCourseIsDeleted(response);
+        }
+
+        // TODO: Try and delete a session with bookings.
 
         private Guid GivenNonExistentSessionId()
         {
             return Guid.NewGuid();
         }
 
-        private Guid GivenExistingStandaloneSessionWithoutBookings()
+        private Guid GivenStandaloneSessionWithoutBookings()
         {
             return AaronOrakei16To17SessionId;
         }
 
-        private Guid GivenExistingCourse()
+        private Guid GivenStandaloneSessionWithBookings()
+        {
+            return AaronOrakei14To15SessionId;
+        }
+
+        private Guid GivenCourseWithoutBookings()
         {
             return BobbyRemueraHolidayCampFor2DaysCourseId;
+        }
+
+        private Guid GivenSessionInCourseWithoutBookings()
+        {
+            return BobbyRemueraHolidayCampFor2DaysSessionIds[1];
         }
 
 
@@ -88,6 +115,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertNotFound(getResponseSession2);
 
             // Other sessions are still there.
+            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
+            AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
+            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);
+            AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
+        }
+
+        private void ThenSessionInCourseIsDeleted(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[1]);
+            AssertNotFound(getResponseSession2);
+
+            // Other sessions/courses are still there.
+            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysCourseId);
+            AssertStatusCode(getResponseCourse.StatusCode, HttpStatusCode.OK);
+            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[0]);
+            AssertStatusCode(getResponseSession1.StatusCode, HttpStatusCode.OK);
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);

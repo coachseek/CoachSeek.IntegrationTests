@@ -41,6 +41,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string FredEmail { get; set; }
         protected string FredPhone { get; set; }
         protected Guid FredOnAaronOrakei14To15SessionId { get; set; }
+        protected Guid BarneyOnAaronOrakei14To15SessionId { get; set; }
 
         protected override string RelativePath
         {
@@ -478,6 +479,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void BookCustomersOntoSessions()
         {
             BookFredFlintstoneOntoAaronOrakei14To15();
+            BookBarneyRubbleOntoAaronOrakei14To15();
         }
 
         private void BookFredFlintstoneOntoAaronOrakei14To15()
@@ -485,6 +487,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, FredId);
             var response = PostBooking(json);
             FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
+        }
+
+        private void BookBarneyRubbleOntoAaronOrakei14To15()
+        {
+            var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, BarneyId);
+            var response = PostBooking(json);
+            BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
         }
 
         private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)
@@ -533,11 +542,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(timing.duration, Is.EqualTo(duration));
         }
 
-        protected void AssertSessionBooking(SessionBookingData booking, int? studentCapacity, bool isOnlineBookable)
+        protected void AssertSessionBooking(SessionBookingData booking, int? studentCapacity, bool isOnlineBookable, int bookingCount = 0)
         {
             Assert.That(booking, Is.Not.Null);
             Assert.That(booking.studentCapacity, Is.EqualTo(studentCapacity));
             Assert.That(booking.isOnlineBookable, Is.EqualTo(isOnlineBookable));
+            Assert.That(booking.bookings, Is.Not.Null);
+            Assert.That(booking.bookings.Count, Is.EqualTo(bookingCount));
         }
 
         protected void AssertSessionPricing(PricingData pricing, decimal? sessionPrice, decimal? coursePrice)

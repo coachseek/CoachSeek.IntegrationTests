@@ -176,15 +176,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(fifthSession.coach.id, Is.EqualTo(AaronId));
             Assert.That(fifthSession.coach.name, Is.EqualTo("Aaron Smith"));
             Assert.That(fifthSession.timing.startTime, Is.EqualTo("14:00"));
-            Assert.That(fifthSession.booking.bookings.Count, Is.EqualTo(1));
-            var booking = fifthSession.booking.bookings[0];
-            Assert.That(booking.bookingId, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
-            var bookingCustomer = booking.customer;
-            Assert.That(bookingCustomer.id, Is.EqualTo(FredId));
-            Assert.That(bookingCustomer.firstName, Is.EqualTo(FRED_FIRST_NAME));
-            Assert.That(bookingCustomer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(bookingCustomer.email, Is.EqualTo(FredEmail));
-            Assert.That(bookingCustomer.phone, Is.EqualTo(FredPhone.ToUpper()));
+            Assert.That(fifthSession.booking.bookings.Count, Is.EqualTo(2));
+            var bookingOne = fifthSession.booking.bookings[0];
+            Assert.That(bookingOne.bookingId, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
+            Assert.That(bookingOne.customer.id, Is.EqualTo(FredId));
+            Assert.That(bookingOne.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
+            Assert.That(bookingOne.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+            Assert.That(bookingOne.customer.email, Is.EqualTo(FredEmail));
+            Assert.That(bookingOne.customer.phone, Is.EqualTo(FredPhone.ToUpper()));
+            var bookingTwo = fifthSession.booking.bookings[1];
+            Assert.That(bookingTwo.bookingId, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
+            Assert.That(bookingTwo.customer.id, Is.EqualTo(BarneyId));
+            Assert.That(bookingTwo.customer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
+            Assert.That(bookingTwo.customer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
+            Assert.That(bookingTwo.customer.email, Is.Null);
+            Assert.That(bookingTwo.customer.phone, Is.Null);
         }
 
         private void ThenReturnInvalidLocationIdErrorResponse(Response response)
