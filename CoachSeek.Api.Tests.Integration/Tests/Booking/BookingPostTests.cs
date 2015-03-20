@@ -22,18 +22,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public class BookingCommandTests : BookingPostTests
         {
             [Test]
-            public void GivenNoBookingSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
+            public void GivenNoBookingSaveCommand_WhenTryBook_ThenReturnNoDataErrorResponse()
             {
                 var command = GivenNoBookingSaveCommand();
-                var response = WhenPost(command);
+                var response = WhenTryBook(command);
                 AssertSingleError(response, "Please post us some data!");
             }
 
             [Test]
-            public void GivenEmptyBookingSaveCommand_WhenPost_ThenReturnMultipleErrors()
+            public void GivenEmptyBookingSaveCommand_WhenTryBook_ThenReturnMultipleErrors()
             {
                 var command = GivenEmptyBookingSaveCommand();
-                var response = WhenPost(command);
+                var response = WhenTryBook(command);
                 AssertMultipleErrors(response, new[,] { { "The session field is required.", "booking.session" },
                                                         { "The customer field is required.", "booking.customer" } });
             }
@@ -156,7 +156,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
                 Assert.That(session.booking.bookings.Count, Is.EqualTo(1));
                 var bookingOne = session.booking.bookings[0];
-                Assert.That(bookingOne.bookingId, Is.EqualTo(bookingId));
+                Assert.That(bookingOne.id, Is.EqualTo(bookingId));
                 var bookingCustomer = bookingOne.customer;
                 Assert.That(bookingCustomer.id, Is.EqualTo(BarneyId));
                 Assert.That(bookingCustomer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
@@ -171,6 +171,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             var json = JsonConvert.SerializeObject(command);
 
+            return WhenTryBook(json);
+        }
+
+        private Response WhenTryBook(string json)
+        {
             return Post<BookingData>(json);
         }
     }

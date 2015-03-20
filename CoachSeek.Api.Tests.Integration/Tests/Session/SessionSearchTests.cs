@@ -178,14 +178,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(fifthSession.timing.startTime, Is.EqualTo("14:00"));
             Assert.That(fifthSession.booking.bookings.Count, Is.EqualTo(2));
             var bookingOne = fifthSession.booking.bookings[0];
-            Assert.That(bookingOne.bookingId, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
+            Assert.That(bookingOne.id, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
             Assert.That(bookingOne.customer.id, Is.EqualTo(FredId));
             Assert.That(bookingOne.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
             Assert.That(bookingOne.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
             Assert.That(bookingOne.customer.email, Is.EqualTo(FredEmail));
             Assert.That(bookingOne.customer.phone, Is.EqualTo(FredPhone.ToUpper()));
             var bookingTwo = fifthSession.booking.bookings[1];
-            Assert.That(bookingTwo.bookingId, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
+            Assert.That(bookingTwo.id, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
             Assert.That(bookingTwo.customer.id, Is.EqualTo(BarneyId));
             Assert.That(bookingTwo.customer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
             Assert.That(bookingTwo.customer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));

@@ -113,7 +113,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var bookings = session.booking.bookings;
             var bookingOne = bookings[0];
-            Assert.That(bookingOne.bookingId, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
+            Assert.That(bookingOne.id, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
             Assert.That(bookingOne.customer.id, Is.EqualTo(FredId));
             Assert.That(bookingOne.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
             Assert.That(bookingOne.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
@@ -121,7 +121,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(bookingOne.customer.phone, Is.EqualTo(FredPhone.ToUpper()));
 
             var bookingTwo = bookings[1];
-            Assert.That(bookingTwo.bookingId, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
+            Assert.That(bookingTwo.id, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
             Assert.That(bookingTwo.customer.id, Is.EqualTo(BarneyId));
             Assert.That(bookingTwo.customer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
             Assert.That(bookingTwo.customer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));

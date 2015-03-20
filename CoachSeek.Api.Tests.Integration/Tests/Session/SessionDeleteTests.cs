@@ -74,12 +74,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Guid GivenCourseWithoutBookings()
         {
-            return BobbyRemueraHolidayCampFor2DaysCourseId;
+            return BobbyRemueraHolidayCampFor3DaysCourseId;
         }
 
         private Guid GivenSessionInCourseWithoutBookings()
         {
-            return BobbyRemueraHolidayCampFor2DaysSessionIds[1];
+            return BobbyRemueraHolidayCampFor3DaysSessionIds[1];
         }
 
 
@@ -107,12 +107,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysCourseId);
+            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
             AssertNotFound(getResponseCourse);
-            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[0]);
+            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
             AssertNotFound(getResponseSession1);
-            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[1]);
+            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
             AssertNotFound(getResponseSession2);
+            var getResponseSession3 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
+            AssertNotFound(getResponseSession3);
 
             // Other sessions are still there.
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
@@ -125,14 +127,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[1]);
+            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
             AssertNotFound(getResponseSession2);
 
             // Other sessions/courses are still there.
-            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysCourseId);
+            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
             AssertStatusCode(getResponseCourse.StatusCode, HttpStatusCode.OK);
-            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor2DaysSessionIds[0]);
+            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
             AssertStatusCode(getResponseSession1.StatusCode, HttpStatusCode.OK);
+            var getResponseSession3 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
+            AssertStatusCode(getResponseSession3.StatusCode, HttpStatusCode.OK);
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);

@@ -15,36 +15,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenNewSessionClashesWithStandaloneSession_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenNewSessionClashesWithStandaloneSession_WhenTryCreateSession_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenNewSessionClashesWithStandaloneSession();
-            var response = WhenPost(command);
+            var response = WhenTryCreateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", AaronOrakei16To17SessionId)));
         }
 
         [Test]
-        public void  GivenNewSessionClashesWithExistingCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenNewSessionClashesWithExistingCourse_WhenTryCreateSession_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenNewSessionClashesWithExistingCourse();
-            var response = WhenPost(command);
+            var response = WhenTryCreateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For8WeeksSessionIds[1].ToString()));
         }
 
         [Test]
-        public void GivenNewSessionWithZeroSessionCount_WhenPost_ThenReturnInvalidSessionCountErrorResponse()
+        public void GivenNewSessionWithZeroSessionCount_WhenTryCreateSession_ThenReturnInvalidSessionCountErrorResponse()
         {
             var command = GivenNewSessionWithZeroSessionCount();
-            var response = WhenPost(command);
+            var response = WhenTryCreateSession(command);
             AssertSingleError(response, "The sessionCount field is not valid.", "session.repetition.sessionCount");
         }
 
         [Test]
-        public void GivenNewValidSession_WhenPost_ThenCreateSession()
+        public void GivenNewValidSession_WhenTryCreateSession_ThenCreateSession()
         {
             var command = GivenNewValidSession();
-            var response = WhenPost(command);
+            var response = WhenTryCreateSession(command);
             ThenCreateNewSession(response);
         }
 

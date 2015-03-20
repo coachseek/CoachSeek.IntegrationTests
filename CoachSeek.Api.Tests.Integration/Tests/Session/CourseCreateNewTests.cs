@@ -15,78 +15,78 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenNewCourseClashesWithStandaloneSession_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenNewCourseClashesWithStandaloneSession_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenNewCourseClashesWithStandaloneSession();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronOrakei14To15SessionId.ToString()));
         }
 
         [Test]
-        public void GivenNewCourseClashesWithAnotherCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenNewCourseClashesWithAnotherCourse_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenNewCourseClashesWithAnotherCourse();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(BobbyRemueraHolidayCampFor2DaysSessionIds[0].ToString()));
+            Assert.That(error.data, Is.StringContaining(BobbyRemueraHolidayCampFor3DaysSessionIds[0].ToString()));
         }
 
         // TODO: Course clashes with course session.
 
         [Test]
-        public void GivenNewCourseWithTooManySessions_WhenPost_ThenReturnTooManySessionInCourseErrorResponse()
+        public void GivenNewCourseWithTooManySessions_WhenTryCreateCourse_ThenReturnTooManySessionInCourseErrorResponse()
         {
             var command = GivenNewCourseWithTooManySessions();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
         }
 
         [Test]
-        public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenPost_ThenReturnWithNoPriceErrorResponse()
+        public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenTryCreateCourse_ThenReturnWithNoPriceErrorResponse()
         {
             var command = GivenNewCourseWithNeitherSessionNorCoursePrice();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             AssertSingleError(response, "At least a session or course price must be specified.", "session.pricing");
         }
 
         [Test]
-        public void GivenNewCourseWithCoursePriceOnly_WhenPost_ThenCreatesCourseWithCoursePriceOnly()
+        public void GivenNewCourseWithCoursePriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithCoursePriceOnly()
         {
             var command = GivenNewCourseWithCoursePriceOnly();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             ThenCreatesCourseWithCoursePriceOnly(response);
         }
 
         [Test]
-        public void GivenNewCourseWithSessionPriceOnly_WhenPost_ThenCreatesCourseWithSessionPriceOnly()
+        public void GivenNewCourseWithSessionPriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceOnly()
         {
             var command = GivenNewCourseWithSessionPriceOnly();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             ThenCreatesCourseWithSessionPriceOnly(response);
         }
 
         [Test]
-        public void GivenNewCourseWithBothSessionPriceAndCoursePrice_WhenPost_ThenCreatesCourseWithSessionPriceAndCoursePrice()
+        public void GivenNewCourseWithBothSessionPriceAndCoursePrice_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceAndCoursePrice()
         {
             var command = GivenNewCourseWithBothSessionPriceAndCoursePrice();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             ThenCreatesCourseWithSessionPriceAndCoursePrice(response);
         }
 
         [Test]
-        public void GivenNewCourseWithZeroSessionPrice_WhenPost_ThenCreatesCourseWithZeroSessionPrice()
+        public void GivenNewCourseWithZeroSessionPrice_WhenTryCreateCourse_ThenCreatesCourseWithZeroSessionPrice()
         {
             var command = GivenNewCourseWithZeroSessionPrice();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             ThenCreatesCourseWithZeroSessionPrice(response);
         }
 
         [Test]
-        public void GivenNewCourseWith24HourStartTime_WhenPost_ThenCreatesCourseWith24HrStartTime()
+        public void GivenNewCourseWith24HourStartTime_WhenTryCreateCourse_ThenCreatesCourseWith24HrStartTime()
         {
             var command = GivenNewCourseWith24HourStartTime();
-            var response = WhenPost(command);
+            var response = WhenTryCreateCourse(command);
             ThenCreatesCourseWith24HrStartTime(response);
         }
 
@@ -109,7 +109,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenNewCourseClashesWithAnotherCourse()
         {
-            return CreateSessionSaveCommandBobbyRemueraHolidayCampFor2Days();
+            return CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
         }
 
         private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()

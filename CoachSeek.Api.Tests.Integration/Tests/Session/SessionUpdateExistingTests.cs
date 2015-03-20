@@ -15,60 +15,60 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenNonExistentSessionId_WhenPost_ThenReturnNotFoundResponse()
+        public void GivenNonExistentSessionId_WhenTryUpdateSession_ThenReturnNotFoundResponse()
         {
             var command = GivenNonExistentSessionId();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             AssertNotFound(response);
         }
 
         [Test]
-        public void GivenUpdatedSessionClashesWithItself_WhenPost_ThenSessionWasUpdatedResponse()
+        public void GivenUpdatedSessionClashesWithItself_WhenTryUpdateSession_ThenSessionWasUpdatedResponse()
         {
             var command = GivenUpdatedSessionClashesWithItself();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             ThenSessionWasUpdatedResponse(response, GetDateFormatNumberOfWeeksOut(3), "14:30");
         }
 
         [Test]
-        public void GivenSessionWillNotClash_WhenPost_ThenSessionWasUpdatedResponse()
+        public void GivenSessionWillNotClash_WhenTryUpdateSession_ThenSessionWasUpdatedResponse()
         {
             var command = ChangeTimeForSessionCoachedByAaronTo("11:30");
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             ThenSessionWasUpdatedResponse(response, GetDateFormatNumberOfWeeksOut(3), "11:30");
         }
 
         [Test]
-        public void GivenCompletelyChangedNonClashingSession_WhenPost_ThenReturnCompletelyChangedSessionWasUpdatedResponse()
+        public void GivenCompletelyChangedNonClashingSession_WhenTryUpdateSession_ThenReturnCompletelyChangedSessionWasUpdatedResponse()
         {
             var command = GivenCompletelyChangedNonClashingSession();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             ThenReturnCompletelyChangedSessionWasUpdatedResponse(response);
         }
 
         [Test]
-        public void GivenSessionClashesWithAnotherSession_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenSessionClashesWithAnotherSession_WhenTryUpdateSession_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenSessionClashesWithAnotherSession();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronOrakei14To15SessionId.ToString()));
         }
 
         [Test]
-        public void GivenSessionClashesWithAnotherSessionInCourse_WhenPost_ThenReturnSessionClashErrorResponse()
+        public void GivenSessionClashesWithAnotherSessionInCourse_WhenTryUpdateSession_ThenReturnSessionClashErrorResponse()
         {
             var command = GivenSessionClashesWithAnotherSessionInCourse();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For8WeeksSessionIds[2].ToString()));
         }
 
         [Test]
-        public void GivenWantTurnSessionIntoCourse_WhenPost_ThenReturnsCannotChangeSessionToCourseError()
+        public void GivenWantTurnSessionIntoCourse_WhenTryUpdateSession_ThenReturnsCannotChangeSessionToCourseError()
         {
             var command = GivenWantTurnSessionIntoCourse();
-            var response = WhenPost(command);
+            var response = WhenTryUpdateSession(command);
             ThenReturnsCannotChangeSessionToCourseError(response);
         }
 
