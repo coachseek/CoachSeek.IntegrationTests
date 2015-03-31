@@ -22,18 +22,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public class BookingCommandTests : BookingPostTests
         {
             [Test]
-            public void GivenNoBookingSaveCommand_WhenTryBook_ThenReturnNoDataErrorResponse()
+            public void GivenNoBookingSaveCommand_WhenTryBookSession_ThenReturnNoDataErrorResponse()
             {
                 var command = GivenNoBookingSaveCommand();
-                var response = WhenTryBook(command);
+                var response = WhenTryBookSession(command);
                 AssertSingleError(response, "Please post us some data!");
             }
 
             [Test]
-            public void GivenEmptyBookingSaveCommand_WhenTryBook_ThenReturnMultipleErrors()
+            public void GivenEmptyBookingSaveCommand_WhenTryBookSession_ThenReturnMultipleErrors()
             {
                 var command = GivenEmptyBookingSaveCommand();
-                var response = WhenTryBook(command);
+                var response = WhenTryBookSession(command);
                 AssertMultipleErrors(response, new[,] { { "The session field is required.", "booking.session" },
                                                         { "The customer field is required.", "booking.customer" } });
             }
@@ -51,37 +51,37 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
 
         [TestFixture]
-        public class BookingNewTests : BookingPostTests
+        public class BookingSessionTests : BookingPostTests
         {
             [Test]
-            public void GivenNonExistentSession_WhenTryBook_ThenReturnNonExistentSessionError()
+            public void GivenNonExistentSession_WhenTryBookSession_ThenReturnNonExistentSessionError()
             {
                 var command = GivenNonExistentSession();
-                var response = WhenTryBook(command);
+                var response = WhenTryBookSession(command);
                 ThenReturNonExistentSessionError(response);
             }
 
             [Test]
-            public void GivenNonExistentCustomer_WhenTryBook_ThenReturnNonExistentCustomerError()
+            public void GivenNonExistentCustomer_WhenTryBookSession_ThenReturnNonExistentCustomerError()
             {
                 var command = GivenNonExistentCustomer();
-                var response = WhenTryBook(command);
+                var response = WhenTryBookSession(command);
                 ThenReturNonExistentCustomerError(response);
             }
 
             [Test]
-            public void GivenNonExistentSessionAndCustomer_WhenTryBook_ThenReturnNonExistentSessionAndCustomerErrors()
+            public void GivenNonExistentSessionAndCustomer_WhenTryBookSession_ThenReturnNonExistentSessionErrorOnly()
             {
                 var command = GivenNonExistentSessionAndCustomer();
-                var response = WhenTryBook(command);
-                ThenReturnNonExistentSessionAndCustomerErrors(response);
+                var response = WhenTryBookSession(command);
+                ThenReturNonExistentSessionError(response);
             }
 
             [Test]
-            public void  GivenACustomerWhoIsNotInASession_WhenTryBook_ThenReturnSuccessfulBookingResponse()
+            public void GivenACustomerWhoIsNotBookedOntoASession_WhenTryBookSession_ThenReturnSuccessfulBookingResponse()
             {
-                var command = GivenACustomerWhoIsNotInASession();
-                var response = WhenTryBook(command);
+                var command = GivenACustomerWhoIsNotBookedOntoASession();
+                var response = WhenTryBookSession(command);
                 ThenReturnSuccessfulBookingResponse(response);
             }
 
@@ -113,7 +113,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 };
             }
 
-            private ApiBookingSaveCommand GivenACustomerWhoIsNotInASession()
+            private ApiBookingSaveCommand GivenACustomerWhoIsNotBookedOntoASession()
             {
                 return new ApiBookingSaveCommand
                 {
@@ -141,10 +141,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             private void ThenReturnSuccessfulBookingResponse(Response response)
             {
-                var booking = AssertSuccessResponse<BookingData>(response);
+                var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
 
                 Assert.That(booking.id, Is.InstanceOf<Guid>());
                 var bookingId = booking.id;
+                Assert.That(booking.parentId, Is.Null);
                 Assert.That(booking.session.id, Is.EqualTo(AaronOrakei16To17SessionId));
                 Assert.That(booking.session.name, Is.EqualTo(string.Format("Mini Red at Orakei Tennis Club with Aaron Smith on {0} at 16:00", 
                                                                            GetFormattedDateOneWeekOut())));
@@ -167,16 +168,110 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        private Response WhenTryBook(ApiBookingSaveCommand command)
+        [TestFixture]
+        public class BookingCourseTests : BookingPostTests
+        {
+            [Test]
+            public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenReturnSuccessfulCourseBookingResponse()
+            {
+                var command = GivenACustomerWhoIsNotBookedOntoACourse();
+                var response = WhenTryBookCourse(command);
+                ThenReturnSuccessfulCourseBookingResponse(response);
+            }
+
+
+            private ApiBookingSaveCommand GivenACustomerWhoIsNotBookedOntoACourse()
+            {
+                return new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = BobbyRemueraHolidayCampFor3DaysCourseId },
+                    customer = new ApiCustomerKey { id = BarneyId }
+                };
+            }
+
+
+            private void ThenReturnSuccessfulCourseBookingResponse(Response response)
+            {
+                var courseBooking = AssertSuccessResponse<CourseBookingData>(response);
+
+                Assert.That(courseBooking.id, Is.InstanceOf<Guid>());
+                var courseBookingId = courseBooking.id;
+                Assert.That(courseBooking.course.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
+                Assert.That(courseBooking.course.name, Is.EqualTo(string.Format("Holiday Camp at Remuera Racquets Club with Bobby Smith starting on {0} at 10:00 for 3 days",
+                                                                           GetDateFormatNumberOfDaysOut(2))));
+                Assert.That(courseBooking.customer.id, Is.EqualTo(BarneyId));
+                Assert.That(courseBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", BARNEY_FIRST_NAME, RUBBLE_LAST_NAME)));
+
+                // Check bookings on sessions
+                Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(3));
+
+                var firstSessionBooking = courseBooking.sessionBookings[0];
+                Assert.That(firstSessionBooking.id, Is.InstanceOf<Guid>());
+                Assert.That(firstSessionBooking.parentId, Is.EqualTo(courseBookingId));
+                Assert.That(firstSessionBooking.session.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
+                Assert.That(firstSessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Remuera Racquets Club with Bobby Smith on {0} at 10:00",
+                                                                           GetDateFormatNumberOfDaysOut(2))));
+                Assert.That(firstSessionBooking.customer.id, Is.EqualTo(BarneyId));
+                Assert.That(firstSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", BARNEY_FIRST_NAME, RUBBLE_LAST_NAME)));
+
+                var secondSessionBooking = courseBooking.sessionBookings[1];
+                Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
+                Assert.That(secondSessionBooking.parentId, Is.EqualTo(courseBookingId));
+                Assert.That(secondSessionBooking.session.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
+                Assert.That(secondSessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Remuera Racquets Club with Bobby Smith on {0} at 10:00",
+                                                                           GetDateFormatNumberOfDaysOut(3))));
+                Assert.That(secondSessionBooking.customer.id, Is.EqualTo(BarneyId));
+                Assert.That(secondSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", BARNEY_FIRST_NAME, RUBBLE_LAST_NAME)));
+
+                var thirdSessionBooking = courseBooking.sessionBookings[2];
+                Assert.That(thirdSessionBooking.id, Is.InstanceOf<Guid>());
+                Assert.That(thirdSessionBooking.parentId, Is.EqualTo(courseBookingId));
+                Assert.That(thirdSessionBooking.session.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
+                Assert.That(thirdSessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Remuera Racquets Club with Bobby Smith on {0} at 10:00",
+                                                                           GetDateFormatNumberOfDaysOut(4))));
+                Assert.That(thirdSessionBooking.customer.id, Is.EqualTo(BarneyId));
+                Assert.That(thirdSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", BARNEY_FIRST_NAME, RUBBLE_LAST_NAME)));
+
+                // Check the bookings on the course
+                
+                // var courseResponse = Get<CourseData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
+                //var course = AssertSuccessResponse<CourseData>(courseResponse);
+
+                //Assert.That(course.booking.bookings.Count, Is.EqualTo(1));
+                //var bookingOne = course.booking.bookings[0];
+                //Assert.That(bookingOne.id, Is.EqualTo(firstSessionBooking.id));
+                //var bookingCustomer = bookingOne.customer;
+                //Assert.That(bookingCustomer.id, Is.EqualTo(BarneyId));
+                //Assert.That(bookingCustomer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
+                //Assert.That(bookingCustomer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
+                //Assert.That(bookingCustomer.email, Is.Null);
+                //Assert.That(bookingCustomer.phone, Is.Null);
+            }
+        }
+
+
+        private Response WhenTryBookSession(ApiBookingSaveCommand command)
         {
             var json = JsonConvert.SerializeObject(command);
 
-            return WhenTryBook(json);
+            return WhenTryBookSession(json);
         }
 
-        private Response WhenTryBook(string json)
+        private Response WhenTryBookCourse(ApiBookingSaveCommand command)
         {
-            return Post<BookingData>(json);
+            var json = JsonConvert.SerializeObject(command);
+
+            return WhenTryBookCourse(json);
+        }
+
+        private Response WhenTryBookSession(string json)
+        {
+            return Post<SingleSessionBookingData>(json);
+        }
+
+        private Response WhenTryBookCourse(string json)
+        {
+            return Post<CourseBookingData>(json);
         }
     }
 }

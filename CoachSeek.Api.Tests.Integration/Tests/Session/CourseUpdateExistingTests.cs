@@ -333,8 +333,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             sessionCommand.id = BobbyRemueraHolidayCampFor3DaysSessionIds[2];
             sessionCommand.repetition = new ApiRepetition {sessionCount = 1};
             sessionCommand.timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(6), startTime = "11:00", duration = 180 };
+            sessionCommand.presentation = new ApiPresentation { colour = "mid-blue" };
 
-            WhenTryUpdateSession(sessionCommand);            
+            WhenTryUpdateSession(sessionCommand);
         }
 
         private ApiSessionSaveCommand GivenWantToUpdateSessionInCourse()

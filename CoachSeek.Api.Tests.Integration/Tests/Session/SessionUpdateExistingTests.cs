@@ -52,6 +52,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = GivenSessionClashesWithAnotherSession();
             var response = WhenTryUpdateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
+            Assert.That(error.code, Is.EqualTo("clashing-session"));
             Assert.That(error.data, Is.StringContaining(AaronOrakei14To15SessionId.ToString()));
         }
 
@@ -61,6 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = GivenSessionClashesWithAnotherSessionInCourse();
             var response = WhenTryUpdateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
+            Assert.That(error.code, Is.EqualTo("clashing-session"));
             Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For8WeeksSessionIds[2].ToString()));
         }
 
