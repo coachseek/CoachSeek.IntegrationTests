@@ -42,6 +42,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string FredPhone { get; set; }
         protected Guid FredOnAaronOrakei14To15SessionId { get; set; }
         protected Guid BarneyOnAaronOrakei14To15SessionId { get; set; }
+        protected Guid FredOnBobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
 
         protected override string RelativePath
         {
@@ -59,6 +60,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestCourses();
             RegisterTestCustomers();
             BookCustomersOntoSessions();
+            BookCustomersOntoCourses();
         }
 
         private void RegisterTestLocations()
@@ -513,6 +515,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, BarneyId);
             var response = PostBooking(json);
             BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
+        }
+
+        private void BookCustomersOntoCourses()
+        {
+            BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days();
+        }
+
+        private void BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days()
+        {
+            var json = CreateNewBookingSaveCommand(BobbyRemueraHolidayCampFor3DaysCourseId, FredId);
+            var response = PostBooking(json);
+            FredOnBobbyRemueraHolidayCampFor3DaysCourseId = ((BookingData)response.Payload).id;
         }
 
         private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)
