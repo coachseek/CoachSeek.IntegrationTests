@@ -7,6 +7,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
     public abstract class BookingPostTests : ScheduleTests
     {
+        private Guid FredSessionBookingId { get; set; }
+
+
         [SetUp]
         public void Setup()
         {
@@ -182,11 +185,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             private ApiBookingSaveCommand GivenACustomerWhoIsNotBookedOntoACourse()
             {
+                // Book a single session on the same course for a more realistic test. 
+                BookSingleSessionOnCourse();
+
                 return new ApiBookingSaveCommand
                 {
                     session = new ApiSessionKey { id = BobbyRemueraHolidayCampFor3DaysCourseId },
                     customer = new ApiCustomerKey { id = BarneyId }
                 };
+            }
+
+            private void BookSingleSessionOnCourse()
+            {
+                var command = new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = BobbyRemueraHolidayCampFor3DaysSessionIds[1] },
+                    customer = new ApiCustomerKey { id = FredId }
+                };
+
+                var booking = WhenTryBookSession(command);
+                FredSessionBookingId = ((SingleSessionBookingData) booking.Payload).id;
             }
 
 
@@ -233,22 +251,71 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 Assert.That(thirdSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", BARNEY_FIRST_NAME, RUBBLE_LAST_NAME)));
 
                 // Check the bookings on the course
-                
-                // var courseResponse = Get<CourseData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
-                //var course = AssertSuccessResponse<CourseData>(courseResponse);
-
-                //Assert.That(course.booking.bookings.Count, Is.EqualTo(1));
-                //var bookingOne = course.booking.bookings[0];
-                //Assert.That(bookingOne.id, Is.EqualTo(firstSessionBooking.id));
-                //var bookingCustomer = bookingOne.customer;
-                //Assert.That(bookingCustomer.id, Is.EqualTo(BarneyId));
-                //Assert.That(bookingCustomer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
-                //Assert.That(bookingCustomer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
-                //Assert.That(bookingCustomer.email, Is.Null);
-                //Assert.That(bookingCustomer.phone, Is.Null);
+                GetAndAssertCourse(courseBookingId, firstSessionBooking.id, secondSessionBooking.id, thirdSessionBooking.id);
             }
         }
 
+        private void GetAndAssertCourse(Guid courseBookingId, Guid firstSessionBookingId, Guid secondSessionBookingId, Guid thirdSessionBookingId)
+        {
+            var courseResponse = Get<CourseData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
+            var course = AssertSuccessResponse<CourseData>(courseResponse);
+
+            Assert.That(course.booking.bookings.Count, Is.EqualTo(1));
+            var courseBooking = course.booking.bookings[0];
+            Assert.That(courseBooking.id, Is.EqualTo(courseBookingId));
+            Assert.That(courseBooking.parentId, Is.Null);
+            Assert.That(courseBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
+            var customerBarney = courseBooking.customer;
+            Assert.That(customerBarney.id, Is.EqualTo(BarneyId));
+            Assert.That(customerBarney.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
+            Assert.That(customerBarney.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
+            Assert.That(customerBarney.email, Is.Null);
+            Assert.That(customerBarney.phone, Is.Null);
+
+            // Check bookings on sessions
+            Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(1));
+            var firstSessionFirstBooking = course.sessions[0].booking.bookings[0];
+            Assert.That(firstSessionFirstBooking.id, Is.EqualTo(firstSessionBookingId));
+            Assert.That(firstSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
+            Assert.That(firstSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
+            Assert.That(firstSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
+            Assert.That(firstSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
+            Assert.That(firstSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));
+            Assert.That(firstSessionFirstBooking.customer.email, Is.EqualTo(customerBarney.email));
+            Assert.That(firstSessionFirstBooking.customer.phone, Is.EqualTo(customerBarney.phone));
+
+            Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(2));
+            var secondSessionFirstBooking = course.sessions[1].booking.bookings[0];
+            Assert.That(secondSessionFirstBooking.id, Is.EqualTo(secondSessionBookingId));
+            Assert.That(secondSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
+            Assert.That(secondSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
+            Assert.That(secondSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
+            Assert.That(secondSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
+            Assert.That(secondSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));
+            Assert.That(secondSessionFirstBooking.customer.email, Is.EqualTo(customerBarney.email));
+            Assert.That(secondSessionFirstBooking.customer.phone, Is.EqualTo(customerBarney.phone));
+
+            var secondSessionSecondBooking = course.sessions[1].booking.bookings[1];
+            Assert.That(secondSessionSecondBooking.id, Is.EqualTo(FredSessionBookingId));
+            Assert.That(secondSessionSecondBooking.parentId, Is.Null);
+            Assert.That(secondSessionSecondBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
+            Assert.That(secondSessionSecondBooking.customer.id, Is.EqualTo(FredId));
+            Assert.That(secondSessionSecondBooking.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
+            Assert.That(secondSessionSecondBooking.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+            Assert.That(secondSessionSecondBooking.customer.email, Is.EqualTo(FredEmail));
+            Assert.That(secondSessionSecondBooking.customer.phone, Is.EqualTo(FredPhone.ToUpper()));
+
+            Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(1));
+            var thirdSessionFirstBooking = course.sessions[2].booking.bookings[0];
+            Assert.That(thirdSessionFirstBooking.id, Is.EqualTo(thirdSessionBookingId));
+            Assert.That(thirdSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
+            Assert.That(thirdSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
+            Assert.That(thirdSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
+            Assert.That(thirdSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
+            Assert.That(thirdSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));
+            Assert.That(thirdSessionFirstBooking.customer.email, Is.EqualTo(customerBarney.email));
+            Assert.That(thirdSessionFirstBooking.customer.phone, Is.EqualTo(customerBarney.phone));
+        }
 
         private Response WhenTryBookSession(ApiBookingSaveCommand command)
         {
