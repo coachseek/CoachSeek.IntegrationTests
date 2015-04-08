@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
-    [TestFixture]
     public class SessionGetTests : ScheduleTests
     {
         [SetUp]
@@ -15,28 +14,54 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        [Test]
-        public void GivenInvalidSessionId_WhenTryGetById_ThenReturnNotFound()
+        [TestFixture]
+        public class AnonymousSessionGetTests : SessionGetTests
         {
-            var id = GivenInvalidSessionId();
-            var response = WhenTryGetById(id);
-            ThenReturnNotFound(response);
+            //[Test]
+            //public void GivenNoBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
+            //{
+            //    var id = GivenInvalidSessionId();
+            //    var response = WhenTryGetById(id);
+            //    ThenReturnNotFound(response);
+            //}
+
+            //[Test]
+            //public void GivenInvalidBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
+            //{
+            //    var id = GivenInvalidSessionId();
+            //    var response = WhenTryGetById(id);
+            //    ThenReturnNotFound(response);
+            //}
+
+        
         }
 
-        [Test]
-        public void GivenValidSessionWithoutBookings_WhenGetById_ThenReturnSessionWithoutBookings()
+        [TestFixture]
+        public class AuthenticatedSessionGetTests : SessionGetTests
         {
-            var id = GivenValidSessionWithoutBookings();
-            var response = WhenTryGetById(id);
-            ThenReturnSessionWithoutBookings(response);
-        }
+            [Test]
+            public void GivenInvalidSessionId_WhenTryGetById_ThenReturnNotFound()
+            {
+                var id = GivenInvalidSessionId();
+                var response = WhenTryGetById(id);
+                ThenReturnNotFound(response);
+            }
 
-        [Test]
-        public void GivenValidSessionWithBookings_WhenGetById_ThenReturnSessionWithBookings()
-        {
-            var id = GivenValidSessionWithBookings();
-            var response = WhenTryGetById(id);
-            ThenReturnSessionWithBookings(response);
+            [Test]
+            public void GivenValidSessionWithoutBookings_WhenGetById_ThenReturnSessionWithoutBookings()
+            {
+                var id = GivenValidSessionWithoutBookings();
+                var response = WhenTryGetById(id);
+                ThenReturnSessionWithoutBookings(response);
+            }
+
+            [Test]
+            public void GivenValidSessionWithBookings_WhenGetById_ThenReturnSessionWithBookings()
+            {
+                var id = GivenValidSessionWithBookings();
+                var response = WhenTryGetById(id);
+                ThenReturnSessionWithBookings(response);
+            }
         }
 
 

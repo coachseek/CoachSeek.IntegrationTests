@@ -13,6 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private string _email;
 
         protected Guid BusinessId { get; set; }
+        protected string BusinessDomain { get; set; }
 
         protected string BaseUrl
         {
@@ -85,6 +86,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Delete<TResponse>(http);
         }
 
+        protected Response DeleteAnonymously<TResponse>(string relativePath, Guid id)
+        {
+            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+
+            return Delete<TResponse>(http);
+        }
+
+
+        protected Response GetAnonymously<TResponse>(string url)
+        {
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBusinessDomainHeader(http, BusinessDomain);
+
+            return Get<TResponse>(http);
+        }
+
         protected Response Get<TResponse>(string relativePath, Guid id)
         {
             var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
@@ -155,12 +173,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                     using (var reader = new StreamReader(stream))
                     {
                         var errors = reader.ReadToEnd();
-                        var obj = JsonConvert.DeserializeObject<ApplicationError[]>(errors);
-
-                        return new Response(status, obj);
+                        return new Response(status, DeserialiseErrors(errors));
                     }
                 }
             }
+        }
+
+        private static object DeserialiseErrors(string errors)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<ApplicationError[]>(errors);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return JsonConvert.DeserializeObject<ApplicationError>(errors);
+            }            
         }
 
         private static void SendData(string json, HttpWebRequest request)
@@ -182,6 +210,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var authInfo = string.Format("{0}:{1}", username, password);
             authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
             request.Headers["Authorization"] = "Basic " + authInfo;
+        }
+
+        private static void SetBusinessDomainHeader(WebRequest request, string domain)
+        {
+            if (domain != null)
+                request.Headers["Business-Domain"] = domain;
         }
 
         private static void SetTestingHeader(WebRequest request)
@@ -223,6 +257,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected void AssertNotFound(Response response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
+        protected void AssertUnauthorised(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
         }
 
         protected T AssertSuccessResponse<T>(Response response)
@@ -278,6 +317,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var response = PostAnonymously<RegistrationData>(json, "BusinessRegistration");
             var registrationResponse = ((RegistrationData)response.Payload);
             BusinessId = registrationResponse.business.id;
+            BusinessDomain = registrationResponse.business.domain;
         }
 
 

@@ -519,7 +519,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookCustomersOntoCourses()
         {
-            BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days();
+            //BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days();
         }
 
         private void BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days()

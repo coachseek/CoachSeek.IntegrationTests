@@ -1,87 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
-    [TestFixture]
-    public class LocationGetTests : WebIntegrationTest
+    public class LocationGetTests : LocationTests
     {
-        private const string ORAKEI_NAME = "Orakei Tennis Club";
-        private const string REMUERA_NAME = "Remuera Racquets Club";
-
-        private Guid OrakeiId { get; set; }
-        private Guid RemueraId { get; set; }
-
-        protected override string RelativePath
+        [TestFixture]
+        public class AnonymousLocationGetTests : LocationGetTests
         {
-            get { return "Locations"; }
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestLocations();
-        }
-
-        private void RegisterTestLocations()
-        {
-            RegisterOrakeiLocation();
-            RegisterRemueraLocation();
-        }
-
-        private void RegisterOrakeiLocation()
-        {
-            var json = CreateNewLocationSaveCommand(ORAKEI_NAME);
-            var response = Post<LocationData>(json);
-            OrakeiId = ((LocationData)response.Payload).id;
-        }
-
-        private void RegisterRemueraLocation()
-        {
-            var json = CreateNewLocationSaveCommand(REMUERA_NAME);
-            var response = Post<LocationData>(json);
-            RemueraId = ((LocationData)response.Payload).id;
-        }
-
-        private string CreateNewLocationSaveCommand(string name)
-        {
-            var location = new ApiLocationSaveCommand
+            [Test]
+            public void GivenNoBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
             {
-                name = name
-            };
+                GivenNoBusinessDomain();
+                var response = WhenTryGetById(OrakeiId);
+                ThenReturnNotAuthorised(response);
+            }
 
-            return JsonConvert.SerializeObject(location);
+            [Test]
+            public void GivenInvalidBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
+            {
+                GivenInvalidBusinessDomain();
+                var response = WhenTryGetById(OrakeiId);
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenValidBusinessDomain_WhenTryGetById_ThenReturnLocation()
+            {
+                GivenValidBusinessDomain();
+                var response = WhenTryGetById(OrakeiId);
+                ThenReturnLocation(response);
+            }
+
+            [Test]
+            public void GivenNoBusinessDomain_WhenTryGetAll_ThenReturnNotAuthorised()
+            {
+                GivenNoBusinessDomain();
+                var response = WhenTryGetAll();
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenInvalidBusinessDomain_WhenTryGetAll_ThenReturnNotAuthorised()
+            {
+                GivenInvalidBusinessDomain();
+                var response = WhenTryGetAll();
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenValidBusinessDomain_WhenTryGetAll_ThenReturnAllLocations()
+            {
+                GivenValidBusinessDomain();
+                var response = WhenTryGetAll();
+                ThenReturnAllLocations(response);
+            }
+
+
+            private void GivenNoBusinessDomain()
+            {
+                BusinessDomain = null;
+            }
+
+            private void GivenInvalidBusinessDomain()
+            {
+                BusinessDomain = "abc123";
+            }
+
+            private void GivenValidBusinessDomain()
+            {
+                // Valid domain is already set.
+            }
+
+
+            private Response WhenTryGetById(Guid locationId)
+            {
+                var url = BuildGetByIdUrl(locationId);
+                return GetAnonymously<LocationData>(url);
+            }
+
+            private Response WhenTryGetAll()
+            {
+                var url = BuildGetAllUrl();
+                return GetAnonymously<List<LocationData>>(url);
+            }
+
+
+            private void ThenReturnNotAuthorised(Response response)
+            {
+                AssertUnauthorised(response);
+            }
         }
 
-
-        [Test]
-        public void WhenGetAll_ThenReturnAllLocationsResponse()
+        [TestFixture]
+        public class AuthenticatedLocationGetTests : LocationGetTests
         {
-            var response = WhenGetAll();
-            ThenReturnAllLocationsResponse(response);
-        }
+            [Test]
+            public void WhenGetAll_ThenReturnAllLocationsResponse()
+            {
+                var response = WhenGetAll();
+                ThenReturnAllLocations(response);
+            }
 
-        [Test]
-        public void GivenInvalidLocationId_WhenGetById_ThenReturnNotFoundResponse()
-        {
-            var locationId = GivenInvalidLocationId();
-            var response = WhenGetById(locationId);
-            ThenReturnNotFoundResponse(response);
-        }
+            [Test]
+            public void GivenInvalidLocationId_WhenGetById_ThenReturnNotFound()
+            {
+                var locationId = GivenInvalidLocationId();
+                var response = WhenGetById(locationId);
+                ThenReturnNotFound(response);
+            }
 
-        [Test]
-        public void GivenValidLocationId_WhenGetById_ThenReturnLocationResponse()
-        {
-            var locationId = GivenValidLocationId();
-            var response = WhenGetById(locationId);
-            ThenReturnLocationResponse(response);
+            [Test]
+            public void GivenValidLocationId_WhenGetById_ThenReturnLocation()
+            {
+                var locationId = GivenValidLocationId();
+                var response = WhenGetById(locationId);
+                ThenReturnLocation(response);
+            }
         }
-
 
 
         private Guid GivenInvalidLocationId()
@@ -108,32 +146,29 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
-        private void ThenReturnAllLocationsResponse(Response response)
+        private void ThenReturnNotFound(Response response)
         {
-            Assert.That(response, Is.Not.Null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Payload, Is.Not.Null);
-            var locations = (List<LocationData>)response.Payload;
+            AssertNotFound(response);
+        }
+
+        private void ThenReturnAllLocations(Response response)
+        {
+            var locations = AssertSuccessResponse<List<LocationData>>(response);
             Assert.That(locations.Count, Is.EqualTo(2));
-            var locationOne = locations[0];
-            Assert.That(locationOne.id, Is.EqualTo(OrakeiId));
-            Assert.That(locationOne.name, Is.EqualTo(ORAKEI_NAME));
-            var locationTwo = locations[1];
-            Assert.That(locationTwo.id, Is.EqualTo(RemueraId));
-            Assert.That(locationTwo.name, Is.EqualTo(REMUERA_NAME));
+            AssertLocation(locations[0], OrakeiId, ORAKEI_NAME);
+            AssertLocation(locations[1], RemueraId, REMUERA_NAME);
         }
 
-        private void ThenReturnNotFoundResponse(Response response)
+        private void ThenReturnLocation(Response response)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            var location = AssertSuccessResponse<LocationData>(response);
+            AssertLocation(location, OrakeiId, ORAKEI_NAME);
         }
 
-        private void ThenReturnLocationResponse(Response response)
+        private void AssertLocation(LocationData location, Guid expectedId, string expectedName)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            var location = (LocationData)response.Payload;
-            Assert.That(location.id, Is.EqualTo(OrakeiId));
-            Assert.That(location.name, Is.EqualTo(ORAKEI_NAME));
+            Assert.That(location.id, Is.EqualTo(expectedId));
+            Assert.That(location.name, Is.EqualTo(expectedName));
         }
     }
 }

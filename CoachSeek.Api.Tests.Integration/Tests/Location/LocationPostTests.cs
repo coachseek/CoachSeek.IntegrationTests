@@ -7,205 +7,180 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
     [TestFixture]
-    public class LocationPostTests : WebIntegrationTest
+    public class LocationPostTests : LocationTests
     {
-        private const string ORAKEI_NAME = "Orakei Tennis Club";
-        private const string REMUERA_NAME = "Remuera Racquets Club";
-
-        private Guid OrakeiId { get; set; }
-        private Guid RemueraId { get; set; }
         private string NewLocationName { get; set; }
 
-        protected override string RelativePath
-        {
-            get { return "Locations"; }
-        }
 
-        [SetUp]
-        public void Setup()
+        protected override void SetupAddtitional()
         {
-            RegisterTestBusiness();
-            RegisterTestLocations();
-
             NewLocationName = string.Empty;
         }
 
-        private void RegisterTestLocations()
-        {
-            RegisterOrakeiLocation();
-            RegisterRemueraLocation();
-        }
 
-        private void RegisterOrakeiLocation()
+        [TestFixture]
+        public class LocationCommandTests : LocationPostTests
         {
-            var json = CreateNewLocationSaveCommand(ORAKEI_NAME);
-            var response = Post<LocationData>(json);
-            OrakeiId = ((LocationData)response.Payload).id;
-        }
-
-        private void RegisterRemueraLocation()
-        {
-            var json = CreateNewLocationSaveCommand(REMUERA_NAME);
-            var response = Post<LocationData>(json);
-            RemueraId = ((LocationData)response.Payload).id;
-        }
-
-        private string CreateNewLocationSaveCommand(string name)
-        {
-            var location = new ApiLocationSaveCommand
+            [Test]
+            public void GivenNoLocationSaveCommand_WhenTryPost_ThenReturnNoDataErrorResponse()
             {
-                name = name
-            };
+                var command = GivenNoLocationSaveCommand();
+                var response = WhenTryPost(command);
+                ThenReturnNoDataErrorResponse(response);
+            }
 
-            return JsonConvert.SerializeObject(location);
-        }
-
-
-        [Test]
-        public void GivenNoLocationSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
-        {
-            var command = GivenNoLocationSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnNoDataErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenEmptyLocationSaveCommand_WhenPost_ThenReturnRootRequiredErrorResponse()
-        {
-            var command = GivenEmptyLocationSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnRootRequiredErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentLocationId_WhenPost_ThenReturnInvalidLocationIdErrorResponse()
-        {
-            var command = GivenNonExistentLocationId();
-            var response = WhenPost(command);
-            ThenReturnInvalidLocationIdErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNewLocationWithAnAlreadyExistingLocationName_WhenPost_ThenReturnDuplicateLocationErrorResponse()
-        {
-            var command = GivenNewLocationWithAnAlreadyExistingLocationName();
-            var response = WhenPost(command);
-            ThenReturnDuplicateLocationErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingLocationAndChangeToAnAlreadyExistingLocationName_WhenPost_ThenReturnDuplicateLocationErrorResponse()
-        {
-            var command = GivenExistingLocationAndChangeToAnAlreadyExistingLocationName();
-            var response = WhenPost(command);
-            ThenReturnDuplicateLocationErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNewUniqueLocation_WhenPost_ThenReturnNewLocationSuccessResponse()
-        {
-            var command = GivenNewUniqueLocation();
-            var response = WhenPost(command);
-            ThenReturnNewLocationSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingLocationAndChangeToUniqueLocationName_WhenPost_ThenReturnExistingLocationSuccessResponse()
-        {
-            var command = GivenExistingLocationAndChangeToUniqueLocationName();
-            var response = WhenPost(command);
-            ThenReturnExistingLocationSuccessResponse(response);
-        }
-
-        [Test]
-        public void GivenExistingLocationAndKeepLocationNameSame_WhenPost_ThenReturnExistingLocationSuccessResponse()
-        {
-            var command = GivenExistingLocationAndKeepLocationNameSame();
-            var response = WhenPost(command);
-            ThenReturnExistingLocationSuccessResponse(response);
-        }
-
-
-        private string GivenNoLocationSaveCommand()
-        {
-            return "";
-        }
-
-        private string GivenEmptyLocationSaveCommand()
-        {
-            return "{}";
-        }
-
-        private string GivenNonExistentLocationId()
-        {
-            var location = new ApiLocationSaveCommand
+            [Test]
+            public void GivenEmptyLocationSaveCommand_WhenTryPost_ThenReturnRootRequiredErrorResponse()
             {
-                id = Guid.Empty,
-                name = RandomString
-            };
+                var command = GivenEmptyLocationSaveCommand();
+                var response = WhenTryPost(command);
+                ThenReturnRootRequiredErrorResponse(response);
+            }
 
-            return JsonConvert.SerializeObject(location);
-        }
-
-        private string GivenNewLocationWithAnAlreadyExistingLocationName()
-        {
-            var location = new ApiLocationSaveCommand
+            
+            private string GivenNoLocationSaveCommand()
             {
-                name = ORAKEI_NAME
-            };
+                return "";
+            }
 
-            return JsonConvert.SerializeObject(location);
-        }
-
-        private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName()
-        {
-            var location = new ApiLocationSaveCommand
+            private string GivenEmptyLocationSaveCommand()
             {
-                id = RemueraId,
-                name = ORAKEI_NAME
-            };
-
-            return JsonConvert.SerializeObject(location);
+                return "{}";
+            }
         }
 
-        private string GivenNewUniqueLocation()
+
+        [TestFixture]
+        public class LocationNewTests : LocationPostTests
         {
-            var location = new ApiLocationSaveCommand
+            [Test]
+            public void GivenNewLocationWithAnAlreadyExistingLocationName_WhenTryPost_ThenReturnDuplicateLocationErrorResponse()
             {
-                name = "Mt Eden Squash Club"
-            };
+                var command = GivenNewLocationWithAnAlreadyExistingLocationName();
+                var response = WhenTryPost(command);
+                ThenReturnDuplicateLocationErrorResponse(response);
+            }
 
-            return JsonConvert.SerializeObject(location);
+            [Test]
+            public void GivenNewUniqueLocation_WhenTryPost_ThenReturnNewLocationSuccessResponse()
+            {
+                var command = GivenNewUniqueLocation();
+                var response = WhenTryPost(command);
+                ThenReturnNewLocationSuccessResponse(response);
+            }
+
+
+            private string GivenNewLocationWithAnAlreadyExistingLocationName()
+            {
+                var location = new ApiLocationSaveCommand
+                {
+                    name = ORAKEI_NAME
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
+
+            private string GivenNewUniqueLocation()
+            {
+                var location = new ApiLocationSaveCommand
+                {
+                    name = "Mt Eden Squash Club"
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
         }
 
-        private string GivenExistingLocationAndChangeToUniqueLocationName()
+
+        [TestFixture]
+        public class LocationExistingTests : LocationPostTests
         {
-            NewLocationName = "Orakei Tennis & Squash Club";
-
-            var location = new ApiLocationSaveCommand
+            [Test]
+            public void GivenNonExistentLocationId_WhenTryPost_ThenReturnInvalidLocationIdErrorResponse()
             {
-                id = OrakeiId,
-                name = NewLocationName
-            };
+                var command = GivenNonExistentLocationId();
+                var response = WhenTryPost(command);
+                ThenReturnInvalidLocationIdErrorResponse(response);
+            }
 
-            return JsonConvert.SerializeObject(location);
+            [Test]
+            public void GivenExistingLocationAndChangeToAnAlreadyExistingLocationName_WhenTryPost_ThenReturnDuplicateLocationErrorResponse()
+            {
+                var command = GivenExistingLocationAndChangeToAnAlreadyExistingLocationName();
+                var response = WhenTryPost(command);
+                ThenReturnDuplicateLocationErrorResponse(response);
+            }
+
+            [Test]
+            public void GivenExistingLocationAndChangeToUniqueLocationName_WhenTryPost_ThenReturnExistingLocationSuccessResponse()
+            {
+                var command = GivenExistingLocationAndChangeToUniqueLocationName();
+                var response = WhenTryPost(command);
+                ThenReturnExistingLocationSuccessResponse(response);
+            }
+
+            [Test]
+            public void GivenExistingLocationAndKeepLocationNameSame_WhenTryPost_ThenReturnExistingLocationSuccessResponse()
+            {
+                var command = GivenExistingLocationAndKeepLocationNameSame();
+                var response = WhenTryPost(command);
+                ThenReturnExistingLocationSuccessResponse(response);
+            }
+
+            
+            private string GivenNonExistentLocationId()
+            {
+                var location = new ApiLocationSaveCommand
+                {
+                    id = Guid.Empty,
+                    name = RandomString
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
+
+            private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName()
+            {
+                var location = new ApiLocationSaveCommand
+                {
+                    id = RemueraId,
+                    name = ORAKEI_NAME
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
+
+            private string GivenExistingLocationAndChangeToUniqueLocationName()
+            {
+                NewLocationName = "Orakei Tennis & Squash Club";
+
+                var location = new ApiLocationSaveCommand
+                {
+                    id = OrakeiId,
+                    name = NewLocationName
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
+
+            private string GivenExistingLocationAndKeepLocationNameSame()
+            {
+                NewLocationName = ORAKEI_NAME;
+
+                var location = new ApiLocationSaveCommand
+                {
+                    id = OrakeiId,
+                    name = NewLocationName
+                };
+
+                return JsonConvert.SerializeObject(location);
+            }
         }
 
-        private string GivenExistingLocationAndKeepLocationNameSame()
-        {
-            NewLocationName = ORAKEI_NAME;
-
-            var location = new ApiLocationSaveCommand
-            {
-                id = OrakeiId,
-                name = NewLocationName
-            };
-
-            return JsonConvert.SerializeObject(location);
-        }
 
 
-        private Response WhenPost(string json)
+
+        private Response WhenTryPost(string json)
         {
             return Post<LocationData>(json);
         }
@@ -229,17 +204,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "location.name", "The name field is required.");
-        }
-
-        private void ThenReturnInvalidBusinessIdErrorResponse(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "location.businessId", "This business does not exist.");
         }
 
         private void ThenReturnInvalidLocationIdErrorResponse(Response response)
