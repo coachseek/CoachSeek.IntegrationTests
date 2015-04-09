@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
-    [TestFixture]
     public class LocationPostTests : LocationTests
     {
         private string NewLocationName { get; set; }
@@ -37,6 +36,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
                 ThenReturnRootRequiredErrorResponse(response);
             }
 
+            [Test]
+            public void GivenValidLocationId_WhenTryPostAnonymously_ThenReturnUnauthorised()
+            {
+                var command = GivenValidLocationSaveCommand();
+                var response = WhenTryPostAnonymously(command);
+                AssertUnauthorised(response);
+            }
+
             
             private string GivenNoLocationSaveCommand()
             {
@@ -46,6 +53,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             private string GivenEmptyLocationSaveCommand()
             {
                 return "{}";
+            }
+
+            private string GivenValidLocationSaveCommand()
+            {
+                var command = new ApiLocationSaveCommand
+                {
+                    name = "Mt Eden Soccer Club"
+                };
+
+                return JsonConvert.SerializeObject(command);
             }
         }
 
@@ -178,11 +195,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
-
-
         private Response WhenTryPost(string json)
         {
             return Post<LocationData>(json);
+        }
+
+        private Response WhenTryPostAnonymously(string json)
+        {
+            return PostAnonymously<LocationData>(json);
         }
 
 
