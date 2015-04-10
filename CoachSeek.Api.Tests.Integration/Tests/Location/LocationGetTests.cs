@@ -11,50 +11,50 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class AnonymousLocationGetTests : LocationGetTests
         {
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
             {
                 GivenNoBusinessDomain();
-                var response = WhenTryGetById(OrakeiId);
+                var response = WhenTryGetByIdAnonymously(OrakeiId);
                 ThenReturnNotAuthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetById_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
             {
                 GivenInvalidBusinessDomain();
-                var response = WhenTryGetById(OrakeiId);
+                var response = WhenTryGetByIdAnonymously(OrakeiId);
                 ThenReturnNotAuthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetById_ThenReturnLocation()
+            public void GivenValidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnLocation()
             {
                 GivenValidBusinessDomain();
-                var response = WhenTryGetById(OrakeiId);
+                var response = WhenTryGetByIdAnonymously(OrakeiId);
                 ThenReturnLocation(response);
             }
 
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetAll_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
             {
                 GivenNoBusinessDomain();
-                var response = WhenTryGetAll();
+                var response = WhenTryGetAllAnonymously();
                 ThenReturnNotAuthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetAll_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
             {
                 GivenInvalidBusinessDomain();
-                var response = WhenTryGetAll();
+                var response = WhenTryGetAllAnonymously();
                 ThenReturnNotAuthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetAll_ThenReturnAllLocations()
+            public void GivenValidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnAllLocations()
             {
                 GivenValidBusinessDomain();
-                var response = WhenTryGetAll();
+                var response = WhenTryGetAllAnonymously();
                 ThenReturnAllLocations(response);
             }
 
@@ -75,13 +75,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             }
 
 
-            private Response WhenTryGetById(Guid locationId)
+            private Response WhenTryGetByIdAnonymously(Guid locationId)
             {
                 var url = BuildGetByIdUrl(locationId);
                 return GetAnonymously<LocationData>(url);
             }
 
-            private Response WhenTryGetAll()
+            private Response WhenTryGetAllAnonymously()
             {
                 var url = BuildGetAllUrl();
                 return GetAnonymously<List<LocationData>>(url);
@@ -94,29 +94,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             }
         }
 
+
         [TestFixture]
         public class AuthenticatedLocationGetTests : LocationGetTests
         {
             [Test]
-            public void WhenGetAll_ThenReturnAllLocationsResponse()
+            public void WhenTryGetAll_ThenReturnAllLocations()
             {
-                var response = WhenGetAll();
+                var response = WhenTryGetAll();
                 ThenReturnAllLocations(response);
             }
 
             [Test]
-            public void GivenInvalidLocationId_WhenGetById_ThenReturnNotFound()
+            public void GivenInvalidLocationId_WhenTryGetById_ThenReturnNotFound()
             {
                 var locationId = GivenInvalidLocationId();
-                var response = WhenGetById(locationId);
+                var response = WhenTryGetById(locationId);
                 ThenReturnNotFound(response);
             }
 
             [Test]
-            public void GivenValidLocationId_WhenGetById_ThenReturnLocation()
+            public void GivenValidLocationId_WhenTryGetById_ThenReturnLocation()
             {
                 var locationId = GivenValidLocationId();
-                var response = WhenGetById(locationId);
+                var response = WhenTryGetById(locationId);
                 ThenReturnLocation(response);
             }
         }
@@ -133,13 +134,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
-        private Response WhenGetAll()
+        private Response WhenTryGetAll()
         {
             var url = BuildGetAllUrl();
             return Get<List<LocationData>>(url);
         }
 
-        private Response WhenGetById(Guid locationId)
+        private Response WhenTryGetById(Guid locationId)
         {
             var url = BuildGetByIdUrl(locationId);
             return Get<LocationData>(url);

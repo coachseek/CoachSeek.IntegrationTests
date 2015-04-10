@@ -6,82 +6,19 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Service
 {
-    public abstract class ServicePostTests : WebIntegrationTest
+    public abstract class ServicePostTests : ServiceTests
     {
-        private const string MINI_RED_NAME = "Mini Red";
-        private const string MINI_RED_DESCRIPTION = "Mini Red Service";
-        private const string MINI_BLUE_NAME = "Mini Blue";
-        private const string MINI_BLUE_DESCRIPTION = "Mini Blue Service";
-
-        private Guid MiniRedId { get; set; }
-        private Guid MiniBlueId { get; set; }
         private string NewServiceName { get; set; }
         private string NewServiceDescription { get; set; }
         private int? Duration { get; set; }
         private string Colour { get; set; }
 
 
-        protected override string RelativePath
+        protected override void SetupAddtitional()
         {
-            get { return "Services"; }
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestServices();
-
             NewServiceName = string.Empty;
         }
 
-        private void RegisterTestServices()
-        {
-            RegisterMiniRedService();
-            RegisterMiniBlueService();
-        }
-
-        private void RegisterMiniRedService()
-        {
-            var json = CreateNewFullServiceSaveCommand(MINI_RED_NAME, MINI_RED_DESCRIPTION, "red");
-            var response = Post<ServiceData>(json);
-            MiniRedId = ((ServiceData)response.Payload).id;
-        }
-
-        private void RegisterMiniBlueService()
-        {
-            var json = CreateNewPartialServiceSaveCommand(MINI_BLUE_NAME, "blue");
-            var response = Post<ServiceData>(json);
-            MiniBlueId = ((ServiceData)response.Payload).id;
-        }
-
-        private string CreateNewFullServiceSaveCommand(string name, string description, string colour)
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = name,
-                description = description,
-                timing = new ApiServiceTiming { duration = 45 },
-                booking = new ApiServiceBooking { studentCapacity = 8, isOnlineBookable = false },
-                presentation = new ApiPresentation { colour = colour },
-                repetition = new ApiServiceRepetition { sessionCount = 10, repeatFrequency = "w" },
-                pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = 100 }
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string CreateNewPartialServiceSaveCommand(string name, string colour)
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = name,
-                repetition = new ApiServiceRepetition { sessionCount = 1 },
-                presentation = new ApiPresentation { colour = colour }
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
 
         [TestFixture]
         public class ServiceCommandTests : ServicePostTests
@@ -103,6 +40,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                                                         { "The repetition field is required.", "service.repetition" } });
             }
 
+            [Test]
+            public void GivenValidServiceSaveCommand_WhenTryPostAnonymously_ThenReturnUnauthorised()
+            {
+                var command = GivenValidServiceSaveCommand();
+                var response = WhenTryPostAnonymously(command);
+                AssertUnauthorised(response);
+            }
+
 
             private string GivenNoServiceSaveCommand()
             {
@@ -112,6 +57,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             private string GivenEmptyServiceSaveCommand()
             {
                 return "{}";
+            }
+
+            private string GivenValidServiceSaveCommand()
+            {
+                var command = new ApiServiceSaveCommand
+                {
+                    name = "Mini Orange",
+                    description = "Mini Orange Service",
+                    repetition = new ApiServiceRepetition { sessionCount = 1 },
+                    presentation = new ApiPresentation { colour = "orange" }
+                };
+
+                return JsonConvert.SerializeObject(command);
             }
         }
 
@@ -890,6 +848,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             var json = JsonConvert.SerializeObject(command, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             return WhenPost(json);
+        }
+
+        private Response WhenTryPostAnonymously(string json)
+        {
+            return PostAnonymously<ServiceData>(json);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class LocationCommandTests : LocationPostTests
         {
             [Test]
-            public void GivenNoLocationSaveCommand_WhenTryPost_ThenReturnNoDataErrorResponse()
+            public void GivenNoLocationSaveCommand_WhenTryPost_ThenReturnNoDataError()
             {
                 var command = GivenNoLocationSaveCommand();
                 var response = WhenTryPost(command);
@@ -29,7 +29,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             }
 
             [Test]
-            public void GivenEmptyLocationSaveCommand_WhenTryPost_ThenReturnRootRequiredErrorResponse()
+            public void GivenEmptyLocationSaveCommand_WhenTryPost_ThenReturnRootRequiredError()
             {
                 var command = GivenEmptyLocationSaveCommand();
                 var response = WhenTryPost(command);
@@ -37,7 +37,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             }
 
             [Test]
-            public void GivenValidLocationId_WhenTryPostAnonymously_ThenReturnUnauthorised()
+            public void GivenValidLocationSaveCommand_WhenTryPostAnonymously_ThenReturnUnauthorised()
             {
                 var command = GivenValidLocationSaveCommand();
                 var response = WhenTryPostAnonymously(command);

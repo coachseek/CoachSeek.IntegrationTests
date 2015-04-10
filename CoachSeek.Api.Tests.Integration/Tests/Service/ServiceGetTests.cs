@@ -2,98 +2,126 @@
 using System.Collections.Generic;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Service
 {
-    [TestFixture]
-    public class ServiceGetTests : WebIntegrationTest
+    public class ServiceGetTests : ServiceTests
     {
-        private const string MINI_RED_NAME = "Mini Red";
-        private const string MINI_RED_DESCRIPTION = "Mini Red Service";
-        private const string MINI_BLUE_NAME = "Mini Blue";
-
-        private Guid MiniRedId { get; set; }
-        private Guid MiniBlueId { get; set; }
-        private string NewServiceName { get; set; }
-        private string NewServiceDescription { get; set; }
-        private int? Duration { get; set; }
-        private string Colour { get; set; }
-
-
-        protected override string RelativePath
+        [TestFixture]
+        public class AnonymousServiceGetTests : ServiceGetTests
         {
-            get { return "Services"; }
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestServices();
-        }
-
-        private void RegisterTestServices()
-        {
-            RegisterMiniRedService();
-            RegisterMiniBlueService();
-        }
-
-        private void RegisterMiniRedService()
-        {
-            var json = CreateNewServiceSaveCommand(MINI_RED_NAME, MINI_RED_DESCRIPTION, "red");
-            var response = Post<ServiceData>(json);
-            MiniRedId = ((ServiceData)response.Payload).id;
-        }
-
-        private void RegisterMiniBlueService()
-        {
-            var json = CreateNewServiceSaveCommand(MINI_BLUE_NAME, "Mini Blue Description", "blue");
-            var response = Post<ServiceData>(json);
-            MiniBlueId = ((ServiceData)response.Payload).id;
-        }
-
-        private string CreateNewServiceSaveCommand(string name, string description, string colour)
-        {
-            var service = new ApiServiceSaveCommand
+            [Test]
+            public void GivenNoBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
             {
-                name = name,
-                description = description,
-                timing = new ApiServiceTiming { duration = 45 },
-                booking = new ApiServiceBooking { studentCapacity = 7, isOnlineBookable = true },
-                repetition = new ApiServiceRepetition { sessionCount = 1 },
-                presentation = new ApiPresentation { colour = colour },
-                pricing = new ApiPricing { sessionPrice = 17.5m }
-            };
+                GivenNoBusinessDomain();
+                var response = WhenTryGetByIdAnonymously(MiniRedId);
+                ThenReturnNotAuthorised(response);
+            }
 
-            return JsonConvert.SerializeObject(service);
+            [Test]
+            public void GivenInvalidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
+            {
+                GivenInvalidBusinessDomain();
+                var response = WhenTryGetByIdAnonymously(MiniRedId);
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenValidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnService()
+            {
+                GivenValidBusinessDomain();
+                var response = WhenTryGetByIdAnonymously(MiniRedId);
+                ThenReturnService(response);
+            }
+
+            [Test]
+            public void GivenNoBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            {
+                GivenNoBusinessDomain();
+                var response = WhenTryGetAllAnonymously();
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenInvalidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            {
+                GivenInvalidBusinessDomain();
+                var response = WhenTryGetAllAnonymously();
+                ThenReturnNotAuthorised(response);
+            }
+
+            [Test]
+            public void GivenValidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnAllServices()
+            {
+                GivenValidBusinessDomain();
+                var response = WhenTryGetAllAnonymously();
+                ThenReturnAllServices(response);
+            }
+
+
+            private void GivenNoBusinessDomain()
+            {
+                BusinessDomain = null;
+            }
+
+            private void GivenInvalidBusinessDomain()
+            {
+                BusinessDomain = "abc123";
+            }
+
+            private void GivenValidBusinessDomain()
+            {
+                // Valid domain is already set.
+            }
+
+
+            private Response WhenTryGetByIdAnonymously(Guid serviceId)
+            {
+                var url = BuildGetByIdUrl(serviceId);
+                return GetAnonymously<ServiceData>(url);
+            }
+
+            private Response WhenTryGetAllAnonymously()
+            {
+                var url = BuildGetAllUrl();
+                return GetAnonymously<List<ServiceData>>(url);
+            }
+
+
+            private void ThenReturnNotAuthorised(Response response)
+            {
+                AssertUnauthorised(response);
+            }
         }
 
 
-        [Test]
-        public void WhenGetAll_ThenReturnAllServicesResponse()
+        [TestFixture]
+        public class AuthenticatedServiceGetTests : ServiceGetTests
         {
-            var response = WhenGetAll();
-            ThenReturnAllServicesResponse(response);
-        }
+            [Test]
+            public void WhenTryGetAll_ThenReturnAllServices()
+            {
+                var response = WhenTryGetAll();
+                ThenReturnAllServices(response);
+            }
 
-        [Test]
-        public void GivenInvalidServiceId_WhenGetById_ThenReturnNotFoundResponse()
-        {
-            var id = GivenInvalidServiceId();
-            var response = WhenGetById(id);
-            ThenReturnNotFoundResponse(response);
-        }
+            [Test]
+            public void GivenInvalidServiceId_WhenTryGetById_ThenReturnNotFound()
+            {
+                var serviceId = GivenInvalidServiceId();
+                var response = WhenTryGetById(serviceId);
+                ThenReturnNotFound(response);
+            }
 
-        [Test]
-        public void GivenValidServiceId_WhenGetById_ThenReturnServiceResponse()
-        {
-            var id = GivenValidServiceId();
-            var response = WhenGetById(id);
-            ThenReturnServiceResponse(response);
+            [Test]
+            public void GivenValidServiceId_WhenTryGetById_ThenReturnService()
+            {
+                var serviceId = GivenValidServiceId();
+                var response = WhenTryGetById(serviceId);
+                ThenReturnService(response);
+            }
         }
-
 
 
         private Guid GivenInvalidServiceId()
@@ -107,23 +135,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         }
 
 
-        private Response WhenGetAll()
+        private Response WhenTryGetAll()
         {
             var url = BuildGetAllUrl();
             return Get<List<ServiceData>>(url);
         }
 
-        private Response WhenGetById(Guid serviceId)
+        private Response WhenTryGetById(Guid serviceId)
         {
             var url = BuildGetByIdUrl(serviceId);
             return Get<ServiceData>(url);
         }
 
 
-        private void ThenReturnAllServicesResponse(Response response)
+        private void ThenReturnAllServices(Response response)
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
             Assert.That(response.Payload, Is.Not.Null);
             var services = (List<ServiceData>)response.Payload;
             Assert.That(services.Count, Is.EqualTo(2));
@@ -135,26 +164,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             Assert.That(serviceTwo.name, Is.EqualTo(MINI_RED_NAME));
         }
 
-        private void ThenReturnNotFoundResponse(Response response)
+        private void ThenReturnNotFound(Response response)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            AssertNotFound(response);
         }
 
-        private void ThenReturnServiceResponse(Response response)
+        private void ThenReturnService(Response response)
         {
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            var service = (ServiceData)response.Payload;
+            var service = AssertSuccessResponse<ServiceData>(response);
+            AssertMiniRedService(service);
+        }
+
+        private void AssertMiniRedService(ServiceData service)
+        {
             Assert.That(service.id, Is.EqualTo(MiniRedId));
             Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
             Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
             Assert.That(service.timing.duration, Is.EqualTo(45));
-            Assert.That(service.booking.studentCapacity, Is.EqualTo(7));
-            Assert.That(service.booking.isOnlineBookable, Is.EqualTo(true));
+            Assert.That(service.booking.studentCapacity, Is.EqualTo(8));
+            Assert.That(service.booking.isOnlineBookable, Is.EqualTo(false));
             Assert.That(service.presentation.colour, Is.EqualTo("red"));
-            Assert.That(service.repetition.sessionCount, Is.EqualTo(1));
-            Assert.That(service.repetition.repeatFrequency, Is.Null);
-            Assert.That(service.pricing.sessionPrice, Is.EqualTo(17.5));
-            Assert.That(service.pricing.coursePrice, Is.Null);
+            Assert.That(service.repetition.sessionCount, Is.EqualTo(10));
+            Assert.That(service.repetition.repeatFrequency, Is.EqualTo("w"));
+            Assert.That(service.pricing.sessionPrice, Is.EqualTo(12.5));
+            Assert.That(service.pricing.coursePrice, Is.EqualTo(100));
         }
     }
 }

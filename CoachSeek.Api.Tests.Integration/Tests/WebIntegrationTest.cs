@@ -185,7 +185,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 return JsonConvert.DeserializeObject<ApplicationError[]>(errors);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonSerializationException)
             {
                 return JsonConvert.DeserializeObject<ApplicationError>(errors);
             }            
