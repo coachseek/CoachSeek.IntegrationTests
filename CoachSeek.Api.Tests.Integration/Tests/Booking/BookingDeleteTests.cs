@@ -29,11 +29,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
         [Test]
-        public void GivenExistingBookingId_WhenTryDelete_ThenBookingIsDeleted()
+        public void GivenExistingSessionBookingId_WhenTryDelete_ThenSessionBookingIsDeleted()
         {
-            var id = GivenExistingBookingId();
+            var id = GivenExistingSessionBookingId();
             var response = WhenTryDelete(id);
-            ThenBookingIsDeleted(response);
+            ThenSessionBookingIsDeleted(response);
+        }
+
+        [Test]
+        public void GivenExistingCourseBookingId_WhenTryDelete_ThenCourseBookingIsDeleted()
+        {
+            var id = GivenExistingCourseBookingId();
+            var response = WhenTryDelete(id);
+            ThenCourseBookingIsDeleted(response);
         }
 
 
@@ -42,9 +50,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             return Guid.NewGuid();
         }
 
-        private Guid GivenExistingBookingId()
+        private Guid GivenExistingSessionBookingId()
         {
+            // Ensure session booking is there BEFORE the deletion
+            var getResponse = Get<SessionBookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            AssertSuccessResponse<SessionBookingData>(getResponse);
+
             return FredOnAaronOrakei14To15SessionId;
+        }
+
+        private Guid GivenExistingCourseBookingId()
+        {
+            // Ensure course booking is there BEFORE the deletion
+            var getResponse = Get<CourseBookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
+            AssertSuccessResponse<CourseBookingData>(getResponse);
+
+            return FredOnAaronOrakeiMiniBlueFor2DaysCourseId;
         }
 
 
@@ -54,11 +75,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        private void ThenBookingIsDeleted(Response response)
+        private void ThenSessionBookingIsDeleted(Response response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
             var getResponse = Get<BookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            AssertNotFound(getResponse);
+        }
+
+        private void ThenCourseBookingIsDeleted(Response response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            var getResponse = Get<BookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
             AssertNotFound(getResponse);
         }
     }

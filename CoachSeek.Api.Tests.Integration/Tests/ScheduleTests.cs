@@ -32,10 +32,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid HolidayCampId { get; set; }
         protected Guid AaronOrakei14To15SessionId { get; set; }
         protected Guid AaronOrakei16To17SessionId { get; set; }
-        protected Guid AaronRemuera9To10For8WeeksCourseId { get; set; }
-        protected Guid[] AaronRemuera9To10For8WeeksSessionIds { get; set; }
+        protected Guid AaronRemuera9To10For5WeeksCourseId { get; set; }
+        protected Guid[] AaronRemuera9To10For5WeeksSessionIds { get; set; }
         protected Guid BobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid[] BobbyRemueraHolidayCampFor3DaysSessionIds { get; set; }
+        protected Guid AaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
+        protected Guid[] AaronOrakeiMiniBlueFor2DaysSessionIds { get; set; }
         protected Guid FredId { get; set; }
         protected Guid BarneyId { get; set; }
         protected string FredEmail { get; set; }
@@ -43,6 +45,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid FredOnAaronOrakei14To15SessionId { get; set; }
         protected Guid BarneyOnAaronOrakei14To15SessionId { get; set; }
         protected Guid FredOnBobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
+        protected Guid FredOnAaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
 
         protected override string RelativePath
         {
@@ -302,17 +305,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             RegisterAaronRemuera9To10For8Weeks();
             RegisterBobbyRemueraHolidayCampFor3Days();
+            RegisterAaronOrakeiMiniBlueFor2Days();
         }
 
         private void RegisterAaronRemuera9To10For8Weeks()
         {
-            var json = CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson();
+            var json = CreateSessionSaveCommandAaronRemuera9To10For5WeeksJson();
             var response = PostCourse(json);
             var course = (CourseData)response.Payload;
-            AaronRemuera9To10For8WeeksCourseId = course.id;
-            AaronRemuera9To10For8WeeksSessionIds = new Guid[8];
-            for(var i = 0; i < 8; i++)
-                AaronRemuera9To10For8WeeksSessionIds[i] = course.sessions[i].id;
+            AaronRemuera9To10For5WeeksCourseId = course.id;
+            AaronRemuera9To10For5WeeksSessionIds = new Guid[5];
+            for(var i = 0; i < 5; i++)
+                AaronRemuera9To10For5WeeksSessionIds[i] = course.sessions[i].id;
         }
 
         private void RegisterBobbyRemueraHolidayCampFor3Days()
@@ -324,6 +328,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             BobbyRemueraHolidayCampFor3DaysSessionIds = new Guid[3];
             for (var i = 0; i < 3; i++)
                 BobbyRemueraHolidayCampFor3DaysSessionIds[i] = course.sessions[i].id;
+        }
+
+        private void RegisterAaronOrakeiMiniBlueFor2Days()
+        {
+            var json = CreateSessionSaveCommandAaronOrakeiMiniBlueFor2DaysJson();
+            var response = PostCourse(json);
+            var course = (CourseData)response.Payload;
+            AaronOrakeiMiniBlueFor2DaysCourseId = course.id;
+            AaronOrakeiMiniBlueFor2DaysSessionIds = new Guid[2];
+            for (var i = 0; i < 2; i++)
+                AaronOrakeiMiniBlueFor2DaysSessionIds[i] = course.sessions[i].id;
         }
 
 
@@ -424,10 +439,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For8Weeks()
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For5Weeks()
         {
             var command = CreateSessionSaveCommandAaronRemuera9To10();
-            command.repetition = new ApiRepetition {sessionCount = 8, repeatFrequency = "w"};
+            command.repetition = new ApiRepetition {sessionCount = 5, repeatFrequency = "w"};
 
             return command;
         }
@@ -447,14 +462,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        private string CreateSessionSaveCommandAaronRemuera9To10For8WeeksJson()
+        protected ApiSessionSaveCommand CreateSessionSaveComandAaronOrakeiMiniBlueFor2Days()
         {
-            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronRemuera9To10For8Weeks());
+            return new ApiSessionSaveCommand
+            {
+                location = new ApiLocationKey { id = OrakeiId },
+                coach = new ApiCoachKey { id = AaronId },
+                service = new ApiServiceKey { id = MiniBlueId },
+                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(1), startTime = "9:00", duration = 60 },
+                booking = new ApiSessionBooking { studentCapacity = 6, isOnlineBookable = true },
+                repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
+                pricing = new ApiPricing { sessionPrice = 25, coursePrice = 40 },
+                presentation = new ApiPresentation { colour = "blue" }
+            };
+        }
+
+        private string CreateSessionSaveCommandAaronRemuera9To10For5WeeksJson()
+        {
+            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronRemuera9To10For5Weeks());
         }
 
         private string CreateSessionSaveCommandBobbyRemueraHolidayCampFor3DaysJson()
         {
             return JsonConvert.SerializeObject(CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days());
+        }
+
+        private string CreateSessionSaveCommandAaronOrakeiMiniBlueFor2DaysJson()
+        {
+            return JsonConvert.SerializeObject(CreateSessionSaveComandAaronOrakeiMiniBlueFor2Days());
         }
 
         private void RegisterTestCustomers()
@@ -519,14 +554,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookCustomersOntoCourses()
         {
-            //BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days();
+            BookFredFlintstoneOntoAaronOrakeiMiniBlueFor2Days();
         }
 
-        private void BookFredFlintstoneOntoBobbyRemueraHolidayCampFor3Days()
+        private void BookFredFlintstoneOntoAaronOrakeiMiniBlueFor2Days()
         {
-            var json = CreateNewBookingSaveCommand(BobbyRemueraHolidayCampFor3DaysCourseId, FredId);
+            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniBlueFor2DaysCourseId, FredId);
             var response = PostBooking(json);
-            FredOnBobbyRemueraHolidayCampFor3DaysCourseId = ((BookingData)response.Payload).id;
+            FredOnAaronOrakeiMiniBlueFor2DaysCourseId = ((BookingData)response.Payload).id;
         }
 
         private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)

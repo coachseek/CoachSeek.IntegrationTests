@@ -136,12 +136,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
             }
 
-            private void ThenReturnNonExistentSessionAndCustomerErrors(Response response)
-            {
-                AssertMultipleErrors(response, new[,] { { "This session does not exist.", "booking.session.id" },
-                                                        { "This customer does not exist.", "booking.customer.id" } });
-            }
-
             private void ThenReturnSuccessfulBookingResponse(Response response)
             {
                 var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
@@ -175,11 +169,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public class BookingCourseTests : BookingPostTests
         {
             [Test]
-            public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenReturnSuccessfulCourseBookingResponse()
+            public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenCreateCourseBooking()
             {
                 var command = GivenACustomerWhoIsNotBookedOntoACourse();
                 var response = WhenTryBookCourse(command);
-                ThenReturnSuccessfulCourseBookingResponse(response);
+                ThenCreateCourseBooking(response);
             }
 
 
@@ -208,7 +202,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             }
 
 
-            private void ThenReturnSuccessfulCourseBookingResponse(Response response)
+            private void ThenCreateCourseBooking(Response response)
             {
                 var courseBooking = AssertSuccessResponse<CourseBookingData>(response);
 

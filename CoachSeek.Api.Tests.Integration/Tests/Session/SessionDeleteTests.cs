@@ -99,7 +99,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             // Other sessions are still there.
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei14To15SessionId);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);
+            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
 
@@ -119,7 +119,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             // Other sessions are still there.
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);
+            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
 
@@ -139,7 +139,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertStatusCode(getResponseSession3.StatusCode, HttpStatusCode.OK);
             var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For8WeeksCourseId);
+            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
     }

@@ -101,7 +101,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse();
             var response = WhenTryUpdateCourse(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For8WeeksSessionIds[6].ToString()));
+            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For5WeeksSessionIds[3].ToString()));
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenNonExistentCourseId()
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+            var course = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
             course.id = Guid.NewGuid();
 
             return course;
@@ -139,8 +139,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenNonExistentLocationId()
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
-            course.id = AaronRemuera9To10For8WeeksCourseId;
+            var course = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
+            course.id = AaronRemuera9To10For5WeeksCourseId;
             course.location.id = Guid.NewGuid();
 
             return course;
@@ -148,8 +148,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenNonExistentCoachId()
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
-            course.id = AaronRemuera9To10For8WeeksCourseId;
+            var course = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
+            course.id = AaronRemuera9To10For5WeeksCourseId;
             course.coach.id = Guid.NewGuid();
 
             return course;
@@ -157,8 +157,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenNonExistentServiceId()
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
-            course.id = AaronRemuera9To10For8WeeksCourseId;
+            var course = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
+            course.id = AaronRemuera9To10For5WeeksCourseId;
             course.service.id = Guid.NewGuid();
 
             return course;
@@ -166,9 +166,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenWantToTurnCourseIntoSession()
         {
-            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
 
-            courseCommand.id = AaronRemuera9To10For8WeeksCourseId;
+            courseCommand.id = AaronRemuera9To10For5WeeksCourseId;
             courseCommand.repetition = new ApiRepetition { sessionCount = 1 };
 
             return courseCommand;
@@ -176,10 +176,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiSessionSaveCommand GivenWantToChangeRepetitionOfCourse()
         {
-            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For8Weeks();
+            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For5Weeks();
 
-            courseCommand.id = AaronRemuera9To10For8WeeksCourseId;
-            courseCommand.repetition = new ApiRepetition { sessionCount = 5, repeatFrequency = "d" };
+            courseCommand.id = AaronRemuera9To10For5WeeksCourseId;
+            courseCommand.repetition = new ApiRepetition { sessionCount = 3, repeatFrequency = "d" };
 
             return courseCommand;
         }
@@ -342,7 +342,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                id = AaronRemuera9To10For8WeeksSessionIds[2],
+                id = AaronRemuera9To10For5WeeksSessionIds[2],
                 location = new ApiLocationKey { id = OrakeiId },
                 coach = new ApiCoachKey { id = BobbyId },
                 service = new ApiServiceKey { id = MiniGreenId },
@@ -357,7 +357,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private ApiSessionSaveCommand GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself()
         {
             var command = CreateSessionSaveCommandAaronRemuera9To10();
-            command.id = AaronRemuera9To10For8WeeksSessionIds[2];
+            command.id = AaronRemuera9To10For5WeeksSessionIds[2];
             command.timing.startDate = GetDateFormatNumberOfWeeksOut(3);
             command.timing.startTime = "9:15";
 
@@ -367,8 +367,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private ApiSessionSaveCommand GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse()
         {
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself();
-            command.id = AaronRemuera9To10For8WeeksSessionIds[2];
-            command.timing.startDate = GetDateFormatNumberOfWeeksOut(7);
+            command.id = AaronRemuera9To10For5WeeksSessionIds[2];
+            command.timing.startDate = GetDateFormatNumberOfWeeksOut(4);
             command.timing.startTime = "9:45";
 
             return command;
@@ -421,8 +421,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
-            Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For8WeeksSessionIds[2]));
+            Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For5WeeksCourseId));
+            Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[2]));
 
             AssertSessionLocation(session.location, RemueraId, "Remuera Racquets Club");
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
@@ -440,8 +440,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For8WeeksCourseId));
-            Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For8WeeksSessionIds[2]));
+            Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For5WeeksCourseId));
+            Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[2]));
 
             AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
             AssertSessionCoach(session.coach, BobbyId, "Bobby Smith");
