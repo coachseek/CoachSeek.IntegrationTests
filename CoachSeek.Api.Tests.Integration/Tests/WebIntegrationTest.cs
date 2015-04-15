@@ -18,9 +18,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string BaseUrl
         {
 #if DEBUG
-            get { return "http://localhost:5272/api"; }
+            get { return "http://localhost:5272"; }
 #else
-            get { return "http://coachseek-api.azurewebsites.net/api"; }
+            get { return "http://api.coachseek.com"; }
 #endif
         }
 
