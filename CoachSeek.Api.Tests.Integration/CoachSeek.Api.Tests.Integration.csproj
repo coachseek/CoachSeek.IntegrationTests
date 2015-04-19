@@ -56,6 +56,7 @@
     <Compile Include="Models\ApiSessionKey.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
     <Compile Include="Models\CourseBookingData.cs" />
+    <Compile Include="Models\SessionSearchData.cs" />
     <Compile Include="Models\SingleSessionBookingData.cs" />
     <Compile Include="Models\CourseData.cs" />
     <Compile Include="Models\CustomerBookingData.cs" />

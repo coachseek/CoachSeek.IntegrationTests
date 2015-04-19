@@ -258,7 +258,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var courseBooking = course.booking.bookings[0];
             Assert.That(courseBooking.id, Is.EqualTo(courseBookingId));
             Assert.That(courseBooking.parentId, Is.Null);
-            Assert.That(courseBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             var customerBarney = courseBooking.customer;
             Assert.That(customerBarney.id, Is.EqualTo(BarneyId));
             Assert.That(customerBarney.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
@@ -271,7 +270,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var firstSessionFirstBooking = course.sessions[0].booking.bookings[0];
             Assert.That(firstSessionFirstBooking.id, Is.EqualTo(firstSessionBookingId));
             Assert.That(firstSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(firstSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
             Assert.That(firstSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
             Assert.That(firstSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
             Assert.That(firstSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));
@@ -282,7 +280,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var secondSessionFirstBooking = course.sessions[1].booking.bookings[0];
             Assert.That(secondSessionFirstBooking.id, Is.EqualTo(secondSessionBookingId));
             Assert.That(secondSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(secondSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
             Assert.That(secondSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
             Assert.That(secondSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
             Assert.That(secondSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));
@@ -292,7 +289,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var secondSessionSecondBooking = course.sessions[1].booking.bookings[1];
             Assert.That(secondSessionSecondBooking.id, Is.EqualTo(FredSessionBookingId));
             Assert.That(secondSessionSecondBooking.parentId, Is.Null);
-            Assert.That(secondSessionSecondBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
             Assert.That(secondSessionSecondBooking.customer.id, Is.EqualTo(FredId));
             Assert.That(secondSessionSecondBooking.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
             Assert.That(secondSessionSecondBooking.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
@@ -303,7 +299,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var thirdSessionFirstBooking = course.sessions[2].booking.bookings[0];
             Assert.That(thirdSessionFirstBooking.id, Is.EqualTo(thirdSessionBookingId));
             Assert.That(thirdSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(thirdSessionFirstBooking.sessionId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
             Assert.That(thirdSessionFirstBooking.customer.id, Is.EqualTo(customerBarney.id));
             Assert.That(thirdSessionFirstBooking.customer.firstName, Is.EqualTo(customerBarney.firstName));
             Assert.That(thirdSessionFirstBooking.customer.lastName, Is.EqualTo(customerBarney.lastName));

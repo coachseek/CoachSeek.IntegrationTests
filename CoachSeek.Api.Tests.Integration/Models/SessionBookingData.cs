@@ -7,6 +7,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
     {
         public int? studentCapacity { get; set; }
         public bool isOnlineBookable { get; set; } // eg. Is private or not
+        public int bookingCount { get; set; }
         public IList<CustomerBookingData> bookings { get; set; }
     }
 }

@@ -6,7 +6,6 @@ namespace CoachSeek.Api.Tests.Integration.Models
     {
         public Guid id { get; set; }
         public Guid? parentId { get; set; }
-        public Guid sessionId { get; set; }
 
         public CustomerData customer { get; set; }
     }
