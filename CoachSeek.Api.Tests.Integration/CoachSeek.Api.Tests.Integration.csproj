@@ -56,6 +56,14 @@
     <Compile Include="Models\ApiSessionKey.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
     <Compile Include="Models\CourseBookingData.cs" />
+    <Compile Include="Models\Expectations\CustomerWilma.cs" />
+    <Compile Include="Models\Expectations\CustomerFred.cs" />
+    <Compile Include="Models\Expectations\CustomerBarney.cs" />
+    <Compile Include="Models\Expectations\ExpectedCustomer.cs" />
+    <Compile Include="Models\Expectations\ExpectedSingleSession.cs" />
+    <Compile Include="Models\Expectations\ExpectedStandaloneSession.cs" />
+    <Compile Include="Models\Expectations\StandaloneAaronOrakei14To15.cs" />
+    <Compile Include="Models\Expectations\StandaloneAaronOrakei16To17.cs" />
     <Compile Include="Models\SessionSearchData.cs" />
     <Compile Include="Models\SingleSessionBookingData.cs" />
     <Compile Include="Models\CourseData.cs" />
@@ -95,6 +103,7 @@
     <Compile Include="Models\ServiceRepetition.cs" />
     <Compile Include="Models\UserData.cs" />
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
+    <Compile Include="Random.cs" />
     <Compile Include="Tests\Booking\BookingPostTests.cs" />
     <Compile Include="Tests\Booking\BookingDeleteTests.cs" />
     <Compile Include="Tests\BusinessRegistrationTests.cs" />

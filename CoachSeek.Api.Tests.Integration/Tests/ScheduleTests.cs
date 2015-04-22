@@ -1,5 +1,6 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -16,10 +17,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected const string MINI_BLUE_NAME = "Mini Blue";
         protected const string MINI_GREEN_NAME = "Mini Green";
         protected const string MINI_ORANGE_NAME = "Mini Orange";
-        protected const string FRED_FIRST_NAME = "Fred";
-        protected const string FLINTSTONE_LAST_NAME = "Flintstone";
-        protected const string BARNEY_FIRST_NAME = "Barney";
-        protected const string RUBBLE_LAST_NAME = "Rubble";
 
         protected Guid OrakeiId { get; set; }
         protected Guid RemueraId { get; set; }
@@ -30,26 +27,50 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid MiniGreenId { get; set; }
         protected Guid MiniOrangeId { get; set; }
         protected Guid HolidayCampId { get; set; }
-        protected Guid AaronOrakei14To15SessionId { get; set; }
-        protected Guid AaronOrakei16To17SessionId { get; set; }
+        //protected Guid AaronOrakei14To15SessionId { get; set; }
+        //protected Guid AaronOrakei16To17SessionId { get; set; }
         protected Guid AaronRemuera9To10For5WeeksCourseId { get; set; }
         protected Guid[] AaronRemuera9To10For5WeeksSessionIds { get; set; }
         protected Guid BobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid[] BobbyRemueraHolidayCampFor3DaysSessionIds { get; set; }
         protected Guid AaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
         protected Guid[] AaronOrakeiMiniBlueFor2DaysSessionIds { get; set; }
-        protected Guid FredId { get; set; }
-        protected Guid BarneyId { get; set; }
-        protected string FredEmail { get; set; }
-        protected string FredPhone { get; set; }
+
         protected Guid FredOnAaronOrakei14To15SessionId { get; set; }
         protected Guid BarneyOnAaronOrakei14To15SessionId { get; set; }
         protected Guid FredOnBobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid FredOnAaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
 
+
+        protected StandaloneAaronOrakei14To15 AaronOrakei14To15 { get; set; }
+        protected StandaloneAaronOrakei16To17 AaronOrakei16To17 { get; set; }
+
+        protected CustomerFred Fred { get; set; }
+        protected CustomerBarney Barney { get; set; }
+        protected CustomerWilma Wilma { get; set; }
+
+
         protected override string RelativePath
         {
             get { return "Sessions"; }
+        }
+
+        protected string AaronOrakei14To15SessionDescription
+        {
+            get
+            {
+                return string.Format("Mini Red at Orakei Tennis Club with Aaron Smith on {0} at 14:00",
+                                     GetFormattedDateOneWeekOut());
+            }
+        }
+
+        protected string AaronOrakei16To17SessionDescription
+        {
+            get
+            {
+                return string.Format("Mini Red at Orakei Tennis Club with Aaron Smith on {0} at 16:00",
+                                     GetFormattedDateOneWeekOut());
+            }
         }
 
 
@@ -283,22 +304,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestSessions()
         {
-            RegisterAaronOrakei14To15();
-            RegisterAaronOrakei16To17();
+            AaronOrakei14To15 = new StandaloneAaronOrakei14To15(AaronId, OrakeiId, MiniRedId, GetDateFormatNumberOfWeeksOut(3));
+            AaronOrakei16To17 = new StandaloneAaronOrakei16To17(AaronId, OrakeiId, MiniRedId, GetDateFormatNumberOfWeeksOut(1));
+
+            RegisterTestSession(AaronOrakei14To15);
+            RegisterTestSession(AaronOrakei16To17);
         }
 
-        private void RegisterAaronOrakei14To15()
+        private void RegisterTestSession(ExpectedStandaloneSession session)
         {
-            var json = CreateSessionSaveCommandAaronOrakei14To15Json();
+            var json = CreateSessionSaveCommandJson(session);
             var response = PostSession(json);
-            AaronOrakei14To15SessionId = ((SessionData)response.Payload).id;
-        }
-
-        private void RegisterAaronOrakei16To17()
-        {
-            var json = CreateSessionSaveCommandAaronOrakei16To17Json();
-            var response = PostSession(json);
-            AaronOrakei16To17SessionId = ((SessionData)response.Payload).id;
+            session.Id = ((SessionData)response.Payload).id;
         }
 
         private void RegisterTestCourses()
@@ -398,10 +415,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 presentation = new ApiPresentation { colour = "red" }
             };
         }
-
-        private string CreateSessionSaveCommandAaronOrakei14To15Json()
+        protected ApiSessionSaveCommand CreateSessionSaveCommand(ExpectedStandaloneSession session)
         {
-            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronOrakei14To15());
+            return new ApiSessionSaveCommand
+            {
+                coach = session.Coach,
+                location = session.Location,
+                service = session.Service,
+                timing = session.Timing,
+                booking = session.Booking,
+                repetition = session.Repetition,
+                pricing = session.Pricing,
+                presentation = session.Presentation
+            };
+        }
+
+        private string CreateSessionSaveCommandJson(ExpectedStandaloneSession session)
+        {
+            return JsonConvert.SerializeObject(CreateSessionSaveCommand(session));
         }
 
         protected ApiSessionSaveCommand CreateSessionSaveCommandAaronOrakei16To17()
@@ -412,7 +443,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
+                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = false },
                 repetition = new ApiRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 19.95m },
                 presentation = new ApiPresentation { colour = "red" }
@@ -494,24 +525,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestCustomers()
         {
-            RegisterFredFlintstoneCustomer();
-            RegisterBarneyRubbleCustomer();
+            Fred = new CustomerFred();
+            Barney = new CustomerBarney();
+            Wilma = new CustomerWilma();
+
+            RegisterTestCustomer(Fred);
+            RegisterTestCustomer(Barney);
+            RegisterTestCustomer(Wilma);
         }
 
-        private void RegisterFredFlintstoneCustomer()
+        private void RegisterTestCustomer(ExpectedCustomer customer)
         {
-            FredEmail = RandomEmail;
-            FredPhone = RandomString;
-            var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME, FredEmail, FredPhone);
+            var json = CreateNewCustomerSaveCommand(customer);
             var response = PostCustomer(json);
-            FredId = ((CustomerData)response.Payload).id;
-        }
-
-        private void RegisterBarneyRubbleCustomer()
-        {
-            var json = CreateNewCustomerSaveCommand(BARNEY_FIRST_NAME, RUBBLE_LAST_NAME);
-            var response = PostCustomer(json);
-            BarneyId = ((CustomerData)response.Payload).id;
+            customer.Id = ((CustomerData)response.Payload).id;
         }
 
         private Response PostCustomer(string json)
@@ -519,14 +546,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<CustomerData>(json, "Customers");
         }
 
-        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email = null, string phone = null)
+        private string CreateNewCustomerSaveCommand(ExpectedCustomer expectedCustomer)
         {
             var customer = new ApiCustomerSaveCommand
             {
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                phone = phone
+                firstName = expectedCustomer.FirstName,
+                lastName = expectedCustomer.LastName,
+                email = expectedCustomer.Email,
+                phone = expectedCustomer.Phone
             };
 
             return JsonConvert.SerializeObject(customer);
@@ -540,14 +567,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookFredFlintstoneOntoAaronOrakei14To15()
         {
-            var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, FredId);
+            var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Fred.Id);
             var response = PostBooking(json);
             FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
         }
 
         private void BookBarneyRubbleOntoAaronOrakei14To15()
         {
-            var json = CreateNewBookingSaveCommand(AaronOrakei14To15SessionId, BarneyId);
+            var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Barney.Id);
             var response = PostBooking(json);
             BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
         }
@@ -559,7 +586,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookFredFlintstoneOntoAaronOrakeiMiniBlueFor2Days()
         {
-            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniBlueFor2DaysCourseId, FredId);
+            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniBlueFor2DaysCourseId, Fred.Id);
             var response = PostBooking(json);
             FredOnAaronOrakeiMiniBlueFor2DaysCourseId = ((BookingData)response.Payload).id;
         }

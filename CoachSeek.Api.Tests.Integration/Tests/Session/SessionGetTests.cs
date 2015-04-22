@@ -72,12 +72,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Guid GivenValidSessionWithoutBookings()
         {
-            return AaronOrakei16To17SessionId;
+            return AaronOrakei16To17.Id;
         }
 
         private Guid GivenValidSessionWithBookings()
         {
-            return AaronOrakei14To15SessionId;
+            return AaronOrakei14To15.Id;
         }
 
 
@@ -104,7 +104,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei16To17SessionId));
+            Assert.That(session.id, Is.EqualTo(AaronOrakei16To17.Id));
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
@@ -112,7 +112,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
             AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "16:00", 60);
-            AssertSessionBooking(session.booking, 13, true);
+            AssertSessionBooking(session.booking, 13, false);
             AssertSessionRepetition(session.repetition, 1, null);
             AssertSessionPricing(session.pricing, 19.95m, null);
             AssertSessionPresentation(session.presentation, "red");
@@ -123,7 +123,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei14To15SessionId));
+            Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
@@ -139,19 +139,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var bookings = session.booking.bookings;
             var bookingOne = bookings[0];
             Assert.That(bookingOne.id, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
-            Assert.That(bookingOne.customer.id, Is.EqualTo(FredId));
-            Assert.That(bookingOne.customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
-            Assert.That(bookingOne.customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(bookingOne.customer.email, Is.EqualTo(FredEmail));
-            Assert.That(bookingOne.customer.phone, Is.EqualTo(FredPhone.ToUpper()));
+            Assert.That(bookingOne.customer.id, Is.EqualTo(Fred.Id));
+            Assert.That(bookingOne.customer.firstName, Is.EqualTo(Fred.FirstName));
+            Assert.That(bookingOne.customer.lastName, Is.EqualTo(Fred.LastName));
+            Assert.That(bookingOne.customer.email, Is.EqualTo(Fred.Email));
+            Assert.That(bookingOne.customer.phone, Is.EqualTo(Fred.Phone.ToUpper()));
 
             var bookingTwo = bookings[1];
             Assert.That(bookingTwo.id, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
-            Assert.That(bookingTwo.customer.id, Is.EqualTo(BarneyId));
-            Assert.That(bookingTwo.customer.firstName, Is.EqualTo(BARNEY_FIRST_NAME));
-            Assert.That(bookingTwo.customer.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
-            Assert.That(bookingTwo.customer.email, Is.Null);
-            Assert.That(bookingTwo.customer.phone, Is.Null);
+            Assert.That(bookingTwo.customer.id, Is.EqualTo(Barney.Id));
+            Assert.That(bookingTwo.customer.firstName, Is.EqualTo(Barney.FirstName));
+            Assert.That(bookingTwo.customer.lastName, Is.EqualTo(Barney.LastName));
+            Assert.That(bookingTwo.customer.email, Is.EqualTo(Barney.Email));
+            Assert.That(bookingTwo.customer.phone, Is.EqualTo(Barney.Phone));
         }
     }
 }

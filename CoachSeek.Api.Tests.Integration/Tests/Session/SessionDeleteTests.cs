@@ -64,12 +64,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Guid GivenStandaloneSessionWithoutBookings()
         {
-            return AaronOrakei16To17SessionId;
+            return AaronOrakei16To17.Id;
         }
 
         private Guid GivenStandaloneSessionWithBookings()
         {
-            return AaronOrakei14To15SessionId;
+            return AaronOrakei14To15.Id;
         }
 
         private Guid GivenCourseWithoutBookings()
@@ -93,11 +93,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
+            var getResponse = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertNotFound(getResponse);
 
             // Other sessions are still there.
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei14To15SessionId);
+            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei14To15.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
@@ -117,7 +117,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertNotFound(getResponseSession3);
 
             // Other sessions are still there.
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
+            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
@@ -137,7 +137,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertStatusCode(getResponseSession1.StatusCode, HttpStatusCode.OK);
             var getResponseSession3 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
             AssertStatusCode(getResponseSession3.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17SessionId);
+            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
