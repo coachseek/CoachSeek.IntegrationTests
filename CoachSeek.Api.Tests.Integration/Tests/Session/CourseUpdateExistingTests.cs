@@ -193,7 +193,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var courseCommand = CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
             courseCommand.id = BobbyRemueraHolidayCampFor3DaysCourseId;
 
-            courseCommand.location = new ApiLocationKey { id = OrakeiId };
+            courseCommand.location = new ApiLocationKey { id = Orakei.Id };
             courseCommand.coach = new ApiCoachKey { id = AaronId };
             courseCommand.booking = new ApiSessionBooking {studentCapacity = 30, isOnlineBookable = true};
             courseCommand.pricing = new ApiPricing {sessionPrice = 150, coursePrice = 220};
@@ -220,7 +220,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(course, Is.Not.Null);
             Assert.That(course.parentId, Is.Null);
             Assert.That(course.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            AssertSessionLocation(course.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(course.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(course.coach, AaronId, "Aaron Smith");
             AssertSessionService(course.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(2), "9:30", 300);
@@ -234,7 +234,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSession, Is.Not.Null);
             Assert.That(firstSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(firstSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
-            AssertSessionLocation(firstSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(firstSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(firstSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(firstSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(2), "9:30", 300);
@@ -247,7 +247,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(secondSession, Is.Not.Null);
             Assert.That(secondSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(secondSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
-            AssertSessionLocation(secondSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(secondSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(secondSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(secondSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(3), "9:30", 300);
@@ -260,7 +260,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(thirdSession, Is.Not.Null);
             Assert.That(thirdSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(thirdSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
-            AssertSessionLocation(thirdSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(thirdSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(thirdSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(thirdSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(6), "9:30", 300);
@@ -277,7 +277,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(course, Is.Not.Null);
             Assert.That(course.parentId, Is.Null);
             Assert.That(course.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            AssertSessionLocation(course.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(course.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(course.coach, AaronId, "Aaron Smith");
             AssertSessionService(course.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(4), "9:30", 300);
@@ -291,7 +291,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSession, Is.Not.Null);
             Assert.That(firstSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(firstSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
-            AssertSessionLocation(firstSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(firstSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(firstSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(firstSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(4), "9:30", 300);
@@ -304,7 +304,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(secondSession, Is.Not.Null);
             Assert.That(secondSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(secondSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
-            AssertSessionLocation(secondSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(secondSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(secondSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(secondSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(5), "9:30", 300);
@@ -317,7 +317,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(thirdSession, Is.Not.Null);
             Assert.That(thirdSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
             Assert.That(thirdSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
-            AssertSessionLocation(thirdSession.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(thirdSession.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(thirdSession.coach, AaronId, "Aaron Smith");
             AssertSessionService(thirdSession.service, HolidayCampId, "Holiday Camp");
             AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(8), "9:30", 300);
@@ -343,7 +343,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new ApiSessionSaveCommand
             {
                 id = AaronRemuera9To10For5WeeksSessionIds[2],
-                location = new ApiLocationKey { id = OrakeiId },
+                location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = BobbyId },
                 service = new ApiServiceKey { id = MiniGreenId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "10:30", duration = 45 },
@@ -424,7 +424,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For5WeeksCourseId));
             Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[2]));
 
-            AssertSessionLocation(session.location, RemueraId, "Remuera Racquets Club");
+            AssertSessionLocation(session.location, Remuera.Id, Remuera.Name);
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
@@ -443,7 +443,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.EqualTo(AaronRemuera9To10For5WeeksCourseId));
             Assert.That(session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[2]));
 
-            AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, BobbyId, "Bobby Smith");
             AssertSessionService(session.service, MiniGreenId, "Mini Green");
 

@@ -118,7 +118,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new ApiSessionSaveCommand
             {
                 id = AaronOrakei14To15.Id,
-                location = new ApiLocationKey { id = OrakeiId },
+                location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 },
@@ -135,7 +135,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             command.id = AaronOrakei16To17.Id;
             command.service.id = MiniBlueId;
-            command.location.id = RemueraId;
+            command.location.id = Remuera.Id;
 
             command.booking = new ApiSessionBooking { studentCapacity = 5, isOnlineBookable = true };
             command.repetition = new ApiRepetition { sessionCount = 1 };
@@ -155,7 +155,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 id = AaronOrakei14To15.Id,
                 coach = new ApiCoachKey { id = AaronId },
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 service = new ApiServiceKey { id = MiniBlueId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "9:45", duration = 60 },
                 booking = new ApiSessionBooking { studentCapacity = 1, isOnlineBookable = false },
@@ -184,7 +184,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new ApiSessionSaveCommand
             {
                 id = AaronOrakei14To15.Id,
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = BobbyId },
                 service = new ApiServiceKey { id = MiniGreenId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(2), startTime = "22:00", duration = 30 },
@@ -203,7 +203,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.Null);
             Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
 
-            AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(session.location, Orakei.Id, "Orakei Tennis Club");
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
@@ -223,7 +223,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session, Is.Not.Null);
             Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
 
-            AssertSessionLocation(session.location, RemueraId, REMUERA_NAME);
+            AssertSessionLocation(session.location, Remuera.Id, Remuera.Name);
             AssertSessionCoach(session.coach, BobbyId, "Bobby Smith");
             AssertSessionService(session.service, MiniGreenId, "Mini Green");
             AssertSessionTiming(session.timing, GetFormattedDateTwoWeeksOut(), "22:00", 30);

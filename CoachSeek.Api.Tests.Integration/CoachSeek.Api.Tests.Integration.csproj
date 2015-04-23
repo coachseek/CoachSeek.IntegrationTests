@@ -59,9 +59,12 @@
     <Compile Include="Models\Expectations\CustomerWilma.cs" />
     <Compile Include="Models\Expectations\CustomerFred.cs" />
     <Compile Include="Models\Expectations\CustomerBarney.cs" />
+    <Compile Include="Models\Expectations\ExpectedLocation.cs" />
     <Compile Include="Models\Expectations\ExpectedCustomer.cs" />
     <Compile Include="Models\Expectations\ExpectedSingleSession.cs" />
     <Compile Include="Models\Expectations\ExpectedStandaloneSession.cs" />
+    <Compile Include="Models\Expectations\LocationRemuera.cs" />
+    <Compile Include="Models\Expectations\LocationOrakei.cs" />
     <Compile Include="Models\Expectations\StandaloneAaronOrakei14To15.cs" />
     <Compile Include="Models\Expectations\StandaloneAaronOrakei16To17.cs" />
     <Compile Include="Models\SessionSearchData.cs" />

@@ -185,7 +185,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 Assert.That(sessions.Count, Is.EqualTo(4));
                 foreach (var session in sessions)
-                    Assert.That(session.location.id, Is.EqualTo(OrakeiId));
+                    Assert.That(session.location.id, Is.EqualTo(Orakei.Id));
             }
 
             private void ThenReturnSessionsForService(Response response)
@@ -359,8 +359,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var firstStandalone = standalones[0];
                 Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
                 Assert.That(firstStandalone.parentId, Is.Null);
-                Assert.That(firstStandalone.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(firstStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(firstStandalone.timing.startTime, Is.EqualTo("14:00"));
                 Assert.That(firstStandalone.booking.bookingCount, Is.EqualTo(2));
                 Assert.That(firstStandalone.booking.bookings, Is.Null); // Ensure booking details are gone
@@ -372,8 +372,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var firstCourse = courses[0];
                 Assert.That(firstCourse.id, Is.EqualTo(AaronOrakeiMiniBlueFor2DaysCourseId));
                 Assert.That(firstCourse.parentId, Is.Null);
-                Assert.That(firstCourse.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(firstCourse.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(firstCourse.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(firstCourse.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(firstCourse.timing.startDate, Is.EqualTo(GetDateFormatNumberOfDaysOut(1)));
                 Assert.That(firstCourse.timing.startTime, Is.EqualTo("9:00"));
                 Assert.That(firstCourse.booking.bookingCount, Is.EqualTo(1));
@@ -400,8 +400,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var firstStandalone = standalones[0];
                 Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
                 Assert.That(firstStandalone.parentId, Is.Null);
-                Assert.That(firstStandalone.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(firstStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(firstStandalone.timing.startTime, Is.EqualTo("14:00"));
                 Assert.That(firstStandalone.booking.bookingCount, Is.EqualTo(2));
                 Assert.That(firstStandalone.booking.bookings, Is.Null); // Ensure booking details are gone
@@ -637,15 +637,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var firstStandalone = standalones[0];
                 Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei16To17.Id));
                 Assert.That(firstStandalone.parentId, Is.Null);
-                Assert.That(firstStandalone.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(firstStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(firstStandalone.timing.startTime, Is.EqualTo("16:00"));
 
                 var secondStandalone = standalones[1];
                 Assert.That(secondStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
                 Assert.That(secondStandalone.parentId, Is.Null);
-                Assert.That(secondStandalone.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(secondStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(secondStandalone.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(secondStandalone.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(secondStandalone.timing.startTime, Is.EqualTo("14:00"));
                 Assert.That(secondStandalone.booking.bookings.Count, Is.EqualTo(2));
 
@@ -656,8 +656,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var firstCourse = courses[0];
                 Assert.That(firstCourse.id, Is.EqualTo(AaronOrakeiMiniBlueFor2DaysCourseId));
                 Assert.That(firstCourse.parentId, Is.Null);
-                Assert.That(firstCourse.location.id, Is.EqualTo(OrakeiId));
-                Assert.That(firstCourse.location.name, Is.EqualTo(ORAKEI_NAME));
+                Assert.That(firstCourse.location.id, Is.EqualTo(Orakei.Id));
+                Assert.That(firstCourse.location.name, Is.EqualTo(Orakei.Name));
                 Assert.That(firstCourse.timing.startDate, Is.EqualTo(GetDateFormatNumberOfDaysOut(1)));
                 Assert.That(firstCourse.timing.startTime, Is.EqualTo("9:00"));
                 Assert.That(firstCourse.booking.bookingCount, Is.EqualTo(1));
@@ -685,15 +685,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var firstStandalone = standalones[0];
             Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei16To17.Id));
             Assert.That(firstStandalone.parentId, Is.Null);
-            Assert.That(firstStandalone.location.id, Is.EqualTo(OrakeiId));
-            Assert.That(firstStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+            Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
+            Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
             Assert.That(firstStandalone.timing.startTime, Is.EqualTo("16:00"));
 
             var secondStandalone = standalones[1];
             Assert.That(secondStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
             Assert.That(secondStandalone.parentId, Is.Null);
-            Assert.That(secondStandalone.location.id, Is.EqualTo(OrakeiId));
-            Assert.That(secondStandalone.location.name, Is.EqualTo(ORAKEI_NAME));
+            Assert.That(secondStandalone.location.id, Is.EqualTo(Orakei.Id));
+            Assert.That(secondStandalone.location.name, Is.EqualTo(Orakei.Name));
             Assert.That(secondStandalone.timing.startTime, Is.EqualTo("14:00"));
             Assert.That(secondStandalone.booking.bookings.Count, Is.EqualTo(2));
 
@@ -760,7 +760,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Tuple<string, string, Guid?, Guid?, Guid?> GivenValidLocationId()
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, OrakeiId, null);
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, Orakei.Id, null);
         }
 
         private Tuple<string, string, Guid?, Guid?, Guid?> GivenInvalidServiceId()

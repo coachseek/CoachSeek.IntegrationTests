@@ -95,7 +95,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var command = CreateSessionSaveCommandAaronOrakei14To15();
 
-            command.location = new ApiLocationKey { id = RemueraId };
+            command.location = new ApiLocationKey { id = Remuera.Id };
             command.service = new ApiServiceKey { id = MiniBlueId };
 
             command.timing.startTime = "14:30";
@@ -117,7 +117,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new ApiSessionSaveCommand
             {
                 service = new ApiServiceKey { id = MiniGreenId },
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
                 booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
@@ -132,7 +132,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new ApiSessionSaveCommand
             {
                 service = new ApiServiceKey { id = MiniGreenId },
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "2:00", duration = 60 },
                 booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
@@ -230,7 +230,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.Null);
             Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
 
-            AssertSessionLocation(session.location, RemueraId, "Remuera Racquets Club");
+            AssertSessionLocation(session.location, Remuera.Id, "Remuera Racquets Club");
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
             AssertSessionService(session.service, MiniGreenId, "Mini Green");
 

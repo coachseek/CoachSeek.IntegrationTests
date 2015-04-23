@@ -8,8 +8,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class ScheduleTests : WebIntegrationTest
     {
-        protected const string ORAKEI_NAME = "Orakei Tennis Club";
-        protected const string REMUERA_NAME = "Remuera Racquets Club";
+        //protected const string ORAKEI_NAME = "Orakei Tennis Club";
+        //protected const string REMUERA_NAME = "Remuera Racquets Club";
         protected const string AARON_FIRST_NAME = "Aaron";
         protected const string BOBBY_FIRST_NAME = "Bobby";
         protected const string SMITH_LAST_NAME = "Smith";
@@ -18,8 +18,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected const string MINI_GREEN_NAME = "Mini Green";
         protected const string MINI_ORANGE_NAME = "Mini Orange";
 
-        protected Guid OrakeiId { get; set; }
-        protected Guid RemueraId { get; set; }
+        //protected Guid OrakeiId { get; set; }
+        //protected Guid RemueraId { get; set; }
         protected Guid AaronId { get; set; }
         protected Guid BobbyId { get; set; }
         protected Guid MiniRedId { get; set; }
@@ -27,8 +27,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid MiniGreenId { get; set; }
         protected Guid MiniOrangeId { get; set; }
         protected Guid HolidayCampId { get; set; }
-        //protected Guid AaronOrakei14To15SessionId { get; set; }
-        //protected Guid AaronOrakei16To17SessionId { get; set; }
+
         protected Guid AaronRemuera9To10For5WeeksCourseId { get; set; }
         protected Guid[] AaronRemuera9To10For5WeeksSessionIds { get; set; }
         protected Guid BobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
@@ -41,6 +40,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid FredOnBobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid FredOnAaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
 
+
+        protected LocationOrakei Orakei { get; set; }
+        protected LocationRemuera Remuera { get; set; }
 
         protected StandaloneAaronOrakei14To15 AaronOrakei14To15 { get; set; }
         protected StandaloneAaronOrakei16To17 AaronOrakei16To17 { get; set; }
@@ -89,22 +91,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestLocations()
         {
-            RegisterOrakeiLocation();
-            RegisterRemueraLocation();
+            Orakei = new LocationOrakei();
+            Remuera = new LocationRemuera();
+
+            RegisterTestLocation(Orakei);
+            RegisterTestLocation(Remuera);
         }
 
-        private void RegisterOrakeiLocation()
+        private void RegisterTestLocation(ExpectedLocation location)
         {
-            var json = CreateNewLocationSaveCommand(ORAKEI_NAME);
+            var json = CreateNewLocationSaveCommand(location);
             var response = PostLocation(json);
-            OrakeiId = ((LocationData)response.Payload).id;
+            location.Id = ((LocationData)response.Payload).id;
         }
 
-        private void RegisterRemueraLocation()
+        private string CreateNewLocationSaveCommand(ExpectedLocation expectedLocation)
         {
-            var json = CreateNewLocationSaveCommand(REMUERA_NAME);
-            var response = PostLocation(json);
-            RemueraId = ((LocationData)response.Payload).id;
+            var location = new ApiLocationSaveCommand
+            {
+                name = expectedLocation.Name
+            };
+
+            return JsonConvert.SerializeObject(location);
         }
 
         private Response PostLocation(string json)
@@ -112,15 +120,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<LocationData>(json, "Locations");
         }
 
-        private string CreateNewLocationSaveCommand(string name)
-        {
-            var location = new ApiLocationSaveCommand
-            {
-                name = name
-            };
-
-            return JsonConvert.SerializeObject(location);
-        }
 
         private void RegisterTestCoaches()
         {
@@ -304,8 +303,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestSessions()
         {
-            AaronOrakei14To15 = new StandaloneAaronOrakei14To15(AaronId, OrakeiId, MiniRedId, GetDateFormatNumberOfWeeksOut(3));
-            AaronOrakei16To17 = new StandaloneAaronOrakei16To17(AaronId, OrakeiId, MiniRedId, GetDateFormatNumberOfWeeksOut(1));
+            AaronOrakei14To15 = new StandaloneAaronOrakei14To15(AaronId, Orakei.Id, MiniRedId, GetDateFormatNumberOfWeeksOut(3));
+            AaronOrakei16To17 = new StandaloneAaronOrakei16To17(AaronId, Orakei.Id, MiniRedId, GetDateFormatNumberOfWeeksOut(1));
 
             RegisterTestSession(AaronOrakei14To15);
             RegisterTestSession(AaronOrakei16To17);
@@ -405,7 +404,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             return new ApiSessionSaveCommand
             {
-                location = new ApiLocationKey { id = OrakeiId },
+                location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "14:00", duration = 60 },
@@ -439,7 +438,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             return new ApiSessionSaveCommand
             {
-                location = new ApiLocationKey { id = OrakeiId },
+                location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "16:00", duration = 60 },
@@ -450,16 +449,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        private string CreateSessionSaveCommandAaronOrakei16To17Json()
-        {
-            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronOrakei16To17());
-        }
-
         protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10()
         {
             return new ApiSessionSaveCommand
             {
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniRedId },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
@@ -482,7 +476,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             return new ApiSessionSaveCommand
             {
-                location = new ApiLocationKey { id = RemueraId },
+                location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = BobbyId },
                 service = new ApiServiceKey { id = HolidayCampId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(2), startTime = "10:00", duration = 240 },
@@ -497,7 +491,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             return new ApiSessionSaveCommand
             {
-                location = new ApiLocationKey { id = OrakeiId },
+                location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = AaronId },
                 service = new ApiServiceKey { id = MiniBlueId },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(1), startTime = "9:00", duration = 60 },

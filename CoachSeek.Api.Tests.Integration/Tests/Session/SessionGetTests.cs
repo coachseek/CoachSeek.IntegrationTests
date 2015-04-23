@@ -107,7 +107,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.id, Is.EqualTo(AaronOrakei16To17.Id));
             Assert.That(session.parentId, Is.Null);
 
-            AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
@@ -126,7 +126,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
             Assert.That(session.parentId, Is.Null);
 
-            AssertSessionLocation(session.location, OrakeiId, "Orakei Tennis Club");
+            AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
