@@ -48,6 +48,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         public Response PostAnonymously<TResponse>(string json)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
+            SetBusinessDomainHeader(http, BusinessDomain);
 
             return Post<TResponse>(json, http);
         }
@@ -56,6 +57,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBusinessDomainHeader(http, BusinessDomain);
 
             return Post<TResponse>(json, http);
         }

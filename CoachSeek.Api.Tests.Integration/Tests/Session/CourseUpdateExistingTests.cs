@@ -411,11 +411,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSingleError(response, "Cannot change the repetition of a course.");
         }
 
-        private void ThenReturnsCannotUpdateCourseError(Response response)
-        {
-            AssertSingleError(response, "Course updates are not working yet.");
-        }
-
         private void ThenReturnsSessionTimeUpdatedResponse(Response response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
@@ -426,7 +421,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Remuera.Id, Remuera.Name);
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRedId, "Mini Red");
+            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "9:15", 60);
             AssertSessionBooking(session.booking, 13, true);

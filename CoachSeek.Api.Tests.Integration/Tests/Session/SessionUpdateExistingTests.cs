@@ -120,7 +120,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 id = AaronOrakei14To15.Id,
                 location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = Aaron.Id },
-                service = new ApiServiceKey { id = MiniRedId },
+                service = new ApiServiceKey { id = MiniRed.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 },
                 booking = new ApiSessionBooking { studentCapacity = 12, isOnlineBookable = false },
                 pricing = new ApiPricing { sessionPrice = 10, coursePrice = 80 },
@@ -205,7 +205,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Orakei.Id, "Orakei Tennis Club");
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRedId, "Mini Red");
+            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, startDate, startTime, 60);
             AssertSessionBooking(session.booking, 13, true);

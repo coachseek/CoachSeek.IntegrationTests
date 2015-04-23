@@ -1,4 +1,4 @@
-﻿namespace CoachSeek.Api.Tests.Integration.Models.Expectations
+﻿namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Customer
 {
     public class CustomerWilma : ExpectedCustomer
     {

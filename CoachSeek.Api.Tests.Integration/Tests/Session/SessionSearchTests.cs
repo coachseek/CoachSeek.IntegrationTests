@@ -194,7 +194,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
                 Assert.That(sessions.Count, Is.EqualTo(5));
                 foreach (var session in sessions)
-                    Assert.That(session.service.id, Is.EqualTo(MiniRedId));
+                    Assert.That(session.service.id, Is.EqualTo(MiniRed.Id));
             }
         }
 
@@ -770,7 +770,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Tuple<string, string, Guid?, Guid?, Guid?> GivenValidServiceId()
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, null, MiniRedId);
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, null, MiniRed.Id);
         }
 
 

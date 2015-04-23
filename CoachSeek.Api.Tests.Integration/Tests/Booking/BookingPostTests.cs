@@ -1,6 +1,7 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -43,6 +44,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                                                         { "The customer field is required.", "booking.customer" } });
             }
 
+            [Test]
+            public void GivenValidBookingSaveCommand_WhenTryBookAnonymously_ThenReturnUnauthorised()
+            {
+                var command = GivenValidBookingSaveCommand();
+                var response = WhenTryBookAnonymously(command);
+                AssertUnauthorised(response);
+            }
+
 
             protected string GivenNoBookingSaveCommand()
             {
@@ -52,6 +61,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             protected string GivenEmptyBookingSaveCommand()
             {
                 return "{}";
+            }
+
+            private string GivenValidBookingSaveCommand()
+            {
+                var command = new ApiBookingSaveCommand
+                {
+                    session = new ApiSessionKey { id = AaronOrakei14To15.Id },
+                    customer = new ApiCustomerKey { id = Wilma.Id }
+                };
+
+                return JsonConvert.SerializeObject(command);
+            }
+
+
+            private Response WhenTryBookAnonymously(string json)
+            {
+                return PostAnonymously<BookingData>(json);
             }
         }
 
@@ -511,12 +537,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private Response WhenTryBookOnlineSession(string json)
         {
-            return Post<SingleSessionBookingData>(json, "OnlineBooking/Bookings");
+            return PostAnonymously<SingleSessionBookingData>(json, "OnlineBooking/Bookings");
         }
 
         private Response WhenTryBookOnlineCourse(string json)
         {
-            return Post<CourseBookingData>(json);
+            return PostAnonymously<CourseBookingData>(json);
         }
     }
 }

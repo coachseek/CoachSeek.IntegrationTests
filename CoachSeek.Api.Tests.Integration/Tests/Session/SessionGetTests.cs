@@ -109,7 +109,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRedId, "Mini Red");
+            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "16:00", 60);
             AssertSessionBooking(session.booking, 13, false);
@@ -128,7 +128,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRedId, "Mini Red");
+            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "14:00", 60);
             AssertSessionBooking(session.booking, 13, true, 2);

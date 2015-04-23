@@ -1,4 +1,4 @@
-﻿namespace CoachSeek.Api.Tests.Integration.Models.Expectations
+﻿namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Coach
 {
     public class CoachBobby : ExpectedCoach
     {
@@ -8,7 +8,7 @@
 
 
         public CoachBobby()
-            : base(Random.RandomEmail, Random.RandomString, ExpectedWeeklyWorkingHours.CreateStandardWorkingHours())
+            : base(Random.RandomEmail, Random.RandomString, ApiWeeklyWorkingHours.CreateStandardWorkingHours())
         { }
     }
 }

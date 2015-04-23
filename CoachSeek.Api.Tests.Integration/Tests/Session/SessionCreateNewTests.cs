@@ -76,7 +76,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                service = new ApiServiceKey { id = MiniRedId },
+                service = new ApiServiceKey { id = MiniRed.Id },
                 location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = Aaron.Id },
                 timing = new ApiSessionTiming { startDate = "2018-11-09", startTime = "15:30", duration = 45 },
@@ -105,7 +105,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRedId, "Mini Red");
+            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, "2018-11-09", "15:30", 45);
             AssertSessionBooking(session.booking, 10, true);
