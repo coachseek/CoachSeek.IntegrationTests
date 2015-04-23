@@ -108,7 +108,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
+            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
             AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "16:00", 60);
@@ -127,7 +127,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(session.coach, AaronId, "Aaron Smith");
+            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
             AssertSessionService(session.service, MiniRedId, "Mini Red");
 
             AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "14:00", 60);
