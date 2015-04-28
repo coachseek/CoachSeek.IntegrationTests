@@ -1,5 +1,6 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -17,6 +18,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         protected override string RelativePath { get { return "Services"; } }
 
 
+        protected ServiceMiniRed MiniRed { get; set; }
+        protected ServiceMiniBlue MiniBlue { get; set; }
+        protected ServiceMiniGreen MiniGreen { get; set; }
+
+
+
+
         [SetUp]
         public void Setup()
         {
@@ -26,15 +34,47 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             SetupAddtitional();
         }
 
-        protected virtual void SetupAddtitional()
-        { }
-
-
         private void RegisterTestServices()
         {
             RegisterMiniRedService();
             RegisterMiniBlueService();
         }
+
+        protected virtual void SetupAddtitional()
+        { }
+
+        //public static void RegisterTestService(ExpectedService service)
+        //{
+        //    var json = CreateNewServiceSaveCommand(service);
+        //    var response = PostService(json);
+        //    service.Id = ((ServiceData)response.Payload).id;
+        //}
+
+        //public static string CreateNewServiceSaveCommand(ExpectedService expectedService)
+        //{
+        //    var service = new ApiServiceSaveCommand
+        //    {
+        //        name = expectedService.Name,
+        //        description = expectedService.Description,
+        //        repetition = expectedService.Repetition,
+        //        presentation = expectedService.Presentation
+        //    };
+
+        //    if (expectedService.Timing != null)
+        //        service.timing = expectedService.Timing;
+        //    if (expectedService.Pricing != null)
+        //        service.pricing = expectedService.Pricing;
+        //    if (expectedService.Booking != null)
+        //        service.booking = expectedService.Booking;
+
+        //    return JsonConvert.SerializeObject(service);
+        //}
+
+        //public static Response PostService(string json)
+        //{
+        //    return Post<ServiceData>(json, "Services");
+        //}
+
 
 
         private void RegisterMiniRedService()

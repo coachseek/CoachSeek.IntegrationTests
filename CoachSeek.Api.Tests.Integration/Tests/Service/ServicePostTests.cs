@@ -280,6 +280,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
             private ApiServiceSaveCommand GivenNewSessionService()
             {
+                //var MiniOrange = new ServiceMiniOrange();
+                //var command = CreateNewServiceSaveCommand(MiniOrange);
+
                 return new ApiServiceSaveCommand
                 {
                     name = "Mini Orange",

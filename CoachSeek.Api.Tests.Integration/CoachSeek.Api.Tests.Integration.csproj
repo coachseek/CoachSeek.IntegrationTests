@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessRegistrar.cs" />
+    <Compile Include="CoachRegistrar.cs" />
     <Compile Include="Models\ApiBusiness.cs" />
     <Compile Include="Models\ApiCustomerKey.cs" />
     <Compile Include="Models\ApiCoachKey.cs" />
@@ -56,19 +58,27 @@
     <Compile Include="Models\ApiSessionKey.cs" />
     <Compile Include="Models\ApiServiceTiming.cs" />
     <Compile Include="Models\CourseBookingData.cs" />
+    <Compile Include="Models\Expectations\Coach\CoachSteve.cs" />
     <Compile Include="Models\Expectations\Coach\CoachBobby.cs" />
     <Compile Include="Models\Expectations\Coach\CoachAaron.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerWilma.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerFred.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerBarney.cs" />
     <Compile Include="Models\Expectations\Coach\ExpectedCoach.cs" />
+    <Compile Include="Models\Expectations\ExpectedBusiness.cs" />
     <Compile Include="Models\Expectations\Location\ExpectedLocation.cs" />
     <Compile Include="Models\Expectations\Customer\ExpectedCustomer.cs" />
     <Compile Include="Models\Expectations\ExpectedSingleSession.cs" />
     <Compile Include="Models\Expectations\ExpectedStandaloneSession.cs" />
     <Compile Include="Models\Expectations\Location\LocationRemuera.cs" />
     <Compile Include="Models\Expectations\Location\LocationOrakei.cs" />
+    <Compile Include="Models\Expectations\RandomBusiness.cs" />
+    <Compile Include="Models\Expectations\Service\ExpectedCourseService.cs" />
+    <Compile Include="Models\Expectations\Service\ExpectedService.cs" />
     <Compile Include="Models\Expectations\Service\ExpectedStandaloneService.cs" />
+    <Compile Include="Models\Expectations\Service\ServiceMiniOrange.cs" />
+    <Compile Include="Models\Expectations\Service\ServiceMiniGreen.cs" />
+    <Compile Include="Models\Expectations\Service\ServiceMiniBlue.cs" />
     <Compile Include="Models\Expectations\Service\ServiceMiniRed.cs" />
     <Compile Include="Models\Expectations\StandaloneBobbyRemuera12To13.cs" />
     <Compile Include="Models\Expectations\StandaloneAaronOrakei14To15.cs" />
@@ -156,6 +166,8 @@
     <Compile Include="Tests\Session\SessionSearchTests.cs" />
     <Compile Include="Tests\Session\SessionUpdateExistingTests.cs" />
     <Compile Include="Tests\WebIntegrationTest.cs" />
+    <Compile Include="UrlBuilder.cs" />
+    <Compile Include="WebClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

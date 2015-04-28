@@ -45,8 +45,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void RegisterFredFlintstoneCustomer()
         {
-            FredEmail = RandomEmail;
-            FredPhone = RandomString;
+            FredEmail = Random.RandomEmail;
+            FredPhone = Random.RandomString;
             var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME, FredEmail, FredPhone);
             var response = Post<CustomerData>(json);
             FredId = ((CustomerData)response.Payload).id;
@@ -120,13 +120,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         private Response WhenGetAll()
         {
             var url = BuildGetAllUrl();
-            return Get<List<CustomerData>>(url);
+            return AuthenticatedGet<List<CustomerData>>(url);
         }
 
         private Response WhenGetById(Guid customerId)
         {
             var url = BuildGetByIdUrl(customerId);
-            return Get<CustomerData>(url);
+            return AuthenticatedGet<CustomerData>(url);
         }
 
 

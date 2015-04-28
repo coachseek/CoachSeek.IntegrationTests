@@ -162,10 +162,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             var coach = new ApiCustomerSaveCommand
             {
                 id = Guid.Empty,
-                firstName = RandomString,
-                lastName = RandomString,
-                email = RandomEmail,
-                phone = RandomString,
+                firstName = Random.RandomString,
+                lastName = Random.RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
             };
 
             return JsonConvert.SerializeObject(coach);
@@ -191,10 +191,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void ThenReturnNoDataErrorResponse(Response response)
         {
-            var errors = AssertErrorResponse(response);
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "Please post us some data!");
+            AssertSingleError(response, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(Response response)

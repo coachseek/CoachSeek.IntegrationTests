@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
@@ -10,22 +10,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
     [TestFixture]
     public class CoachGetTests : WebIntegrationTest
     {
-        private const string AARON_FIRST_NAME = "Aaron";
-        private const string BOBBY_FIRST_NAME = "Bobby";
-        private const string STEVE_FIRST_NAME = "Steve";
-        private const string FERGUSSON_LAST_NAME = "Fergusson";
-        private const string SMITH_LAST_NAME = "Smith";
-
-        private Guid AaronId { get; set; }
-        private Guid BobbyId { get; set; }
-        private Guid SteveId { get; set; }
-        private string AaronEmail { get; set; }
-        private string AaronPhone { get; set; }
-        private string BobbyEmail { get; set; }
-        private string BobbyPhone { get; set; }
-        private string SteveEmail { get; set; }
-        private string StevePhone { get; set; }
-
         protected override string RelativePath
         {
             get { return "Coaches"; }
@@ -40,64 +24,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void RegisterTestCoaches()
         {
-            RegisterSteveFergussonCoach();
-            RegisterAaronSmithCoach();
-            RegisterBobbySmithCoach();
-        }
+            Steve = new CoachSteve();
+            CoachRegistrar.RegisterCoach(Steve, Business);
 
-        private void RegisterSteveFergussonCoach()
-        {
-            SteveEmail = RandomEmail;
-            StevePhone = RandomString;
-            var json = CreateNewCoachSaveCommand(STEVE_FIRST_NAME, FERGUSSON_LAST_NAME, SteveEmail, StevePhone);
-            var response = Post<CoachData>(json);
-            SteveId = ((CoachData)response.Payload).id;
-        }
-
-        private void RegisterAaronSmithCoach()
-        {
-            AaronEmail = RandomEmail;
-            AaronPhone = RandomString;
-            var json = CreateNewCoachSaveCommand(AARON_FIRST_NAME, SMITH_LAST_NAME, AaronEmail, AaronPhone);
-            var response = Post<CoachData>(json);
-            AaronId = ((CoachData)response.Payload).id;
-        }
-
-        private void RegisterBobbySmithCoach()
-        {
-            BobbyEmail = RandomEmail;
-            BobbyPhone = RandomString;
-            var json = CreateNewCoachSaveCommand(BOBBY_FIRST_NAME, SMITH_LAST_NAME, BobbyEmail, BobbyPhone);
-            var response = Post<CoachData>(json);
-            BobbyId = ((CoachData)response.Payload).id;
-        }
-
-        private string CreateNewCoachSaveCommand(string firstName, string lastName, string email, string phone)
-        {
-            var coach = new ApiCoachSaveCommand
-            {
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                phone = phone,
-                workingHours = SetupStandardWorkingHours()
-            };
-
-            return JsonConvert.SerializeObject(coach);
-        }
-
-        private ApiWeeklyWorkingHours SetupStandardWorkingHours()
-        {
-            return new ApiWeeklyWorkingHours
-            {
-                monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                tuesday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                wednesday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                thursday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                friday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                saturday = new ApiDailyWorkingHours(),
-                sunday = new ApiDailyWorkingHours()
-            };
+            Aaron = new CoachAaron();
+            CoachRegistrar.RegisterCoach(Aaron, Business);
+            
+            Bobby = new CoachBobby();
+            CoachRegistrar.RegisterCoach(Bobby, Business);
         }
 
 
@@ -133,20 +67,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private Guid GivenValidCoachId()
         {
-            return AaronId;
+            return Aaron.Id;
         }
 
 
         private Response WhenGetAll()
         {
             var url = BuildGetAllUrl();
-            return Get<List<CoachData>>(url);
+            return AuthenticatedGet<List<CoachData>>(url);
         }
 
         private Response WhenGetById(Guid coachId)
         {
             var url = BuildGetByIdUrl(coachId);
-            return Get<CoachData>(url);
+            return AuthenticatedGet<CoachData>(url);
         }
 
 
@@ -159,36 +93,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             Assert.That(coaches.Count, Is.EqualTo(3));
 
             var coachOne = coaches[0];
-            Assert.That(coachOne.id, Is.EqualTo(AaronId));
-            Assert.That(coachOne.firstName, Is.EqualTo(AARON_FIRST_NAME));
-            Assert.That(coachOne.lastName, Is.EqualTo(SMITH_LAST_NAME));
-            Assert.That(coachOne.email, Is.EqualTo(AaronEmail));
-            Assert.That(coachOne.phone, Is.EqualTo(AaronPhone.ToUpper()));
+            Assert.That(coachOne.id, Is.EqualTo(Aaron.Id));
+            Assert.That(coachOne.firstName, Is.EqualTo(Aaron.FirstName));
+            Assert.That(coachOne.lastName, Is.EqualTo(Aaron.LastName));
+            Assert.That(coachOne.email, Is.EqualTo(Aaron.Email));
+            Assert.That(coachOne.phone, Is.EqualTo(Aaron.Phone.ToUpper()));
             
             var coachTwo = coaches[1];
-            Assert.That(coachTwo.id, Is.EqualTo(BobbyId));
-            Assert.That(coachTwo.firstName, Is.EqualTo(BOBBY_FIRST_NAME));
-            Assert.That(coachTwo.lastName, Is.EqualTo(SMITH_LAST_NAME));
-            Assert.That(coachTwo.email, Is.EqualTo(BobbyEmail));
-            Assert.That(coachTwo.phone, Is.EqualTo(BobbyPhone.ToUpper()));
+            Assert.That(coachTwo.id, Is.EqualTo(Bobby.Id));
+            Assert.That(coachTwo.firstName, Is.EqualTo(Bobby.FirstName));
+            Assert.That(coachTwo.lastName, Is.EqualTo(Bobby.LastName));
+            Assert.That(coachTwo.email, Is.EqualTo(Bobby.Email));
+            Assert.That(coachTwo.phone, Is.EqualTo(Bobby.Phone.ToUpper()));
 
             var coachThree = coaches[2];
-            Assert.That(coachThree.id, Is.EqualTo(SteveId));
-            Assert.That(coachThree.firstName, Is.EqualTo(STEVE_FIRST_NAME));
-            Assert.That(coachThree.lastName, Is.EqualTo(FERGUSSON_LAST_NAME));
-            Assert.That(coachThree.email, Is.EqualTo(SteveEmail));
-            Assert.That(coachThree.phone, Is.EqualTo(StevePhone.ToUpper()));
+            Assert.That(coachThree.id, Is.EqualTo(Steve.Id));
+            Assert.That(coachThree.firstName, Is.EqualTo(Steve.FirstName));
+            Assert.That(coachThree.lastName, Is.EqualTo(Steve.LastName));
+            Assert.That(coachThree.email, Is.EqualTo(Steve.Email));
+            Assert.That(coachThree.phone, Is.EqualTo(Steve.Phone.ToUpper()));
         }
 
         private void ThenReturnCoachResponse(Response response)
         {
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             var coach = (CoachData)response.Payload;
-            Assert.That(coach.id, Is.EqualTo(AaronId));
-            Assert.That(coach.firstName, Is.EqualTo(AARON_FIRST_NAME));
-            Assert.That(coach.lastName, Is.EqualTo(SMITH_LAST_NAME));
-            Assert.That(coach.email, Is.EqualTo(AaronEmail));
-            Assert.That(coach.phone, Is.EqualTo(AaronPhone.ToUpperInvariant()));
+            Assert.That(coach.id, Is.EqualTo(Aaron.Id));
+            Assert.That(coach.firstName, Is.EqualTo(Aaron.FirstName));
+            Assert.That(coach.lastName, Is.EqualTo(Aaron.LastName));
+            Assert.That(coach.email, Is.EqualTo(Aaron.Email));
+            Assert.That(coach.phone, Is.EqualTo(Aaron.Phone.ToUpperInvariant()));
             AssertStandardWorkingHours(coach);
         }
 

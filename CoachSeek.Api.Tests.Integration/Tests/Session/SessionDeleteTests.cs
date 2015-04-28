@@ -93,13 +93,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponse = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertNotFound(getResponse);
 
             // Other sessions are still there.
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei14To15.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei14To15.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
+            var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
 
@@ -107,19 +107,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
+            var getResponseCourse = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
             AssertNotFound(getResponseCourse);
-            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
+            var getResponseSession1 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
             AssertNotFound(getResponseSession1);
-            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
+            var getResponseSession2 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
             AssertNotFound(getResponseSession2);
-            var getResponseSession3 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
+            var getResponseSession3 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
             AssertNotFound(getResponseSession3);
 
             // Other sessions are still there.
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
+            var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
 
@@ -127,19 +127,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponseSession2 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
+            var getResponseSession2 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
             AssertNotFound(getResponseSession2);
 
             // Other sessions/courses are still there.
-            var getResponseCourse = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
+            var getResponseCourse = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
             AssertStatusCode(getResponseCourse.StatusCode, HttpStatusCode.OK);
-            var getResponseSession1 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
+            var getResponseSession1 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
             AssertStatusCode(getResponseSession1.StatusCode, HttpStatusCode.OK);
-            var getResponseSession3 = Get<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
+            var getResponseSession3 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
             AssertStatusCode(getResponseSession3.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeSession = Get<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = Get<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
+            var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
         }
     }

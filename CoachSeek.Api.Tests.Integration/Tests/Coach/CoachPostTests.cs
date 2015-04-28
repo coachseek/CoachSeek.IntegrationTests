@@ -52,8 +52,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             {
                 firstName = firstName,
                 lastName = lastName,
-                email = RandomEmail,
-                phone = RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
                 workingHours = SetupStandardWorkingHours()
             };
 
@@ -173,10 +173,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         {
             var coach = new ApiCoachSaveCommand
             {
-                firstName = RandomString,
-                lastName = RandomString,
-                email = RandomEmail,
-                phone = RandomString,
+                firstName = Random.RandomString,
+                lastName = Random.RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
                 workingHours = new ApiWeeklyWorkingHours
                 {
                     monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
@@ -193,10 +193,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         {
             var coach = new ApiCoachSaveCommand
             {
-                firstName = RandomString,
-                lastName = RandomString,
-                email = RandomEmail,
-                phone = RandomString,
+                firstName = Random.RandomString,
+                lastName = Random.RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
                 workingHours = new ApiWeeklyWorkingHours
                 {
                     monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
@@ -217,10 +217,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             var coach = new ApiCoachSaveCommand
             {
                 id = Guid.Empty,
-                firstName = RandomString,
-                lastName = RandomString,
-                email = RandomEmail,
-                phone = RandomString,
+                firstName = Random.RandomString,
+                lastName = Random.RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
                 workingHours = SetupStandardWorkingHours()
             };
 
@@ -233,8 +233,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             {
                 firstName = AARON_FIRST_NAME,
                 lastName = SMITH_LAST_NAME,
-                email = RandomEmail,
-                phone = RandomString,
+                email = Random.RandomEmail,
+                phone = Random.RandomString,
                 workingHours = SetupStandardWorkingHours()
             };
 
@@ -281,12 +281,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void ThenReturnNoDataErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "Please post us some data!");
+            AssertSingleError(response, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(Response response)

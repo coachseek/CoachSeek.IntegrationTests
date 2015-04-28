@@ -84,13 +84,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private Response WhenGetAll()
         {
             var url = BuildGetAllUrl();
-            return Get<List<CustomerData>>(url);
+            return AuthenticatedGet<List<CustomerData>>(url);
         }
 
         private Response WhenTryGetById(Guid sessionId)
         {
             var url = BuildGetByIdUrl(sessionId);
-            return Get<SessionData>(url);
+            return AuthenticatedGet<SessionData>(url);
         }
 
 

@@ -530,7 +530,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
                 url = string.Format("{0}&useNewSearch=true", url);
 
-                return Get<SessionSearchData>(url);
+                return AuthenticatedGet<SessionSearchData>(url);
             }
 
 
@@ -778,7 +778,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
 
-            return Get<List<SessionData>>(url);
+            return AuthenticatedGet<List<SessionData>>(url);
         }
          
 

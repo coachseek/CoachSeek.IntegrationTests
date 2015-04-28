@@ -63,7 +63,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             {
                 coach = new ApiCoachKey { id = Aaron.Id },
                 location = new ApiLocationKey { id = Orakei.Id },
-                service = new ApiServiceKey { id = MiniBlueId },
+                service = new ApiServiceKey { id = MiniBlue.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateTwoWeeksOut(), startTime = "9:30", duration = 30 },
                 booking = new ApiSessionBooking { studentCapacity = 9, isOnlineBookable = true },
                 pricing = new ApiPricing { sessionPrice = 25 },

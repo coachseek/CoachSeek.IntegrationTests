@@ -1,4 +1,6 @@
 ﻿using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -10,12 +12,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class WebIntegrationTest
     {
+        protected CoachSteve Steve { get; set; }
+        protected CoachAaron Aaron { get; set; }
+        protected CoachBobby Bobby { get; set; }
+
+
         private string _email;
 
-        protected Guid BusinessId { get; set; }
-        protected string BusinessDomain { get; set; }
-
-        protected string BaseUrl
+        protected static string BaseUrl
         {
 #if DEBUG
             get { return "http://localhost:5272"; }
@@ -23,18 +27,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             get { return "http://api.coachseek.com"; }
 #endif
         }
+        
+
+        public RandomBusiness Business { get; set; }
+
 
         protected abstract string RelativePath { get; }
 
-        protected string Url
+        protected Uri Url
         {
-            get { return string.Format("{0}/{1}", BaseUrl, RelativePath); }
+            get { return new Uri(string.Format("{0}/{1}", BaseUrl, RelativePath)); }
+        }
+
+        protected Uri OnlineBookingUrl
+        {
+            get { return new Uri(string.Format("{0}/OnlineBooking/{1}", BaseUrl, RelativePath)); }
         }
 
         protected string Email
         {
             get { return _email; }
-            set { _email = value ?? RandomEmail; }
+            set { _email = value ?? Random.RandomEmail; }
         }
 
         protected string Username
@@ -47,9 +60,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         public Response PostAnonymously<TResponse>(string json)
         {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
-            SetBusinessDomainHeader(http, BusinessDomain);
-
+            var http = CreateAnonymousWebRequest(Url);
             return Post<TResponse>(json, http);
         }
 
@@ -57,24 +68,49 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBusinessDomainHeader(http, BusinessDomain);
+            SetBusinessDomainHeader(http, Business.Domain);
 
             return Post<TResponse>(json, http);
         }
 
         protected Response Post<TResponse>(string json)
         {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(Url));
-            SetBasicAuthHeader(http, Username, Password);
+            var http = CreateAuthenticatedWebRequest();
 
             return Post<TResponse>(json, http);
+        }
+
+        protected Response PostForOnlineBooking<TResponse>(string json)
+        {
+            var http = CreateOnlineBookingWebRequest();
+
+            return Post<TResponse>(json, http);
+        }
+
+        private HttpWebRequest CreateAuthenticatedWebRequest()
+        {
+            var http = (HttpWebRequest)WebRequest.Create(Url);
+            SetBasicAuthHeader(http, Business.UserName, Business.Password);
+            return http;
+        }
+
+        private HttpWebRequest CreateAnonymousWebRequest(Uri url)
+        {
+            var http = (HttpWebRequest)WebRequest.Create(url);
+            SetBusinessDomainHeader(http, Business.Domain);
+            return http;
+        }
+
+        private HttpWebRequest CreateOnlineBookingWebRequest()
+        {
+            return CreateAnonymousWebRequest(OnlineBookingUrl);
         }
 
         protected Response Post<TResponse>(string json, string relativePath)
         {
             var url = string.Format("{0}/{1}", BaseUrl, relativePath);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Username, Password);
+            SetBasicAuthHeader(http, Business.UserName, Business.Password);
 
             return Post<TResponse>(json, http);
         }
@@ -83,7 +119,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Username, Password);
+            SetBasicAuthHeader(http, Business.UserName, Business.Password);
 
             return Delete<TResponse>(http);
         }
@@ -100,24 +136,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Response GetAnonymously<TResponse>(string url)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBusinessDomainHeader(http, BusinessDomain);
+            SetBusinessDomainHeader(http, Business.Domain);
 
             return Get<TResponse>(http);
         }
 
-        protected Response Get<TResponse>(string relativePath, Guid id)
+        protected Response AuthenticatedGet<TResponse>(string relativePath, Guid id)
         {
             var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Username, Password);
 
-            return Get<TResponse>(url);
+            return AuthenticatedGet<TResponse>(url);
         }
 
-        protected Response Get<TResponse>(string url)
+        protected Response AuthenticatedGet<TResponse>(string url)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Username, Password);
+            SetBasicAuthHeader(http, Business.UserName, Business.Password);
 
             return Get<TResponse>(http);
         }
@@ -207,7 +242,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             newStream.Close();
         }
 
-        private void SetBasicAuthHeader(WebRequest request, string username, string password)
+        private static void SetBasicAuthHeader(WebRequest request, string username, string password)
         {
             var authInfo = string.Format("{0}:{1}", username, password);
             authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
@@ -315,44 +350,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected void RegisterTestBusiness()
         {
-            var json = CreateTestBusinessRegistrationCommand();
-            var response = PostAnonymously<RegistrationData>(json, "BusinessRegistration");
-            var registrationResponse = ((RegistrationData)response.Payload);
-            BusinessId = registrationResponse.business.id;
-            BusinessDomain = registrationResponse.business.domain;
+            Business = new RandomBusiness();
+            BusinessRegistrar.RegisterBusiness(Business);
         }
-
 
         protected string CreateTestBusinessRegistrationCommand()
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                business = new ApiBusiness { name = RandomString },
+                business = new ApiBusiness { name = Random.RandomString },
                 admin = new ApiBusinessAdmin
                 {
                     firstName = "Bob",
                     lastName = "Smith",
-                    email = Email = RandomEmail,
+                    email = Email = Random.RandomEmail,
                     password = Password = "password1"
                 }
             };
 
             return JsonConvert.SerializeObject(registration);
         }
-
-        protected string RandomEmail
-        {
-            get
-            {
-                return string.Format("{0}@{1}.com", RandomString, RandomString).ToLower();
-            }
-        }
-
-        protected string RandomString
-        {
-            get { return Guid.NewGuid().ToString().ToLower().Replace("-", ""); }
-        }
-
 
         protected string BuildGetAllUrl()
         {

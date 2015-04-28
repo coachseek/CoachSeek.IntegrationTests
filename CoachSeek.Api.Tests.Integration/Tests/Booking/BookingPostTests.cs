@@ -16,6 +16,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public void Setup()
         {
             SetupFullTestBusiness();
+
+            BobbyRemuera12To13 = new StandaloneBobbyRemuera12To13(Bobby.Id, Remuera.Id, MiniBlue.Id, GetDateFormatNumberOfDaysOut(5));
+            RegisterTestSession(BobbyRemuera12To13);
         }
 
         protected override string RelativePath
@@ -233,7 +236,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 AssertSingleSessionBooking(booking, session, customer);
                 var bookingId = booking.id;
 
-                var sessionResponse = Get<SessionData>("Sessions", booking.session.id);
+                var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id);
                 var sessionData = AssertSuccessResponse<SessionData>(sessionResponse);
 
                 Assert.That(sessionData.booking.bookings.Count, Is.EqualTo(expectedBookingCount));
@@ -338,7 +341,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                 Assert.That(booking.customer.id, Is.EqualTo(Barney.Id));
                 Assert.That(booking.customer.name, Is.EqualTo(string.Format("{0} {1}", Barney.FirstName, Barney.LastName)));
 
-                var sessionResponse = Get<SessionData>("Sessions", booking.session.id);
+                var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id);
                 var session = AssertSuccessResponse<SessionData>(sessionResponse);
 
                 Assert.That(session.booking.bookings.Count, Is.EqualTo(1));
@@ -440,7 +443,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private void GetAndAssertCourse(Guid courseBookingId, Guid firstSessionBookingId, Guid secondSessionBookingId, Guid thirdSessionBookingId)
         {
-            var courseResponse = Get<CourseData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
+            var courseResponse = AuthenticatedGet<CourseData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
             var course = AssertSuccessResponse<CourseData>(courseResponse);
 
             Assert.That(course.booking.bookings.Count, Is.EqualTo(1));
@@ -537,12 +540,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private Response WhenTryBookOnlineSession(string json)
         {
-            return PostAnonymously<SingleSessionBookingData>(json, "OnlineBooking/Bookings");
+            return PostForOnlineBooking<SingleSessionBookingData>(json);
         }
 
         private Response WhenTryBookOnlineCourse(string json)
         {
-            return PostAnonymously<CourseBookingData>(json);
+            return PostForOnlineBooking<CourseBookingData>(json);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private Guid GivenExistingSessionBookingId()
         {
             // Ensure session booking is there BEFORE the deletion
-            var getResponse = Get<SessionBookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            var getResponse = AuthenticatedGet<SessionBookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
             AssertSuccessResponse<SessionBookingData>(getResponse);
 
             return FredOnAaronOrakei14To15SessionId;
@@ -62,7 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private Guid GivenExistingCourseBookingId()
         {
             // Ensure course booking is there BEFORE the deletion
-            var getResponse = Get<CourseBookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
+            var getResponse = AuthenticatedGet<CourseBookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
             AssertSuccessResponse<CourseBookingData>(getResponse);
 
             return FredOnAaronOrakeiMiniBlueFor2DaysCourseId;
@@ -79,7 +79,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = Get<BookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            var getResponse = AuthenticatedGet<BookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
             AssertNotFound(getResponse);
         }
 
@@ -87,7 +87,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = Get<BookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
+            var getResponse = AuthenticatedGet<BookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
             AssertNotFound(getResponse);
         }
     }

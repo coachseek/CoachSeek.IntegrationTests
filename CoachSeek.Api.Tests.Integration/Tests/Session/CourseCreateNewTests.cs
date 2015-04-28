@@ -1,5 +1,6 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -11,6 +12,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void Setup()
         {
             SetupFullTestBusiness();
+
+            MiniGreen = new ServiceMiniGreen();
+            RegisterTestService(MiniGreen);
         }
 
 
@@ -96,7 +100,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = CreateSessionSaveCommandAaronOrakei14To15();
 
             command.location = new ApiLocationKey { id = Remuera.Id };
-            command.service = new ApiServiceKey { id = MiniBlueId };
+            command.service = new ApiServiceKey { id = MiniBlue.Id };
 
             command.timing.startTime = "14:30";
 
@@ -116,7 +120,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                service = new ApiServiceKey { id = MiniGreenId },
+                service = new ApiServiceKey { id = MiniGreen.Id },
                 location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = Aaron.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
@@ -131,7 +135,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                service = new ApiServiceKey { id = MiniGreenId },
+                service = new ApiServiceKey { id = MiniGreen.Id },
                 location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = Aaron.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "2:00", duration = 60 },
@@ -232,7 +236,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Remuera.Id, "Remuera Racquets Club");
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniGreenId, "Mini Green");
+            AssertSessionService(session.service, MiniGreen.Id, MiniGreen.Name);
 
             AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "21:30", 60);
             AssertSessionBooking(session.booking, 10, false);

@@ -1,5 +1,6 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -11,6 +12,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void Setup()
         {
             SetupFullTestBusiness();
+
+            MiniGreen = new ServiceMiniGreen();
+            RegisterTestService(MiniGreen);
         }
 
 
@@ -345,7 +349,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 id = AaronRemuera9To10For5WeeksSessionIds[2],
                 location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = Bobby.Id },
-                service = new ApiServiceKey { id = MiniGreenId },
+                service = new ApiServiceKey { id = MiniGreen.Id },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "10:30", duration = 45 },
                 booking = new ApiSessionBooking { studentCapacity = 11, isOnlineBookable = false },
                 repetition = new ApiRepetition { sessionCount = 1 },
@@ -440,7 +444,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
             AssertSessionCoach(session.coach, Bobby.Id, Bobby.Name);
-            AssertSessionService(session.service, MiniGreenId, "Mini Green");
+            AssertSessionService(session.service, MiniGreen.Id, MiniGreen.Name);
 
             AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "10:30", 45);
             AssertSessionBooking(session.booking, 11, false);

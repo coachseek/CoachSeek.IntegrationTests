@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -23,60 +24,60 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [SetUp]
         public void Setup()
         {
-            BusinessName = RandomString;
+            BusinessName = Random.RandomString;
             Domain = BusinessName;
             FirstName = "Isaac";
             LastName = "Newton";
-            Email = RandomEmail;
+            Email = Random.RandomEmail;
             Password = "password1";
         }
 
 
         [Test]
-        public void GivenNoBusinessRegistrationCommand_WhenPost_ThenReturnNoDataErrorResponse()
+        public void GivenNoBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnNoDataErrorResponse()
         {
             var command = GivenNoBusinessRegistrationCommand();
-            var response = WhenPost(command);
+            var response = WhenTryRegisterBusiness(command);
             ThenReturnNoDataErrorResponse(response);
         }
 
         [Test]
-        public void GivenEmptyBusinessRegistrationCommand_WhenPost_ThenReturnRootRequiredErrorResponse()
+        public void GivenEmptyBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnRootRequiredErrorResponse()
         {
             var command = GivenEmptyBusinessRegistrationCommand();
-            var response = WhenPost(command);
+            var response = WhenTryRegisterBusiness(command);
             ThenReturnRootRequiredErrorResponse(response);
         }
 
         [Test]
-        public void GivenMissingProperties_WhenPost_ThenReturnMissingPropertiesErrorResponse()
+        public void GivenMissingProperties_WhenTryRegisterBusiness_ThenReturnMissingPropertiesErrorResponse()
         {
             var command = GivenMissingProperties();
-            var response = WhenPost(command);
+            var response = WhenTryRegisterBusiness(command);
             ThenReturnMissingPropertiesErrorResponse(response);
         }
 
         [Test]
-        public void GivenMultipleErrorsOnProperties_WhenPost_ThenReturnMultipleErrorResponse()
+        public void GivenMultipleErrorsOnProperties_WhenTryRegisterBusiness_ThenReturnMultipleErrorResponse()
         {
             var command = GivenMultipleErrorsOnProperties();
-            var response = WhenPost(command);
+            var response = WhenTryRegisterBusiness(command);
             ThenReturnMultipleErrorResponse(response);
         }
 
         [Test]
-        public void GivenDuplicateBusinessAdmin_WhenPost_ThenReturnDuplicateAdminErrorResponse()
+        public void GivenDuplicateBusinessAdmin_WhenTryRegisterBusiness_ThenReturnDuplicateAdminErrorResponse()
         {
-            var command = GivenDuplicateBusinessAdmin();
-            var response = WhenPost(command);
+            GivenDuplicateBusinessAdmin();
+            var response = WhenTryRegisterBusiness();
             ThenReturnDuplicateAdminErrorResponse(response);
         }
 
         [Test]
-        public void GivenUniqueBusinessAdmin_WhenPost_ThenReturnNewBusinessSuccessResponse()
+        public void GivenUniqueBusinessAdmin_WhenTryRegisterBusiness_ThenReturnNewBusinessSuccessResponse()
         {
             var command = GivenUniqueBusinessAdmin();
-            var response = WhenPost(command);
+            var response = WhenTryRegisterBusiness(command);
             ThenReturnNewBusinessSuccessResponse(response);
         }
 
@@ -119,9 +120,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(registration);
         }
 
-        private string GivenDuplicateBusinessAdmin()
+        private void GivenDuplicateBusinessAdmin()
         {
-            return RegisterFirstTime();
+            RegisterFirstTime();
         }
 
         private string GivenUniqueBusinessAdmin()
@@ -129,12 +130,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return CreateValidBusinessRegistrationCommand();
         }
 
-        private string RegisterFirstTime()
+        private void RegisterFirstTime()
         {
-            var registration = CreateValidBusinessRegistrationCommand();
-            var response = WhenPost(registration);
-
-            return registration;
+            Business = new RandomBusiness();
+            BusinessRegistrar.RegisterBusiness(Business);
         }
 
         private string CreateValidBusinessRegistrationCommand()
@@ -154,6 +153,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(registration);
         }
 
+        private Response WhenTryRegisterBusiness()
+        {
+            return BusinessRegistrar.RegisterBusiness(Business);
+        }
+
+        private Response WhenTryRegisterBusiness(string json)
+        {
+            return WebClient.AnonymousPost<RegistrationData>(json, RelativePath);
+        }
 
         private Response WhenPost(string json)
         {
@@ -163,37 +171,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void ThenReturnNoDataErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "Please post us some data!");
+            AssertSingleError(response, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "registration.business", "The business field is required.");
-            AssertApplicationError(errors[1], "registration.admin", "The admin field is required.");
+            AssertMultipleErrors(response, new[,] { { "The business field is required.", "registration.business" },
+                                                    { "The admin field is required.", "registration.admin" } });
         }
 
         private void ThenReturnMissingPropertiesErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(5));
-            AssertApplicationError(errors[0], "registration.business.name", "The name field is required.");
-            AssertApplicationError(errors[1], "registration.admin.firstName", "The firstName field is required.");
-            AssertApplicationError(errors[2], "registration.admin.lastName", "The lastName field is required.");
-            AssertApplicationError(errors[3], "registration.admin.email", "The email field is required.");
-            AssertApplicationError(errors[4], "registration.admin.password", "The password field is required.");
+            AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
+                                                    { "The firstName field is required.", "registration.admin.firstName" },
+                                                    { "The lastName field is required.", "registration.admin.lastName" },
+                                                    { "The email field is required.", "registration.admin.email" },
+                                                    { "The password field is required.", "registration.admin.password" } });
         }
 
         private void ThenReturnMultipleErrorResponse(Response response)

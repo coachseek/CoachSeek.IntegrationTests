@@ -150,7 +150,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
                 var location = new ApiLocationSaveCommand
                 {
                     id = Guid.Empty,
-                    name = RandomString
+                    name = Random.RandomString
                 };
 
                 return JsonConvert.SerializeObject(location);
@@ -208,12 +208,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
         private void ThenReturnNoDataErrorResponse(Response response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "Please post us some data!");
+            AssertSingleError(response, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(Response response)

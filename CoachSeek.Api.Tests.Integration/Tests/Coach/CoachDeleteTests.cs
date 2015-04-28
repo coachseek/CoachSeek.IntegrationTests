@@ -45,8 +45,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void RegisterSteveFergussonCoach()
         {
-            SteveEmail = RandomEmail;
-            StevePhone = RandomString;
+            SteveEmail = Random.RandomEmail;
+            StevePhone = Random.RandomString;
             var json = CreateNewCoachSaveCommand(STEVE_FIRST_NAME, FERGUSSON_LAST_NAME, SteveEmail, StevePhone);
             var response = Post<CoachData>(json);
             SteveId = ((CoachData)response.Payload).id;
@@ -54,8 +54,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void RegisterAaronSmithCoach()
         {
-            AaronEmail = RandomEmail;
-            AaronPhone = RandomString;
+            AaronEmail = Random.RandomEmail;
+            AaronPhone = Random.RandomString;
             var json = CreateNewCoachSaveCommand(AARON_FIRST_NAME, SMITH_LAST_NAME, AaronEmail, AaronPhone);
             var response = Post<CoachData>(json);
             AaronId = ((CoachData)response.Payload).id;
@@ -63,8 +63,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void RegisterBobbySmithCoach()
         {
-            BobbyEmail = RandomEmail;
-            BobbyPhone = RandomString;
+            BobbyEmail = Random.RandomEmail;
+            BobbyPhone = Random.RandomString;
             var json = CreateNewCoachSaveCommand(BOBBY_FIRST_NAME, SMITH_LAST_NAME, BobbyEmail, BobbyPhone);
             var response = Post<CoachData>(json);
             BobbyId = ((CoachData)response.Payload).id;

@@ -62,12 +62,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
             private void GivenNoBusinessDomain()
             {
-                BusinessDomain = null;
+                Business.Domain = null;
             }
 
             private void GivenInvalidBusinessDomain()
             {
-                BusinessDomain = "abc123";
+                Business.Domain = "abc123";
             }
 
             private void GivenValidBusinessDomain()
@@ -138,13 +138,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         private Response WhenTryGetAll()
         {
             var url = BuildGetAllUrl();
-            return Get<List<ServiceData>>(url);
+            return AuthenticatedGet<List<ServiceData>>(url);
         }
 
         private Response WhenTryGetById(Guid serviceId)
         {
             var url = BuildGetByIdUrl(serviceId);
-            return Get<ServiceData>(url);
+            return AuthenticatedGet<ServiceData>(url);
         }
 
 
