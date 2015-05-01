@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Customer
 {
@@ -19,6 +20,16 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Customer
         {
             Email = email;
             Phone = phone != null ? phone.ToUpperInvariant() : null;
+        }
+
+
+        public void Assert(CustomerData actualCustomer)
+        {
+            NUnit.Framework.Assert.That(actualCustomer.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(actualCustomer.firstName, Is.EqualTo(FirstName));
+            NUnit.Framework.Assert.That(actualCustomer.lastName, Is.EqualTo(LastName));
+            NUnit.Framework.Assert.That(actualCustomer.email, Is.EqualTo(Email));
+            NUnit.Framework.Assert.That(actualCustomer.phone, Is.EqualTo(Phone));
         }
     }
 }

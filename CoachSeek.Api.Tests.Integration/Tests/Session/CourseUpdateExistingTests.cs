@@ -11,7 +11,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [SetUp]
         public void Setup()
         {
-            SetupFullTestBusiness();
+            FullySetupNewTestBusiness();
 
             MiniGreen = new ServiceMiniGreen();
             RegisterTestService(MiniGreen);

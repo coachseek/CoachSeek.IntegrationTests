@@ -10,7 +10,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [SetUp]
         public void Setup()
         {
-            SetupFullTestBusiness();
+            FullySetupNewTestBusiness();
         }
 
         private string BuildSearchUrl(string startDate, string endDate, Guid? coachId, Guid? locationId, Guid? serviceId)

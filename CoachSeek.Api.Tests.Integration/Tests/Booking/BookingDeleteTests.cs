@@ -11,7 +11,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         [SetUp]
         public void Setup()
         {
-            SetupFullTestBusiness();
+            FullySetupNewTestBusiness();
         }
 
         protected override string RelativePath

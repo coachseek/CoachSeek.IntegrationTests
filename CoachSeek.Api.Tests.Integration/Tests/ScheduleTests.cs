@@ -71,9 +71,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        protected void SetupFullTestBusiness()
+        protected void FullySetupNewTestBusiness()
         {
             RegisterTestBusiness();
+            FullySetupExistingTestBusiness();
+        }
+
+        protected void FullySetupExistingTestBusiness()
+        {
             RegisterTestLocations();
             RegisterTestCoaches();
             RegisterTestServices();
@@ -287,12 +292,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestCourses()
         {
-            RegisterAaronRemuera9To10For8Weeks();
+            RegisterAaronRemuera9To10For5Weeks();
             RegisterBobbyRemueraHolidayCampFor3Days();
             RegisterAaronOrakeiMiniBlueFor2Days();
         }
 
-        private void RegisterAaronRemuera9To10For8Weeks()
+        private void RegisterAaronRemuera9To10For5Weeks()
         {
             var json = CreateSessionSaveCommandAaronRemuera9To10For5WeeksJson();
             var response = PostCourse(json);
