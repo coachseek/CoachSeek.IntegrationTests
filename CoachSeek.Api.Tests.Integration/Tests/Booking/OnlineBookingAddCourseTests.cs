@@ -23,6 +23,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             ThenReturnCourseNotOnlineBookableError(response);
         }
 
+        [Test, Ignore("TODO")]
+        public void GivenCourseIsFullyBooked_WhenTryBookOnlineCourse_ThenReturnNoSpacesAvailableError()
+        {
+            var command = GivenCourseIsFullyBooked();
+            var response = WhenTryBookOnlineCourse(command);
+            ThenReturnCourseNotOnlineBookableError(response);
+        }
+
         [Test]
         public void GivenCourseIsOnlineBookable_WhenTryBookOnlineCourse_ThenCreateSessionBooking()
         {
@@ -32,20 +40,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        protected ApiBookingSaveCommand GivenCourseIsOnlineBookable()
-        {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = AaronRemuera9To10For5WeeksCourseId },
-                customer = new ApiCustomerKey { id = Wilma.Id }
-            };
-        }
-
         protected ApiBookingSaveCommand GivenCourseIsNotOnlineBookable()
         {
             return new ApiBookingSaveCommand
             {
                 session = new ApiSessionKey { id = BobbyRemueraHolidayCampFor3DaysCourseId },
+                customer = new ApiCustomerKey { id = Wilma.Id }
+            };
+        }
+
+        private ApiBookingSaveCommand GivenCourseIsFullyBooked()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected ApiBookingSaveCommand GivenCourseIsOnlineBookable()
+        {
+            return new ApiBookingSaveCommand
+            {
+                session = new ApiSessionKey { id = AaronRemuera9To10For4WeeksCourseId },
                 customer = new ApiCustomerKey { id = Wilma.Id }
             };
         }
@@ -62,19 +75,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             Assert.That(courseBooking.id, Is.InstanceOf<Guid>());
             var courseBookingId = courseBooking.id;
-            Assert.That(courseBooking.course.id, Is.EqualTo(AaronRemuera9To10For5WeeksCourseId));
-            Assert.That(courseBooking.course.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith starting on {0} at 09:00 for 5 weeks",
+            Assert.That(courseBooking.course.id, Is.EqualTo(AaronRemuera9To10For4WeeksCourseId));
+            Assert.That(courseBooking.course.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith starting on {0} at 09:00 for 4 weeks",
                                                                        GetDateFormatNumberOfDaysOut(7))));
             Assert.That(courseBooking.customer.id, Is.EqualTo(Wilma.Id));
             Assert.That(courseBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", Wilma.FirstName, Wilma.LastName)));
 
             // Check bookings on sessions
-            Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(5));
+            Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(4));
 
             var firstSessionBooking = courseBooking.sessionBookings[0];
             Assert.That(firstSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(firstSessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(firstSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[0]));
+            Assert.That(firstSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For4WeeksSessionIds[0]));
             Assert.That(firstSessionBooking.session.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith on {0} at 09:00",
                                                                        GetDateFormatNumberOfDaysOut(7))));
             Assert.That(firstSessionBooking.customer.id, Is.EqualTo(Wilma.Id));
@@ -83,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var secondSessionBooking = courseBooking.sessionBookings[1];
             Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(secondSessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(secondSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[1]));
+            Assert.That(secondSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For4WeeksSessionIds[1]));
             Assert.That(secondSessionBooking.session.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith on {0} at 09:00",
                                                                        GetDateFormatNumberOfDaysOut(14))));
             Assert.That(secondSessionBooking.customer.id, Is.EqualTo(Wilma.Id));
@@ -92,7 +105,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var thirdSessionBooking = courseBooking.sessionBookings[2];
             Assert.That(thirdSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(thirdSessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(thirdSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[2]));
+            Assert.That(thirdSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For4WeeksSessionIds[2]));
             Assert.That(thirdSessionBooking.session.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith on {0} at 09:00",
                                                                        GetDateFormatNumberOfDaysOut(21))));
             Assert.That(thirdSessionBooking.customer.id, Is.EqualTo(Wilma.Id));
@@ -101,38 +114,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var fourthSessionBooking = courseBooking.sessionBookings[3];
             Assert.That(fourthSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(fourthSessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(fourthSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[3]));
+            Assert.That(fourthSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For4WeeksSessionIds[3]));
             Assert.That(fourthSessionBooking.session.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith on {0} at 09:00",
                                                                        GetDateFormatNumberOfDaysOut(28))));
             Assert.That(fourthSessionBooking.customer.id, Is.EqualTo(Wilma.Id));
             Assert.That(fourthSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", Wilma.FirstName, Wilma.LastName)));
-
-            var fifthSessionBooking = courseBooking.sessionBookings[4];
-            Assert.That(fifthSessionBooking.id, Is.InstanceOf<Guid>());
-            Assert.That(fifthSessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(fifthSessionBooking.session.id, Is.EqualTo(AaronRemuera9To10For5WeeksSessionIds[4]));
-            Assert.That(fifthSessionBooking.session.name, Is.EqualTo(string.Format("Mini Red at Remuera Racquets Club with Aaron Smith on {0} at 09:00",
-                                                                       GetDateFormatNumberOfDaysOut(35))));
-            Assert.That(fifthSessionBooking.customer.id, Is.EqualTo(Wilma.Id));
-            Assert.That(fifthSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", Wilma.FirstName, Wilma.LastName)));
 
             // Check the bookings on the course
             GetAndAssertCourse(courseBookingId, 
                                firstSessionBooking.id,
                                secondSessionBooking.id,
                                thirdSessionBooking.id,
-                               fourthSessionBooking.id,
-                               fifthSessionBooking.id);
+                               fourthSessionBooking.id);
         }
 
         private void GetAndAssertCourse(Guid courseBookingId, 
                                         Guid firstSessionBookingId,
                                         Guid secondSessionBookingId,
                                         Guid thirdSessionBookingId,
-                                        Guid fourthSessionBookingId,
-                                        Guid fifthSessionBookingId)
+                                        Guid fourthSessionBookingId)
         {
-            var courseResponse = AuthenticatedGet<CourseData>("Sessions", AaronRemuera9To10For5WeeksCourseId);
+            var courseResponse = AuthenticatedGet<CourseData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
             var course = AssertSuccessResponse<CourseData>(courseResponse);
 
             Assert.That(course.booking.bookings.Count, Is.EqualTo(1));
@@ -167,12 +169,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(fourthSessionFirstBooking.id, Is.EqualTo(fourthSessionBookingId));
             Assert.That(fourthSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
             AssertCustomer(fourthSessionFirstBooking.customer, customerWilma);
-
-            Assert.That(course.sessions[4].booking.bookings.Count, Is.EqualTo(1));
-            var fifthSessionFirstBooking = course.sessions[4].booking.bookings[0];
-            Assert.That(fifthSessionFirstBooking.id, Is.EqualTo(fifthSessionBookingId));
-            Assert.That(fifthSessionFirstBooking.parentId, Is.EqualTo(courseBookingId));
-            AssertCustomer(fifthSessionFirstBooking.customer, customerWilma);
         }
 
 

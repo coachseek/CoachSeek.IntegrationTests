@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessRegistrar.cs" />
+    <Compile Include="LocationRegistrar.cs" />
     <Compile Include="CoachRegistrar.cs" />
     <Compile Include="Models\ApiBusiness.cs" />
     <Compile Include="Models\ApiCustomerKey.cs" />
@@ -168,13 +169,16 @@
     <Compile Include="Tests\Service\ServicePostTests.cs" />
     <Compile Include="Tests\Service\ServiceGetTests.cs" />
     <Compile Include="Tests\Service\ServiceTests.cs" />
+    <Compile Include="Tests\Session\BaseSessionSearchTests.cs" />
+    <Compile Include="Tests\Session\OnlineBookingSessionSearchTests.cs" />
     <Compile Include="Tests\Session\SessionDeleteTests.cs" />
     <Compile Include="Tests\Session\CourseCreateNewTests.cs" />
     <Compile Include="Tests\Session\CourseUpdateExistingTests.cs" />
     <Compile Include="Tests\Session\SessionGetTests.cs" />
     <Compile Include="Tests\Session\SessionCreateNewTests.cs" />
+    <Compile Include="Tests\Session\SessionNewSearchTests.cs" />
+    <Compile Include="Tests\Session\SessionOldSearchTests.cs" />
     <Compile Include="Tests\Session\SessionSaveCommandTests.cs" />
-    <Compile Include="Tests\Session\SessionSearchTests.cs" />
     <Compile Include="Tests\Session\SessionUpdateExistingTests.cs" />
     <Compile Include="Tests\WebIntegrationTest.cs" />
     <Compile Include="UrlBuilder.cs" />

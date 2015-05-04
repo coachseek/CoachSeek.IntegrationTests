@@ -29,7 +29,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = GivenNewSessionClashesWithExistingCourse();
             var response = WhenTryCreateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For5WeeksSessionIds[1].ToString()));
+            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For4WeeksSessionIds[1].ToString()));
         }
 
         [Test]

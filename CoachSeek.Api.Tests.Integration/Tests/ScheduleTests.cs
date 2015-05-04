@@ -14,8 +14,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
     {
         protected Guid HolidayCampId { get; set; }
 
-        protected Guid AaronRemuera9To10For5WeeksCourseId { get; set; }
-        protected Guid[] AaronRemuera9To10For5WeeksSessionIds { get; set; }
+        protected Guid AaronRemuera9To10For4WeeksCourseId { get; set; }
+        protected Guid[] AaronRemuera9To10For4WeeksSessionIds { get; set; }
         protected Guid BobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid[] BobbyRemueraHolidayCampFor3DaysSessionIds { get; set; }
         protected Guid AaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
@@ -93,49 +93,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void RegisterTestLocations()
         {
             Orakei = new LocationOrakei();
-            RegisterTestLocation(Orakei);
+            LocationRegistrar.RegisterLocation(Orakei, Business);
 
             Remuera = new LocationRemuera();
-            RegisterTestLocation(Remuera);
-        }
-
-        private void RegisterTestLocation(ExpectedLocation location)
-        {
-            var json = CreateNewLocationSaveCommand(location);
-            var response = PostLocation(json);
-            location.Id = ((LocationData)response.Payload).id;
-        }
-
-        private string CreateNewLocationSaveCommand(ExpectedLocation expectedLocation)
-        {
-            var location = new ApiLocationSaveCommand
-            {
-                name = expectedLocation.Name
-            };
-
-            return JsonConvert.SerializeObject(location);
-        }
-
-        private Response PostLocation(string json)
-        {
-            return Post<LocationData>(json, "Locations");
+            LocationRegistrar.RegisterLocation(Remuera, Business);
         }
 
 
         private void RegisterTestCoaches()
         {
             Aaron = new CoachAaron();
-            RegisterTestCoach(Aaron);
+            CoachRegistrar.RegisterCoach(Aaron, Business);
 
             Bobby = new CoachBobby();
-            RegisterTestCoach(Bobby);
+            CoachRegistrar.RegisterCoach(Bobby, Business);
         }
 
         private void RegisterTestCoach(ExpectedCoach coach)
         {
             var json = CreateNewCoachSaveCommand(coach);
             var response = PostCoach(json);
-            coach.Id = ((CoachData)response.Payload).id;
+            if (response.Payload != null)
+                coach.Id = ((CoachData)response.Payload).id;
         }
 
         private string CreateNewCoachSaveCommand(ExpectedCoach expectedCoach)
@@ -174,7 +153,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateNewServiceSaveCommand(service);
             var response = PostService(json);
-            service.Id = ((ServiceData)response.Payload).id;
+            if (response.Payload != null)
+                service.Id = ((ServiceData)response.Payload).id;
         }
 
         protected string CreateNewServiceSaveCommand(ExpectedService expectedService)
@@ -202,7 +182,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateHolidayCampServiceSaveCommand();
             var response = PostService(json);
-            HolidayCampId = ((ServiceData)response.Payload).id;
+            if (response.Payload != null)
+                HolidayCampId = ((ServiceData)response.Payload).id;
         }
 
         private Response PostService(string json)
@@ -287,25 +268,29 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateSessionSaveCommandJson(session);
             var response = PostSession(json);
-            session.Id = ((SessionData)response.Payload).id;
+            if (response.Payload != null)
+                session.Id = ((SessionData)response.Payload).id;
         }
 
         private void RegisterTestCourses()
         {
-            RegisterAaronRemuera9To10For5Weeks();
+            RegisterAaronRemuera9To10For4Weeks();
             RegisterBobbyRemueraHolidayCampFor3Days();
             RegisterAaronOrakeiMiniBlueFor2Days();
         }
 
-        private void RegisterAaronRemuera9To10For5Weeks()
+        private void RegisterAaronRemuera9To10For4Weeks()
         {
-            var json = CreateSessionSaveCommandAaronRemuera9To10For5WeeksJson();
+            var json = CreateSessionSaveCommandAaronRemuera9To10For4WeeksJson();
             var response = PostCourse(json);
             var course = (CourseData)response.Payload;
-            AaronRemuera9To10For5WeeksCourseId = course.id;
-            AaronRemuera9To10For5WeeksSessionIds = new Guid[5];
-            for(var i = 0; i < 5; i++)
-                AaronRemuera9To10For5WeeksSessionIds[i] = course.sessions[i].id;
+            if (course != null)
+            {
+                AaronRemuera9To10For4WeeksCourseId = course.id;
+                AaronRemuera9To10For4WeeksSessionIds = new Guid[5];
+                for (var i = 0; i < 4; i++)
+                    AaronRemuera9To10For4WeeksSessionIds[i] = course.sessions[i].id;
+            }
         }
 
         private void RegisterBobbyRemueraHolidayCampFor3Days()
@@ -313,10 +298,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateSessionSaveCommandBobbyRemueraHolidayCampFor3DaysJson();
             var response = PostCourse(json);
             var course = (CourseData)response.Payload;
-            BobbyRemueraHolidayCampFor3DaysCourseId = course.id;
-            BobbyRemueraHolidayCampFor3DaysSessionIds = new Guid[3];
-            for (var i = 0; i < 3; i++)
-                BobbyRemueraHolidayCampFor3DaysSessionIds[i] = course.sessions[i].id;
+            if (course != null)
+            {
+                BobbyRemueraHolidayCampFor3DaysCourseId = course.id;
+                BobbyRemueraHolidayCampFor3DaysSessionIds = new Guid[3];
+                for (var i = 0; i < 3; i++)
+                    BobbyRemueraHolidayCampFor3DaysSessionIds[i] = course.sessions[i].id;
+            }
         }
 
         private void RegisterAaronOrakeiMiniBlueFor2Days()
@@ -324,10 +312,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateSessionSaveCommandAaronOrakeiMiniBlueFor2DaysJson();
             var response = PostCourse(json);
             var course = (CourseData)response.Payload;
-            AaronOrakeiMiniBlueFor2DaysCourseId = course.id;
-            AaronOrakeiMiniBlueFor2DaysSessionIds = new Guid[2];
-            for (var i = 0; i < 2; i++)
-                AaronOrakeiMiniBlueFor2DaysSessionIds[i] = course.sessions[i].id;
+            if (course != null)
+            {
+                AaronOrakeiMiniBlueFor2DaysCourseId = course.id;
+                AaronOrakeiMiniBlueFor2DaysSessionIds = new Guid[2];
+                for (var i = 0; i < 2; i++)
+                    AaronOrakeiMiniBlueFor2DaysSessionIds[i] = course.sessions[i].id;
+            }
         }
 
 
@@ -430,17 +421,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = Aaron.Id },
                 service = new ApiServiceKey { id = MiniRed.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true },
+                booking = new ApiSessionBooking { studentCapacity = 2, isOnlineBookable = true },
                 repetition = new ApiRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 19.95m },
                 presentation = new ApiPresentation { colour = "red" }
             };
         }
 
-        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For5Weeks()
+        protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10For4Weeks()
         {
             var command = CreateSessionSaveCommandAaronRemuera9To10();
-            command.repetition = new ApiRepetition {sessionCount = 5, repeatFrequency = "w"};
+            command.repetition = new ApiRepetition {sessionCount = 4, repeatFrequency = "w"};
 
             return command;
         }
@@ -475,9 +466,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
-        private string CreateSessionSaveCommandAaronRemuera9To10For5WeeksJson()
+        private string CreateSessionSaveCommandAaronRemuera9To10For4WeeksJson()
         {
-            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronRemuera9To10For5Weeks());
+            return JsonConvert.SerializeObject(CreateSessionSaveCommandAaronRemuera9To10For4Weeks());
         }
 
         private string CreateSessionSaveCommandBobbyRemueraHolidayCampFor3DaysJson()
@@ -506,7 +497,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateNewCustomerSaveCommand(customer);
             var response = PostCustomer(json);
-            customer.Id = ((CustomerData)response.Payload).id;
+            if (response.Payload != null)
+                customer.Id = ((CustomerData)response.Payload).id;
         }
 
         private string CreateNewCustomerSaveCommand(ExpectedCustomer expectedCustomer)
@@ -538,14 +530,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Fred.Id);
             var response = PostBooking(json);
-            FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
+            if (response.Payload != null)
+                FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
         }
 
         private void BookBarneyRubbleOntoAaronOrakei14To15()
         {
             var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Barney.Id);
             var response = PostBooking(json);
-            BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
+            if (response.Payload != null)
+                BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
         }
 
         private void BookCustomersOntoCourses()
@@ -557,7 +551,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var json = CreateNewBookingSaveCommand(AaronOrakeiMiniBlueFor2DaysCourseId, Fred.Id);
             var response = PostBooking(json);
-            FredOnAaronOrakeiMiniBlueFor2DaysCourseId = ((BookingData)response.Payload).id;
+            if (response.Payload != null)
+                FredOnAaronOrakeiMiniBlueFor2DaysCourseId = ((BookingData)response.Payload).id;
         }
 
         private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)

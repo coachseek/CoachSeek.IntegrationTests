@@ -22,9 +22,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected static string BaseUrl
         {
 #if DEBUG
-            get { return "http://localhost:5272"; }
+            get { return "https://localhost:44300"; }
+            //get { return "http://localhost:5272"; }
 #else
-            get { return "http://api.coachseek.com"; }
+            get { return "https://api.coachseek.com"; }
 #endif
         }
         

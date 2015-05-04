@@ -11,7 +11,8 @@ namespace CoachSeek.Api.Tests.Integration
         {
             var json = CreateNewCoachSaveCommand(coach);
             var response = PostCoach(business, json);
-            coach.Id = ((CoachData)response.Payload).id;
+            if (response.Payload != null)
+                coach.Id = ((CoachData)response.Payload).id;
         }
 
         private static string CreateNewCoachSaveCommand(ExpectedCoach expectedCoach)
