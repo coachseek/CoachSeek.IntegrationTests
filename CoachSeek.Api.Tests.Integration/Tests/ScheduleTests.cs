@@ -12,8 +12,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class ScheduleTests : WebIntegrationTest
     {
-        protected Guid HolidayCampId { get; set; }
-
         protected Guid AaronRemuera9To10For4WeeksCourseId { get; set; }
         protected Guid[] AaronRemuera9To10For4WeeksSessionIds { get; set; }
         protected Guid BobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
@@ -34,6 +32,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected ServiceMiniRed MiniRed { get; set; }
         protected ServiceMiniBlue MiniBlue { get; set; }
         protected ServiceMiniGreen MiniGreen { get; set; }
+        protected ServiceHolidayCamp HolidayCamp { get; set; }
 
         protected StandaloneAaronOrakei14To15 AaronOrakei14To15 { get; set; }
         protected StandaloneAaronOrakei16To17 AaronOrakei16To17 { get; set; }
@@ -99,7 +98,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             LocationRegistrar.RegisterLocation(Remuera, Business);
         }
 
-
         private void RegisterTestCoaches()
         {
             Aaron = new CoachAaron();
@@ -109,150 +107,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             CoachRegistrar.RegisterCoach(Bobby, Business);
         }
 
-        private void RegisterTestCoach(ExpectedCoach coach)
-        {
-            var json = CreateNewCoachSaveCommand(coach);
-            var response = PostCoach(json);
-            if (response.Payload != null)
-                coach.Id = ((CoachData)response.Payload).id;
-        }
-
-        private string CreateNewCoachSaveCommand(ExpectedCoach expectedCoach)
-        {
-            var coach = new ApiCoachSaveCommand
-            {
-                firstName = expectedCoach.FirstName,
-                lastName = expectedCoach.LastName,
-                email = expectedCoach.Email,
-                phone = expectedCoach.Phone,
-                workingHours = expectedCoach.WorkingHours
-            };
-
-            return JsonConvert.SerializeObject(coach);
-        }
-
-        private Response PostCoach(string json)
-        {
-            return Post<CoachData>(json, "Coaches");
-        }
-
-
         private void RegisterTestServices()
         {
             MiniRed = new ServiceMiniRed();
-            RegisterTestService(MiniRed);
+            ServiceRegistrar.RegisterService(MiniRed, Business);
 
             MiniBlue = new ServiceMiniBlue();
-            RegisterTestService(MiniBlue);
+            ServiceRegistrar.RegisterService(MiniBlue, Business);
 
-
-            RegisterHolidayCampService();
-        }
-
-        protected void RegisterTestService(ExpectedService service)
-        {
-            var json = CreateNewServiceSaveCommand(service);
-            var response = PostService(json);
-            if (response.Payload != null)
-                service.Id = ((ServiceData)response.Payload).id;
-        }
-
-        protected string CreateNewServiceSaveCommand(ExpectedService expectedService)
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = expectedService.Name,
-                description = expectedService.Description,
-                repetition = expectedService.Repetition,
-                presentation = expectedService.Presentation
-            };
-
-            if (expectedService.Timing != null)
-                service.timing = expectedService.Timing;
-            if (expectedService.Pricing != null)
-                service.pricing = expectedService.Pricing;
-            if (expectedService.Booking != null)
-                service.booking = expectedService.Booking;
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-
-        private void RegisterHolidayCampService()
-        {
-            var json = CreateHolidayCampServiceSaveCommand();
-            var response = PostService(json);
-            if (response.Payload != null)
-                HolidayCampId = ((ServiceData)response.Payload).id;
-        }
-
-        private Response PostService(string json)
-        {
-            return Post<ServiceData>(json, "Services");
-        }
-
-        private string CreateNewServiceSaveCommandWithoutDefaults(string name, string colour)
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = name,
-                description = string.Format("{0} Service", name),
-                repetition = new ApiServiceRepetition { sessionCount = 1 },
-                presentation = new ApiPresentation { colour = colour }
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-        private string CreateNewServiceSaveCommandWithDefaults(string name, string colour)
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = name,
-                description = string.Format("{0} Service", name),
-                timing = new ApiServiceTiming { duration = 75 },
-                booking = new ApiServiceBooking
-                {
-                    studentCapacity = 13,
-                    isOnlineBookable = true
-                },
-                repetition = new ApiServiceRepetition { sessionCount = 1 },
-                pricing = new ApiPricing { sessionPrice = 19.95m },
-                presentation = new ApiPresentation { colour = colour }
-            };
-
-            return JsonConvert.SerializeObject(service);
-        }
-
-
-        //private string CreateMiniOrangeServiceSaveCommand()
-        //{
-        //    var service = new ApiServiceSaveCommand
-        //    {
-        //        name = MINI_ORANGE_NAME,
-        //        timing = new ApiServiceTiming { duration = 75 },
-        //        booking = new ApiServiceBooking { studentCapacity = 6 },
-        //        pricing = new ApiPricing { coursePrice = 125 },
-        //        repetition = new ApiServiceRepetition { sessionCount = 5, repeatFrequency = "w" },
-        //        presentation = new ApiPresentation { colour = "orange" }
-        //    };
-
-        //    return JsonConvert.SerializeObject(service);
-        //}
-
-        private string CreateHolidayCampServiceSaveCommand()
-        {
-            var service = new ApiServiceSaveCommand
-            {
-                name = "Holiday Camp",
-                timing = new ApiServiceTiming { duration = 240 },
-                booking = new ApiServiceBooking { studentCapacity = 20 },
-                pricing = new ApiPricing { sessionPrice = 120, coursePrice = 200 },
-                repetition = new ApiServiceRepetition { sessionCount = 3, repeatFrequency = "d" },
-                presentation = new ApiPresentation { colour = "yellow" }
-            };
-
-            return JsonConvert.SerializeObject(service);
+            HolidayCamp = new ServiceHolidayCamp();
+            ServiceRegistrar.RegisterService(HolidayCamp, Business);
         }
 
         private void RegisterTestSessions()
@@ -263,6 +127,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AaronOrakei16To17 = new StandaloneAaronOrakei16To17(Aaron.Id, Orakei.Id, MiniRed.Id, GetDateFormatNumberOfDaysOut(7));
             RegisterTestSession(AaronOrakei16To17);
         }
+
 
         protected void RegisterTestSession(ExpectedStandaloneSession session)
         {
@@ -442,7 +307,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             {
                 location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = Bobby.Id },
-                service = new ApiServiceKey { id = HolidayCampId },
+                service = new ApiServiceKey { id = HolidayCamp.Id },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(2), startTime = "10:00", duration = 240 },
                 booking = new ApiSessionBooking { studentCapacity = 20, isOnlineBookable = false },
                 repetition = new ApiRepetition { sessionCount = 3, repeatFrequency = "d"},
@@ -484,39 +349,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private void RegisterTestCustomers()
         {
             Fred = new CustomerFred();
-            RegisterTestCustomer(Fred);
+            CustomerRegistrar.RegisterCustomer(Fred, Business);
 
             Barney = new CustomerBarney();
-            RegisterTestCustomer(Barney);
+            CustomerRegistrar.RegisterCustomer(Barney, Business);
 
             Wilma = new CustomerWilma();
-            RegisterTestCustomer(Wilma);
-        }
-
-        private void RegisterTestCustomer(ExpectedCustomer customer)
-        {
-            var json = CreateNewCustomerSaveCommand(customer);
-            var response = PostCustomer(json);
-            if (response.Payload != null)
-                customer.Id = ((CustomerData)response.Payload).id;
-        }
-
-        private string CreateNewCustomerSaveCommand(ExpectedCustomer expectedCustomer)
-        {
-            var customer = new ApiCustomerSaveCommand
-            {
-                firstName = expectedCustomer.FirstName,
-                lastName = expectedCustomer.LastName,
-                email = expectedCustomer.Email,
-                phone = expectedCustomer.Phone
-            };
-
-            return JsonConvert.SerializeObject(customer);
-        }
-
-        private Response PostCustomer(string json)
-        {
-            return Post<CustomerData>(json, "Customers");
+            CustomerRegistrar.RegisterCustomer(Wilma, Business);
         }
 
 

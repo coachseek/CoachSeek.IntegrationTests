@@ -73,6 +73,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             ThenReturnDuplicateAdminErrorResponse(response);
         }
 
+        [Test, Ignore("Uncomment once http is disabled.")]
+        public void GivenUniqueBusinessAdmin_WhenTryRegisterBusinessUsingHttp_ThenReturnForbiddenError()
+        {
+            var command = GivenUniqueBusinessAdmin();
+            var response = WhenTryRegisterBusinessUsingHttp(command);
+            ThenReturnForbiddenError(response);
+        }
+
         [Test]
         public void GivenUniqueBusinessAdmin_WhenTryRegisterBusiness_ThenReturnNewBusinessSuccessResponse()
         {
@@ -163,9 +171,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return WebClient.AnonymousPost<RegistrationData>(json, RelativePath);
         }
 
-        private Response WhenPost(string json)
+        private Response WhenTryRegisterBusinessUsingHttp(string json)
         {
-            return PostAnonymously<RegistrationData>(json);
+            return WebClient.AnonymousPost<RegistrationData>(json, RelativePath, "http");
         }
 
 
@@ -222,6 +230,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var errors = (ApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "registration.admin.email", "The user with this email address already exists.");
+        }
+
+        private void ThenReturnForbiddenError(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.Forbidden);
         }
 
         private void ThenReturnNewBusinessSuccessResponse(Response response)

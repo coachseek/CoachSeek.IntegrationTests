@@ -10,20 +10,9 @@ namespace CoachSeek.Api.Tests.Integration
 {
     public static class WebClient
     {
-        private static string BaseUrl
+        public static Response AnonymousPost<TResponse>(string json, string relativePath, string scheme = "https")
         {
-#if DEBUG
-            get { return "https://localhost:44300"; }
-            //get { return "http://localhost:5272"; }
-#else
-            get { return "http://api.coachseek.com"; }
-#endif
-        }
-
-
-        public static Response AnonymousPost<TResponse>(string json, string relativePath)
-        {
-            var http = CreateWebRequest(relativePath);
+            var http = CreateWebRequest(relativePath, scheme);
 
             return Post<TResponse>(json, http);
         }
@@ -44,9 +33,9 @@ namespace CoachSeek.Api.Tests.Integration
             return Post<TResponse>(json, http);
         }
 
-        private static HttpWebRequest CreateWebRequest(string relativePath)
+        private static HttpWebRequest CreateWebRequest(string relativePath, string scheme = "https")
         {
-            var url = CreateUrl(relativePath);
+            var url = CreateUrl(scheme, relativePath);
             return (HttpWebRequest)WebRequest.Create(url);
         }
 
@@ -63,9 +52,18 @@ namespace CoachSeek.Api.Tests.Integration
             request.Headers["Authorization"] = "Basic " + authInfo;
         }
 
-        private static Uri CreateUrl(string relativePath)
+        private static Uri CreateUrl(string scheme, string relativePath)
         {
-            return new Uri(string.Format("{0}/{1}", BaseUrl, relativePath));
+#if DEBUG
+            if (scheme == "https")
+                return new Uri(string.Format("https://localhost:44300/{0}", relativePath));
+            if (scheme == "http")
+                return new Uri(string.Format("http://localhost:5272/{0}", relativePath));
+
+            throw new InvalidOperationException("Invalid scheme");
+#else
+            return new Uri(string.Format("{0}://api.coachseek.com/{1}", scheme, relativePath));
+#endif
         }
 
         //protected Response Post<TResponse>(string json)

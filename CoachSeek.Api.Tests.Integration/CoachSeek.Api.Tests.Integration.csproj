@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessRegistrar.cs" />
+    <Compile Include="CustomerRegistrar.cs" />
+    <Compile Include="Models\Expectations\Service\ServiceHolidayCamp.cs" />
+    <Compile Include="ServiceRegistrar.cs" />
     <Compile Include="LocationRegistrar.cs" />
     <Compile Include="CoachRegistrar.cs" />
     <Compile Include="Models\ApiBusiness.cs" />
