@@ -141,7 +141,8 @@
     <Compile Include="Tests\Booking\OnlineBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddSessionTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingSaveCommandTests.cs" />
-    <Compile Include="Tests\BusinessRegistrationTests.cs" />
+    <Compile Include="Tests\Business\BusinessRegistrationTests.cs" />
+    <Compile Include="Tests\Business\BusinessGetTests.cs" />
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
     <Compile Include="Tests\Coach\CoachDeleteTests.cs" />
@@ -159,7 +160,6 @@
     <Compile Include="Models\ApplicationError.cs" />
     <Compile Include="Models\BusinessAdminData.cs" />
     <Compile Include="Models\BusinessData.cs" />
-    <Compile Include="Models\BusinessResponse.cs" />
     <Compile Include="Models\CoachData.cs" />
     <Compile Include="Models\LocationData.cs" />
     <Compile Include="Models\Response.cs" />

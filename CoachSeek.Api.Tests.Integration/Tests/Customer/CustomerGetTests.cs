@@ -70,7 +70,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email = null, string phone = null)
         {
-            var coach = new ApiCustomerSaveCommand
+            var customer = new ApiCustomerSaveCommand
             {
                 firstName = firstName,
                 lastName = lastName,
@@ -78,15 +78,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 phone = phone
             };
 
-            return JsonConvert.SerializeObject(coach);
+            return JsonConvert.SerializeObject(customer);
         }
 
 
         [Test]
-        public void WhenGetAll_ThenReturnAllCoachesResponse()
+        public void WhenGetAll_ThenReturnAllCustomersResponse()
         {
             var response = WhenGetAll();
-            ThenReturnAllCoachesResponse(response);
+            ThenReturnAllCustomersResponse(response);
         }
 
         [Test]
@@ -130,34 +130,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         }
 
 
-        private void ThenReturnAllCoachesResponse(Response response)
+        private void ThenReturnAllCustomersResponse(Response response)
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Payload, Is.Not.Null);
-            var coaches = (List<CustomerData>)response.Payload;
-            Assert.That(coaches.Count, Is.EqualTo(3));
+            var customers = (List<CustomerData>)response.Payload;
+            Assert.That(customers.Count, Is.EqualTo(3));
 
-            var coachOne = coaches[0];
-            Assert.That(coachOne.id, Is.EqualTo(FredId));
-            Assert.That(coachOne.firstName, Is.EqualTo(FRED_FIRST_NAME));
-            Assert.That(coachOne.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(coachOne.email, Is.EqualTo(FredEmail));
-            Assert.That(coachOne.phone, Is.EqualTo(FredPhone.ToUpper()));
+            var customerOne = customers[0];
+            Assert.That(customerOne.id, Is.EqualTo(FredId));
+            Assert.That(customerOne.firstName, Is.EqualTo(FRED_FIRST_NAME));
+            Assert.That(customerOne.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+            Assert.That(customerOne.email, Is.EqualTo(FredEmail));
+            Assert.That(customerOne.phone, Is.EqualTo(FredPhone.ToUpper()));
 
-            var coachTwo = coaches[1];
-            Assert.That(coachTwo.id, Is.EqualTo(WilmaId));
-            Assert.That(coachTwo.firstName, Is.EqualTo(WILMA_FIRST_NAME));
-            Assert.That(coachTwo.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(coachTwo.email, Is.Null);
-            Assert.That(coachTwo.phone, Is.Null);
+            var customerTwo = customers[1];
+            Assert.That(customerTwo.id, Is.EqualTo(WilmaId));
+            Assert.That(customerTwo.firstName, Is.EqualTo(WILMA_FIRST_NAME));
+            Assert.That(customerTwo.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
+            Assert.That(customerTwo.email, Is.Null);
+            Assert.That(customerTwo.phone, Is.Null);
 
-            var coachThree = coaches[2];
-            Assert.That(coachThree.id, Is.EqualTo(BambamId));
-            Assert.That(coachThree.firstName, Is.EqualTo(BAMBAM_FIRST_NAME));
-            Assert.That(coachThree.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
-            Assert.That(coachThree.email, Is.Null);
-            Assert.That(coachThree.phone, Is.EqualTo(BambamPhone));
+            var customerThree = customers[2];
+            Assert.That(customerThree.id, Is.EqualTo(BambamId));
+            Assert.That(customerThree.firstName, Is.EqualTo(BAMBAM_FIRST_NAME));
+            Assert.That(customerThree.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
+            Assert.That(customerThree.email, Is.Null);
+            Assert.That(customerThree.phone, Is.EqualTo(BambamPhone));
 
         }
 

@@ -5,7 +5,7 @@ using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace CoachSeek.Api.Tests.Integration.Tests
+namespace CoachSeek.Api.Tests.Integration.Tests.Business
 {
     [TestFixture]
     public class BusinessRegistrationTests : WebIntegrationTest

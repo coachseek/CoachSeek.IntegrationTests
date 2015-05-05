@@ -9,9 +9,9 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public string name { get; set; }
         public string domain { get; set; }
 
-        public IList<LocationData> locations { get; set; }
-        public IList<CoachData> coaches { get; set; }
-        public IList<ServiceData> services { get; set; }
-        public IList<SessionData> sessions { get; set; }
+        //public IList<LocationData> locations { get; set; }
+        //public IList<CoachData> coaches { get; set; }
+        //public IList<ServiceData> services { get; set; }
+        //public IList<SessionData> sessions { get; set; }
     }
 }
