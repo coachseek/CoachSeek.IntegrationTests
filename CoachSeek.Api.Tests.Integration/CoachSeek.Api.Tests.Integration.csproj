@@ -147,6 +147,7 @@
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
     <Compile Include="Tests\Coach\CoachDeleteTests.cs" />
     <Compile Include="Tests\Customer\CustomerGetTests.cs" />
+    <Compile Include="Tests\Customer\OnlineBookingCustomerPostTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
     <Compile Include="Tests\Location\LocationDeleteTests.cs" />
     <Compile Include="Tests\Location\LocationGetTests.cs" />

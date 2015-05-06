@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 {
     [TestFixture]
-    public class CustomerPostTests : WebIntegrationTest
+    public class OnlineBookingCustomerPostTests : WebIntegrationTest
     {
         private Guid FredId { get; set; }
 
@@ -35,7 +35,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             var json = JsonConvert.SerializeObject(customer);
             var response = Post<CustomerData>(json);
             FredId = ((CustomerData)response.Payload).id;
-
         }
 
         private ApiCustomerSaveCommand CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
@@ -59,68 +58,79 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
 
         [Test]
-        public void GivenNoCustomerSaveCommand_WhenTryPost_ThenReturnNoDataErrorResponse()
+        public void GivenNoCustomerSaveCommand_WhenTryAddOnlineBookCustomer_ThenReturnNoDataError()
         {
             var command = GivenNoCustomerSaveCommand();
-            var response = WhenTryPost(command);
-            ThenReturnNoDataErrorResponse(response);
+            var response = WhenTryAddOnlineBookCustomer(command);
+            ThenReturnNoDataError(response);
         }
 
         [Test]
-        public void GivenEmptyCustomerSaveCommand_WhenTryPost_ThenReturnRootRequiredErrorResponse()
+        public void GivenEmptyCustomerSaveCommand_WhenTryAddOnlineBookCustomer_ThenReturnRootRequiredError()
         {
             var command = GivenEmptyCustomerSaveCommand();
-            var response = WhenTryPost(command);
-            ThenReturnRootRequiredErrorResponse(response);
+            var response = WhenTryAddOnlineBookCustomer(command);
+            ThenReturnRootRequiredError(response);
         }
 
         [Test]
-        public void GivenEmptyStringForEmailAddress_WhenTryPost_ThenReturnInvalidEmailAddressErrorResponse()
+        public void GivenCustomerIdSpecified_WhenTryAddOnlineBookCustomer_ThenReturnExistingCustomerError()
         {
-            var command = GivenEmptyStringForEmailAddress();
-            var response = WhenTryPost(command);
-            ThenReturnInvalidEmailAddressErrorResponse(response);
+            var command = GivenCustomerIdSpecified();
+            var response = WhenTryAddOnlineBookCustomer(command);
+            AssertSingleError(response, "Existing customer used for online booking.");
         }
 
         [Test]
-        public void GivenEmailIsNotAnEmailAddress_WhenTryPost_ThenReturnInvalidEmailAddressErrorResponse()
-        {
-            var command = GivenEmailIsNotAnEmailAddress();
-            var response = WhenTryPost(command);
-            ThenReturnInvalidEmailAddressErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenValidNewCustomer_WhenTryPost_ThenReturnNewCustomerResponse()
-        {
-            var command = GivenValidNewCustomer();
-            var response = WhenTryPost(command);
-            ThenReturnNewCustomerResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentCustomerId_WhenTryPost_ThenReturnInvalidCustomerIdErrorResponse()
-        {
-            var command = GivenNonExistentCustomerId();
-            var response = WhenTryPost(command);
-            ThenReturnInvalidCustomerIdErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenWantToUpdateExistingCustomer_WhenTryPost_ThenReturnUpdatedCustomerResponse()
-        {
-            var command = GivenWantToUpdateExistingCustomer();
-            var response = WhenTryPost(command);
-            ThenReturnUpdatedCustomerResponse(response);
-        }
-
-        [Test]
-        public void GivenCustomerMatchesOnEmailAndName_WhenTryPost_ThenReturnDuplicateCustomerError()
+        public void GivenCustomerMatchesOnEmailAndName_WhenTryAddOnlineBookCustomer_ThenReturnMatchingCustomer()
         {
             var command = GivenCustomerMatchesOnEmailAndName();
-            var response = WhenTryPost(command);
-            ThenReturnDuplicateCustomerError(response);
+            var response = WhenTryAddOnlineBookCustomer(command);
+            ThenReturnMatchingCustomer(response);
         }
+
+
+
+
+        //[Test]
+        //public void GivenEmptyStringForEmailAddress_WhenPost_ThenReturnInvalidEmailAddressErrorResponse()
+        //{
+        //    var command = GivenEmptyStringForEmailAddress();
+        //    var response = WhenPost(command);
+        //    ThenReturnInvalidEmailAddressErrorResponse(response);
+        //}
+
+        //[Test]
+        //public void GivenEmailIsNotAnEmailAddress_WhenPost_ThenReturnInvalidEmailAddressErrorResponse()
+        //{
+        //    var command = GivenEmailIsNotAnEmailAddress();
+        //    var response = WhenPost(command);
+        //    ThenReturnInvalidEmailAddressErrorResponse(response);
+        //}
+
+        //[Test]
+        //public void GivenValidNewCustomer_WhenPost_ThenReturnNewCustomerResponse()
+        //{
+        //    var command = GivenValidNewCustomer();
+        //    var response = WhenPost(command);
+        //    ThenReturnNewCustomerResponse(response);
+        //}
+
+        //[Test]
+        //public void GivenNonExistentCustomerId_WhenPost_ThenReturnInvalidCustomerIdErrorResponse()
+        //{
+        //    var command = GivenNonExistentCustomerId();
+        //    var response = WhenPost(command);
+        //    ThenReturnInvalidCustomerIdErrorResponse(response);
+        //}
+
+        //[Test]
+        //public void GivenWantToUpdateExistingCustomer_WhenPost_ThenReturnUpdatedCustomerResponse()
+        //{
+        //    var command = GivenWantToUpdateExistingCustomer();
+        //    var response = WhenPost(command);
+        //    ThenReturnUpdatedCustomerResponse(response);
+        //}
 
 
         private string GivenNoCustomerSaveCommand()
@@ -131,6 +141,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         private string GivenEmptyCustomerSaveCommand()
         {
             return "{}";
+        }
+
+        private ApiCustomerSaveCommand GivenCustomerIdSpecified()
+        {
+            var command = CreateNewCustomerSaveCommand();
+            command.id = Guid.NewGuid();
+
+            return command;
+        }
+
+        private ApiCustomerSaveCommand GivenCustomerMatchesOnEmailAndName()
+        {
+            return new ApiCustomerSaveCommand
+            {
+                firstName = " fred",
+                lastName = "flintstone ",
+                email = "Fred@Flintstones.net ",
+                phone = " 333 666 ",
+            };
         }
 
         private ApiCustomerSaveCommand GivenEmptyStringForEmailAddress()
@@ -184,30 +213,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return CreateExistingCustomerSaveCommand(FredId, "Barney", "Rubble", "barney@rubbles.net", "09 456 456");
         }
 
-        private ApiCustomerSaveCommand GivenCustomerMatchesOnEmailAndName()
-        {
-            return CreateNewCustomerSaveCommand("fred ", " flintStone", " Fred@Flintstones.net ", "12345");
-        }
 
 
-        private Response WhenTryPost(string json)
-        {
-            return Post<CustomerData>(json);
-        }
 
-        private Response WhenTryPost(ApiCustomerSaveCommand command)
+        protected Response WhenTryAddOnlineBookCustomer(ApiCustomerSaveCommand command)
         {
             var json = JsonConvert.SerializeObject(command);
-            return Post<CustomerData>(json);
+
+            return WhenTryAddOnlineBookCustomer(json);
+        }
+
+        protected Response WhenTryAddOnlineBookCustomer(string json)
+        {
+            return PostForOnlineBooking<CustomerData>(json);
         }
 
 
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private void ThenReturnNoDataError(Response response)
         {
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+        private void ThenReturnRootRequiredError(Response response)
         {
             var errors = AssertErrorResponse(response);
 
@@ -235,6 +262,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.phone, Is.EqualTo("012 3456 7890"));
         }
 
+        private void ThenReturnMatchingCustomer(Response response)
+        {
+            var customer = AssertSuccessResponse<CustomerData>(response);
+
+            Assert.That(customer.id, Is.EqualTo(FredId));
+            Assert.That(customer.firstName, Is.EqualTo("Fred"));
+            Assert.That(customer.lastName, Is.EqualTo("Flintstone"));
+            Assert.That(customer.email, Is.EqualTo("fred@flintstones.net"));
+            Assert.That(customer.phone, Is.EqualTo("021 123 123"));
+        }
+
         private void ThenReturnInvalidCustomerIdErrorResponse(Response response)
         {
             var errors = AssertErrorResponse(response);
@@ -252,11 +290,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.lastName, Is.EqualTo("Rubble"));
             Assert.That(customer.email, Is.EqualTo("barney@rubbles.net"));
             Assert.That(customer.phone, Is.EqualTo("09 456 456"));
-        }
-
-        private void ThenReturnDuplicateCustomerError(Response response)
-        {
-            AssertSingleError(response, "This customer already exists.");
         }
     }
 }
