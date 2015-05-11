@@ -49,7 +49,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             return new ApiBookingSaveCommand
             {
                 session = new ApiSessionKey { id = AaronOrakei14To15.Id },
-                customer = new ApiCustomerKey { id = Wilma.Id }
+                customer = new ApiCustomerKey { id = BamBam.Id }
             };
         }
 

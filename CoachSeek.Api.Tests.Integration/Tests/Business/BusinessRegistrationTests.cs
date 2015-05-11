@@ -73,7 +73,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             ThenReturnDuplicateAdminErrorResponse(response);
         }
 
-        [Test, Ignore("Uncomment once http is disabled.")]
+        [Test]
         public void GivenUniqueBusinessAdmin_WhenTryRegisterBusinessUsingHttp_ThenReturnForbiddenError()
         {
             var command = GivenUniqueBusinessAdmin();
@@ -88,6 +88,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             var response = WhenTryRegisterBusiness(command);
             ThenReturnNewBusinessSuccessResponse(response);
         }
+
+
+
+        //[Test]
+        //public void TestWelcomeEmail()
+        //{
+        //    var command = new ApiBusinessRegistrationCommand
+        //    {
+        //        business = new ApiBusiness { name = "Test Business" },
+        //        admin = new ApiBusinessAdmin
+        //        {
+        //            firstName = "Olaf",
+        //            lastName = "Thielke",
+        //            email = "olaft@ihug.co.nz",
+        //            password = "password1"
+        //        }
+        //    };
+
+        //    var response = WhenTryRegisterBusiness(command);
+        //    ThenReturnNewBusinessSuccessResponse(response);
+        //}
+
 
 
         private string GivenNoBusinessRegistrationCommand()
@@ -164,6 +186,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         private Response WhenTryRegisterBusiness()
         {
             return BusinessRegistrar.RegisterBusiness(Business);
+        }
+
+        private Response WhenTryRegisterBusiness(ApiBusinessRegistrationCommand command)
+        {
+            var json = JsonConvert.SerializeObject(command);
+
+            return WhenTryRegisterBusiness(json);
         }
 
         private Response WhenTryRegisterBusiness(string json)

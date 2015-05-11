@@ -1,4 +1,5 @@
 ﻿using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -56,9 +57,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         [Test]
         public void GivenSessionIsOnlineBookable_WhenTryBookOnlineSession_ThenCreateSessionBooking()
         {
+            BamBam = new CustomerBamBam();
+            CustomerRegistrar.RegisterCustomer(BamBam, Business);
+
             var command = GivenSessionIsOnlineBookable();
             var response = WhenTryBookOnlineSession(command);
-            ThenCreateSessionBooking(response, AaronOrakei14To15, Wilma, 3);
+            ThenCreateSessionBooking(response, AaronOrakei14To15, BamBam, 3);
         }
 
 

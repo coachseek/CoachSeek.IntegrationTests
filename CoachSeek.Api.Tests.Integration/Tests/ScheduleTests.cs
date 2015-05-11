@@ -41,6 +41,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected CustomerFred Fred { get; set; }
         protected CustomerBarney Barney { get; set; }
         protected CustomerWilma Wilma { get; set; }
+        protected CustomerBamBam BamBam { get; set; }
 
 
         //protected SessionBookingFredOnBobbyRemuera12To13 FredOnBobbyRemuera12To13 { get; set; }

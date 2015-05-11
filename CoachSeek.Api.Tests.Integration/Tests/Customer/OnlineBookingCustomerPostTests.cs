@@ -108,13 +108,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         //    ThenReturnInvalidEmailAddressErrorResponse(response);
         //}
 
-        //[Test]
-        //public void GivenValidNewCustomer_WhenPost_ThenReturnNewCustomerResponse()
-        //{
-        //    var command = GivenValidNewCustomer();
-        //    var response = WhenPost(command);
-        //    ThenReturnNewCustomerResponse(response);
-        //}
+        [Test]
+        public void GivenValidNewCustomer_WhenTryAddOnlineBookCustomer_ThenReturnNewCustomerResponse()
+        {
+            var command = GivenValidNewCustomer();
+            var response = WhenTryAddOnlineBookCustomer(command);
+            ThenReturnNewCustomerResponse(response);
+        }
 
         //[Test]
         //public void GivenNonExistentCustomerId_WhenPost_ThenReturnInvalidCustomerIdErrorResponse()
