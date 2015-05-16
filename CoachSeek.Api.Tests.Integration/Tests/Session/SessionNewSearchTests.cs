@@ -145,8 +145,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSessionFirstCourse.booking.bookings.Count, Is.EqualTo(1));
 
             var secondSessionFirstCourse = firstCourse.sessions[1];
-            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(1));
-            Assert.That(secondSessionFirstCourse.booking.bookings.Count, Is.EqualTo(1));
+            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(2));
+            Assert.That(secondSessionFirstCourse.booking.bookings.Count, Is.EqualTo(2));
 
             var secondCourse = courses[1];
             Assert.That(secondCourse.id, Is.EqualTo(AaronRemuera9To10For4WeeksCourseId));
@@ -219,8 +219,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSessionFirstCourse.booking.bookings.Count, Is.EqualTo(1));
 
             var secondSessionFirstCourse = firstCourse.sessions[1];
-            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(1));
-            Assert.That(secondSessionFirstCourse.booking.bookings.Count, Is.EqualTo(1));
+            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(2));
+            Assert.That(secondSessionFirstCourse.booking.bookings.Count, Is.EqualTo(2));
         }
     }
 }

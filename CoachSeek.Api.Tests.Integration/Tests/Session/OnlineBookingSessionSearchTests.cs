@@ -124,7 +124,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSessionFirstCourse.booking.bookings, Is.Null);     // Ensure booking details are gone
 
             var secondSessionFirstCourse = firstCourse.sessions[1];
-            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(1));
+            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(2));
             Assert.That(secondSessionFirstCourse.booking.bookings, Is.Null);    // Ensure booking details are gone
 
             var secondCourse = courses[1];
@@ -193,7 +193,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(firstSessionFirstCourse.booking.bookings, Is.Null);     // Ensure booking details are gone
 
             var secondSessionFirstCourse = firstCourse.sessions[1];
-            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(1));
+            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(2));
             Assert.That(secondSessionFirstCourse.booking.bookings, Is.Null);    // Ensure booking details are gone
         }
 

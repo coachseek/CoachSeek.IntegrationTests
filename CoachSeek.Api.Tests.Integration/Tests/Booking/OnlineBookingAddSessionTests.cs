@@ -55,6 +55,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
         [Test]
+        public void GivenSessionIsFull_WhenTryBookOnlineSession_ThenReturnSessionFullError()
+        {
+            BamBam = new CustomerBamBam();
+            CustomerRegistrar.RegisterCustomer(BamBam, Business);
+            WhenTryBookOnlineSession(new ApiBookingSaveCommand(AaronOrakei14To15.Id, BamBam.Id));
+
+            var command = GivenSessionIsFull();
+            var response = WhenTryBookOnlineSession(command);
+            ThenReturnSessionFullError(response);
+        }
+
+        [Test]
         public void GivenSessionIsOnlineBookable_WhenTryBookOnlineSession_ThenCreateSessionBooking()
         {
             BamBam = new CustomerBamBam();
@@ -66,9 +78,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
+        private ApiBookingSaveCommand GivenSessionIsFull()
+        {
+            return new ApiBookingSaveCommand
+            {
+                session = new ApiSessionKey { id = AaronOrakei14To15.Id },
+                customer = new ApiCustomerKey { id = Wilma.Id }
+            };
+        }
+
+
         private void ThenReturnSessionNotOnlineBookableError(Response response)
         {
             AssertSingleError(response, "This session is not online bookable.", "booking.session");
+        }
+
+        private void ThenReturnSessionFullError(Response response)
+        {
+            AssertSingleError(response, "This session is already fully booked.");
         }
     }
 }

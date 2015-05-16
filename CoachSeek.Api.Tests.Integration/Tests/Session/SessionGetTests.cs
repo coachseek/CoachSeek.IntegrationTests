@@ -131,7 +131,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
 
             AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "14:00", 60);
-            AssertSessionBooking(session.booking, 13, true, 2);
+            AssertSessionBooking(session.booking, 3, true, 2);
             AssertSessionRepetition(session.repetition, 1, null);
             AssertSessionPricing(session.pricing, 19.95m, null);
             AssertSessionPresentation(session.presentation, "red");

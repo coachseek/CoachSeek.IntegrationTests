@@ -1,10 +1,10 @@
 ﻿using System;
 using CoachSeek.Api.Tests.Integration.Models;
-using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Location;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -23,7 +23,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Guid BarneyOnAaronOrakei14To15SessionId { get; set; }
         protected Guid FredOnBobbyRemueraHolidayCampFor3DaysCourseId { get; set; }
         protected Guid FredOnAaronOrakeiMiniBlueFor2DaysCourseId { get; set; }
-
+        protected Guid BarneyOnAaronOrakeiMiniBlueFor2DaysOnTheSecondDayId { get; set; }
 
 
         protected LocationOrakei Orakei { get; set; }
@@ -85,8 +85,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestSessions();
             RegisterTestCourses();
             RegisterTestCustomers();
-            BookCustomersOntoSessions();
+            BookCustomersOntoStandaloneSessions();
             BookCustomersOntoCourses();
+            BookCustomersOntoCourseSessions();
         }
 
 
@@ -287,7 +288,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = Aaron.Id },
                 service = new ApiServiceKey { id = MiniRed.Id },
                 timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "9:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 2, isOnlineBookable = true },
+                booking = new ApiSessionBooking { studentCapacity = 6, isOnlineBookable = true },
                 repetition = new ApiRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 19.95m },
                 presentation = new ApiPresentation { colour = "red" }
@@ -325,7 +326,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 coach = new ApiCoachKey { id = Aaron.Id },
                 service = new ApiServiceKey { id = MiniBlue.Id },
                 timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(1), startTime = "9:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 6, isOnlineBookable = true },
+                booking = new ApiSessionBooking { studentCapacity = 2, isOnlineBookable = true },
                 repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
                 pricing = new ApiPricing { sessionPrice = 25, coursePrice = 40 },
                 presentation = new ApiPresentation { colour = "blue" }
@@ -360,7 +361,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        private void BookCustomersOntoSessions()
+        private void BookCustomersOntoStandaloneSessions()
         {
             BookFredFlintstoneOntoAaronOrakei14To15();
             BookBarneyRubbleOntoAaronOrakei14To15();
@@ -393,6 +394,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var response = PostBooking(json);
             if (response.Payload != null)
                 FredOnAaronOrakeiMiniBlueFor2DaysCourseId = ((BookingData)response.Payload).id;
+        }
+
+        private void BookCustomersOntoCourseSessions()
+        {
+            BookBarneyRubbleOntoAaronOrakeiMiniBlueFor2DaysOnTheSecondDay();
+        }
+
+        private void BookBarneyRubbleOntoAaronOrakeiMiniBlueFor2DaysOnTheSecondDay()
+        {
+            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniBlueFor2DaysSessionIds[1], Barney.Id);
+            var response = PostBooking(json);
+            if (response.Payload != null)
+                BarneyOnAaronOrakeiMiniBlueFor2DaysOnTheSecondDayId = ((BookingData)response.Payload).id;
         }
 
         private string CreateNewBookingSaveCommand(Guid sessionId, Guid customerId)

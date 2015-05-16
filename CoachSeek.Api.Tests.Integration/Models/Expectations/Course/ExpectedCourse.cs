@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoachSeek.Api.Tests.Integration.Models.Expectations
+namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
 {
     public abstract class ExpectedCourse
     {
@@ -23,14 +23,14 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         protected ExpectedCourse() 
         { }
 
-        protected ExpectedCourse(Guid coachId, Guid locationId, Guid serviceId, string date, string startTime, int duration, int studentCapacity, bool isOnlineBookable, decimal price, string colour)
+        protected ExpectedCourse(Guid coachId, Guid locationId, Guid serviceId, int sessionCount, string repeatFrequency, string startDate, string startTime, int duration, int studentCapacity, bool isOnlineBookable, decimal price, string colour)
         {
             Coach = new ApiCoachKey { id = coachId };
             Location = new ApiLocationKey { id = locationId };
             Service = new ApiServiceKey { id = serviceId };
-            Timing = new ApiSessionTiming { startDate = date, startTime = startTime, duration = duration };
+            Timing = new ApiSessionTiming { startDate = startDate, startTime = startTime, duration = duration };
             Booking = new ApiSessionBooking { studentCapacity = studentCapacity, isOnlineBookable = isOnlineBookable };
-            Repetition = new ApiRepetition { sessionCount = 1 };
+            Repetition = new ApiRepetition { sessionCount = sessionCount, repeatFrequency = repeatFrequency };
             Pricing = new ApiPricing { sessionPrice = price };
             Presentation = new ApiPresentation { colour = colour };
         }

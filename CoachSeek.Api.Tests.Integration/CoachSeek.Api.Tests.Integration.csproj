@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BusinessRegistrar.cs" />
     <Compile Include="CustomerRegistrar.cs" />
+    <Compile Include="Models\Expectations\Course\CourseAaronRemuera9To10For4Weeks.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerBamBam.cs" />
     <Compile Include="Models\Expectations\Service\ServiceHolidayCamp.cs" />
     <Compile Include="ServiceRegistrar.cs" />
@@ -71,11 +72,11 @@
     <Compile Include="Models\Expectations\Customer\CustomerBarney.cs" />
     <Compile Include="Models\Expectations\Coach\ExpectedCoach.cs" />
     <Compile Include="Models\Expectations\ExpectedBusiness.cs" />
-    <Compile Include="Models\Expectations\ExpectedCourse.cs" />
+    <Compile Include="Models\Expectations\Course\ExpectedCourse.cs" />
     <Compile Include="Models\Expectations\Location\ExpectedLocation.cs" />
     <Compile Include="Models\Expectations\Customer\ExpectedCustomer.cs" />
-    <Compile Include="Models\Expectations\ExpectedSingleSession.cs" />
-    <Compile Include="Models\Expectations\ExpectedStandaloneSession.cs" />
+    <Compile Include="Models\Expectations\Session\ExpectedSingleSession.cs" />
+    <Compile Include="Models\Expectations\Session\ExpectedStandaloneSession.cs" />
     <Compile Include="Models\Expectations\Location\LocationRemuera.cs" />
     <Compile Include="Models\Expectations\Location\LocationOrakei.cs" />
     <Compile Include="Models\Expectations\RandomBusiness.cs" />
@@ -86,9 +87,9 @@
     <Compile Include="Models\Expectations\Service\ServiceMiniGreen.cs" />
     <Compile Include="Models\Expectations\Service\ServiceMiniBlue.cs" />
     <Compile Include="Models\Expectations\Service\ServiceMiniRed.cs" />
-    <Compile Include="Models\Expectations\StandaloneBobbyRemuera12To13.cs" />
-    <Compile Include="Models\Expectations\StandaloneAaronOrakei14To15.cs" />
-    <Compile Include="Models\Expectations\StandaloneAaronOrakei16To17.cs" />
+    <Compile Include="Models\Expectations\Session\StandaloneBobbyRemuera12To13.cs" />
+    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakei14To15.cs" />
+    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakei16To17.cs" />
     <Compile Include="Models\SessionSearchData.cs" />
     <Compile Include="Models\SingleSessionBookingData.cs" />
     <Compile Include="Models\CourseData.cs" />

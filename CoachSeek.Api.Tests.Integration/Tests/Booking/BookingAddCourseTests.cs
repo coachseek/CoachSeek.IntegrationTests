@@ -15,6 +15,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
 
         [Test]
+        public void GivenNonExistentCustomer_WhenTryBookSession_ThenReturnNonExistentCustomerError()
+        {
+            var command = GivenNonExistentCustomer();
+            var response = WhenTryBookCourse(command);
+            ThenReturnNonExistentCustomerError(response);
+        }
+
+        [Test]
+        public void GivenASessionIsFull_WhenTryBookCourse_ThenReturnCourseFullError()
+        {
+            var command = GivenASessionIsFull();
+            var response = WhenTryBookCourse(command);
+            ThenReturnCourseFullError(response);
+        }
+
+        [Test]
         public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenCreateCourseBooking()
         {
             var command = GivenACustomerWhoIsNotBookedOntoACourse();
@@ -32,6 +48,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             {
                 session = new ApiSessionKey { id = BobbyRemueraHolidayCampFor3DaysCourseId },
                 customer = new ApiCustomerKey { id = Barney.Id }
+            };
+        }
+
+        private ApiBookingSaveCommand GivenASessionIsFull()
+        {
+            return new ApiBookingSaveCommand
+            {
+                session = new ApiSessionKey { id = AaronOrakeiMiniBlueFor2DaysCourseId },
+                customer = new ApiCustomerKey { id = Wilma.Id }
             };
         }
 

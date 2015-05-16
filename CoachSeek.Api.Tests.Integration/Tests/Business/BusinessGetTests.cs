@@ -26,12 +26,44 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             ThenReturnBusiness(response);
         }
 
+        [Test]
+        public void GivenNonExistentBusiness_WhenGetBusinessForOnlineBooking_ThenReturnNotAuthorised()
+        {
+            GivenNonExistentBusiness();
+            var response = WhenGetBusinessForOnlineBooking();
+            ThenReturnNotAuthorised(response);
+        }
+
+        [Test]
+        public void GivenValidBusiness_WhenGetBusinessForOnlineBooking_ThenReturnBusiness()
+        {
+            GivenValidBusiness();
+            var response = WhenGetBusinessForOnlineBooking();
+            ThenReturnBusiness(response);
+        }
+
+
+        private void GivenNonExistentBusiness()
+        {
+            Business.Domain = "abc123";
+        }
+
+        private void GivenValidBusiness()
+        {
+            // Nothinbg to do.
+        }
+
 
         private Response WhenGetBusiness()
         {
-            var url = BuildGetBusinessUrl();
-            return AuthenticatedGet<BusinessData>(url);
+            return AuthenticatedGet<BusinessData>(Url.AbsoluteUri);
         }
+
+        private Response WhenGetBusinessForOnlineBooking()
+        {
+            return GetAnonymously<BusinessData>(OnlineBookingUrl.AbsoluteUri);
+        }
+
 
         private void ThenReturnBusiness(Response response)
         {
@@ -42,10 +74,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.domain, Is.EqualTo(Business.Domain));
         }
 
+        private void ThenReturnNotAuthorised(Response response)
+        {
+            AssertUnauthorised(response);
+        }
+
 
         protected string BuildGetBusinessUrl()
         {
-            return string.Format("{0}/{1}", BaseUrl, RelativePath);
+            return Url.AbsoluteUri;
         }
     }
 }

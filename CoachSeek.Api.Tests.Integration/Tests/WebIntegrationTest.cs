@@ -23,7 +23,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
 #if DEBUG
             get { return "https://localhost:44300"; }
-            //get { return "http://localhost:5272"; }
 #else
             get { return "https://api.coachseek.com"; }
 #endif

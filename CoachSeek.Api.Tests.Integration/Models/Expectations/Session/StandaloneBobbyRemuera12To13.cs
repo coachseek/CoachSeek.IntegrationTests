@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoachSeek.Api.Tests.Integration.Models.Expectations
+namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Session
 {
     public class StandaloneBobbyRemuera12To13 : ExpectedStandaloneSession
     {
