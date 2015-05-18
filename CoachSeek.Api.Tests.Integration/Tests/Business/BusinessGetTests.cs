@@ -50,7 +50,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void GivenValidBusiness()
         {
-            // Nothinbg to do.
+            // Nothing to do.
         }
 
 

@@ -193,6 +193,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             try
             {
+                request.Timeout = 200000;
                 var response = request.GetResponse();
                 var status = ((HttpWebResponse) response).StatusCode;
                 var stream = response.GetResponseStream();
@@ -204,6 +205,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
             catch (WebException ex)
             {
+                if (ex.Status == WebExceptionStatus.Timeout)
+                    return new Response(HttpStatusCode.RequestTimeout);
+
                 var status = ((HttpWebResponse) ex.Response).StatusCode;
                 using (var stream = ex.Response.GetResponseStream())
                 {

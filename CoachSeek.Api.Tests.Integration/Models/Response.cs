@@ -8,7 +8,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public HttpStatusCode StatusCode { get; private set; }
         public object Payload { get; private set; }
 
-        public Response(HttpStatusCode statusCode, object payload)
+        public Response(HttpStatusCode statusCode, object payload = null)
         {
             StatusCode = statusCode;
             Payload = payload;

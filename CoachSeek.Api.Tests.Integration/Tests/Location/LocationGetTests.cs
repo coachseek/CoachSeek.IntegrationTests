@@ -59,6 +59,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             }
 
 
+            //[Test]
+            //public void TestTracing()
+            //{
+            //    GivenValidBusinessDomain();
+            //    var url = string.Format("{0}/{1}/{2}", BaseUrl, RelativePath, Guid.Empty);
+            //    var response = GetAnonymously<LocationData>(url);
+            //}
+
+
+
             private void GivenNoBusinessDomain()
             {
                 Business.Domain = null;
