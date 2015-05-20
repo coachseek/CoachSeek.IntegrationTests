@@ -48,7 +48,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        protected Response WhenTrySearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
+        protected Response WhenTryOldSearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
         {
             var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
 

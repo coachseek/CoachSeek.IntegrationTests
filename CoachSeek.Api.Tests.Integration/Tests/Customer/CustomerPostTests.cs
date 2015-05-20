@@ -49,7 +49,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             };
         }
 
-        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, string firstName, string lastName, string email, string phone)
+        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, string firstName, string lastName, string email = null, string phone = null)
         {
             var command = CreateNewCustomerSaveCommand(firstName, lastName, email, phone);
             command.id = id;
@@ -112,6 +112,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             var command = GivenWantToUpdateExistingCustomer();
             var response = WhenTryPost(command);
             ThenReturnUpdatedCustomerResponse(response);
+        }
+
+        [Test]
+        public void GivenWantToUpdateExistingCustomerWithoutEmail_WhenTryPost_ThenReturnUpdatedCustomerWithoutEmail()
+        {
+            var command = GivenWantToUpdateExistingCustomerWithoutEmail();
+            var response = WhenTryPost(command);
+            ThenReturnUpdatedCustomerWithoutEmail(response);
         }
 
         [Test]
@@ -184,6 +192,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return CreateExistingCustomerSaveCommand(FredId, "Barney", "Rubble", "barney@rubbles.net", "09 456 456");
         }
 
+        private ApiCustomerSaveCommand GivenWantToUpdateExistingCustomerWithoutEmail()
+        {
+            return CreateExistingCustomerSaveCommand(FredId, "Bam Bam", "Rubble");
+        }
+
         private ApiCustomerSaveCommand GivenCustomerMatchesOnEmailAndName()
         {
             return CreateNewCustomerSaveCommand("fred ", " flintStone", " Fred@Flintstones.net ", "12345");
@@ -252,6 +265,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.lastName, Is.EqualTo("Rubble"));
             Assert.That(customer.email, Is.EqualTo("barney@rubbles.net"));
             Assert.That(customer.phone, Is.EqualTo("09 456 456"));
+        }
+
+        private void ThenReturnUpdatedCustomerWithoutEmail(Response response)
+        {
+            var customer = AssertSuccessResponse<CustomerData>(response);
+
+            Assert.That(customer.id, Is.EqualTo(FredId));
+            Assert.That(customer.firstName, Is.EqualTo("Bam Bam"));
+            Assert.That(customer.lastName, Is.EqualTo("Rubble"));
+            Assert.That(customer.email, Is.Null);
+            Assert.That(customer.phone, Is.Null);
         }
 
         private void ThenReturnDuplicateCustomerError(Response response)

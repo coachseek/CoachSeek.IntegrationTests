@@ -15,66 +15,66 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenInvalidSearchPeriod_WhenTrySearch_ThenReturnInvalidSearchPeriodError()
+        public void GivenInvalidSearchPeriod_WhenTryOldSearch_ThenReturnInvalidSearchPeriodError()
         {
             var criteria = GivenInvalidSearchPeriod();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnInvalidSearchPeriodError(response);
         }
 
         [Test]
-        public void GivenNoSessionInSearchPeriod_WhenTrySearch_ThenReturnNoSession()
+        public void GivenNoSessionInSearchPeriod_WhenTryOldSearch_ThenReturnNoSession()
         {
             var criteria = GivenNoSessionInSearchPeriod();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnNoSession(response);
         }
 
         [Test]
-        public void GivenInvalidCoachId_WhenTrySearch_ThenReturnInvalidCoachIdError()
+        public void GivenInvalidCoachId_WhenTryOldSearch_ThenReturnInvalidCoachIdError()
         {
             var criteria = GivenInvalidCoachId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnInvalidCoachIdError(response);
         }
 
         [Test]
-        public void GivenValidCoachId_WhenTrySearch_ThenReturnSessionsForCoach()
+        public void GivenValidCoachId_WhenTryOldSearch_ThenReturnSessionsForCoach()
         {
             var criteria = GivenValidCoachId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnSessionsForCoach(response);
         }
 
         [Test]
-        public void GivenInvalidLocationId_WhenTrySearch_ThenReturnInvalidLocationIdError()
+        public void GivenInvalidLocationId_WhenTryOldSearch_ThenReturnInvalidLocationIdError()
         {
             var criteria = GivenInvalidLocationId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnInvalidLocationIdError(response);
         }
 
         [Test]
-        public void GivenValidLocationId_WhenTrySearch_ThenReturnSessionsForLocation()
+        public void GivenValidLocationId_WhenTryOldSearch_ThenReturnSessionsForLocation()
         {
             var criteria = GivenValidLocationId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnSessionsForLocation(response);
         }
 
         [Test]
-        public void GivenInvalidServiceId_WhenTrySearch_ThenReturnInvalidServiceIdError()
+        public void GivenInvalidServiceId_WhenTryOldSearch_ThenReturnInvalidServiceIdError()
         {
             var criteria = GivenInvalidServiceId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnInvalidServiceIdError(response);
         }
 
         [Test]
-        public void GivenValidServiceId_WhenTrySearch_ThenReturnSessionsForService()
+        public void GivenValidServiceId_WhenTryOldSearch_ThenReturnSessionsForService()
         {
             var criteria = GivenValidServiceId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTryOldSearch(criteria);
             ThenReturnSessionsForService(response);
         }
 

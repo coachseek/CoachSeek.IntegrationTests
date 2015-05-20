@@ -176,6 +176,7 @@
     <Compile Include="Tests\Service\ServiceGetTests.cs" />
     <Compile Include="Tests\Service\ServiceTests.cs" />
     <Compile Include="Tests\Session\BaseSessionSearchTests.cs" />
+    <Compile Include="Tests\Session\CourseDeleteTests.cs" />
     <Compile Include="Tests\Session\OnlineBookingSessionSearchTests.cs" />
     <Compile Include="Tests\Session\SessionDeleteTests.cs" />
     <Compile Include="Tests\Session\CourseCreateNewTests.cs" />

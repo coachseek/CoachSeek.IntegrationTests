@@ -15,71 +15,71 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
 
         [Test]
-        public void GivenInvalidSearchPeriod_WhenTrySearch_ThenReturnInvalidSearchPeriodError()
+        public void GivenInvalidSearchPeriod_WhenTrySearchForOnlineBookableSessions_ThenReturnInvalidSearchPeriodError()
         {
             var criteria = GivenInvalidSearchPeriod();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnInvalidSearchPeriodError(response);
         }
 
         [Test]
-        public void GivenNoSessionInSearchPeriod_WhenTrySearch_ThenReturnNoSessionOrCourses()
+        public void GivenNoSessionInSearchPeriod_WhenTrySearchForOnlineBookableSessions_ThenReturnNoSessionOrCourses()
         {
             var criteria = GivenNoSessionInSearchPeriod();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnNoSessionOrCourses(response);
         }
 
         [Test]
-        public void GivenInvalidCoachId_WhenTrySearch_ThenReturnInvalidCoachIdError()
+        public void GivenInvalidCoachId_WhenTrySearchForOnlineBookableSessions_ThenReturnInvalidCoachIdError()
         {
             var criteria = GivenInvalidCoachId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnInvalidCoachIdError(response);
         }
 
         [Test]
-        public void GivenValidCoachId_WhenTrySearch_ThenReturnOnlineBookableSessionsAndCoursesForCoach()
+        public void GivenValidCoachId_WhenTrySearchForOnlineBookableSessions_ThenReturnOnlineBookableSessionsAndCoursesForCoach()
         {
             var criteria = GivenValidCoachId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnOnlineBookableSessionsAndCoursesForCoach(response);
         }
 
         [Test]
-        public void GivenInvalidLocationId_WhenTrySearch_ThenReturnInvalidLocationIdError()
+        public void GivenInvalidLocationId_WhenTrySearchForOnlineBookableSessions_ThenReturnInvalidLocationIdError()
         {
             var criteria = GivenInvalidLocationId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnInvalidLocationIdError(response);
         }
 
         [Test]
-        public void GivenValidLocationId_WhenTrySearch_ThenReturnOnlineBookableSessionsAndCoursesForLocation()
+        public void GivenValidLocationId_WhenTrySearchForOnlineBookableSessions_ThenReturnOnlineBookableSessionsAndCoursesForLocation()
         {
             var criteria = GivenValidLocationId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnOnlineBookableSessionsAndCoursesForLocation(response);
         }
 
         [Test]
-        public void GivenInvalidServiceId_WhenTrySearch_ThenReturnInvalidServiceIdError()
+        public void GivenInvalidServiceId_WhenTrySearchForOnlineBookableSessions_ThenReturnInvalidServiceIdError()
         {
             var criteria = GivenInvalidServiceId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnInvalidServiceIdError(response);
         }
 
         [Test]
-        public void GivenValidServiceId_WhenTrySearch_ThenReturnOnlineBookableSessionsAndCoursesForService()
+        public void GivenValidServiceId_WhenTrySearchForOnlineBookableSessions_ThenReturnOnlineBookableSessionsAndCoursesForService()
         {
             var criteria = GivenValidServiceId();
-            var response = WhenTrySearch(criteria);
+            var response = WhenTrySearchForOnlineBookableSessions(criteria);
             ThenReturnOnlineBookableSessionsAndCoursesForService(response);
         }
 
 
-        private Response WhenTrySearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
+        private Response WhenTrySearchForOnlineBookableSessions(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
         {
             var url = BuildOnlineBookingSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
 

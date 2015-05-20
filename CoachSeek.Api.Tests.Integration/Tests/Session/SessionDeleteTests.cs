@@ -40,14 +40,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
-        public void GivenCourseWithoutBookings_WhenTryDelete_ThenCourseIsDeleted()
-        {
-            var id = GivenCourseWithoutBookings();
-            var response = WhenTryDelete(id);
-            ThenCourseIsDeleted(response);
-        }
-
-        [Test]
         public void GivenSessionInCourseWithoutBookings_WhenTryDelete_ThenSessionInCourseIsDeleted()
         {
             var id = GivenSessionInCourseWithoutBookings();
@@ -72,11 +64,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return AaronOrakei14To15.Id;
         }
 
-        private Guid GivenCourseWithoutBookings()
-        {
-            return BobbyRemueraHolidayCampFor3DaysCourseId;
-        }
-
         private Guid GivenSessionInCourseWithoutBookings()
         {
             return BobbyRemueraHolidayCampFor3DaysSessionIds[1];
@@ -98,26 +85,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             // Other sessions are still there.
             var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei14To15.Id);
-            AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
-            AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
-        }
-
-        private void ThenCourseIsDeleted(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            var getResponseCourse = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
-            AssertNotFound(getResponseCourse);
-            var getResponseSession1 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
-            AssertNotFound(getResponseSession1);
-            var getResponseSession2 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
-            AssertNotFound(getResponseSession2);
-            var getResponseSession3 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
-            AssertNotFound(getResponseSession3);
-
-            // Other sessions are still there.
-            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
