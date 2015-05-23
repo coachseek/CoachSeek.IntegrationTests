@@ -170,5 +170,4 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                 Assert.That(session.service.id, Is.EqualTo(MiniRed.Id));
         }
     }
-
 }

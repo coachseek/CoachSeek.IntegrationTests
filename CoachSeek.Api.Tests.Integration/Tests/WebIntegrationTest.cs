@@ -12,6 +12,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class WebIntegrationTest
     {
+        protected const string AdminUserName = "userZvFXUEmjht1hFJGn+H0YowMqO+5u5tEI";
+        protected const string AdminPassword = "passYBoVaaWVp1W9ywZOHK6E6QXFh3z3+OUf";
+
+
         protected CoachSteve Steve { get; set; }
         protected CoachAaron Aaron { get; set; }
         protected CoachBobby Bobby { get; set; }
@@ -19,7 +23,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private string _email;
 
-        protected static string BaseUrl
+        public static string BaseUrl
         {
 #if DEBUG
             get { return "https://localhost:44300"; }
@@ -42,6 +46,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected Uri OnlineBookingUrl
         {
             get { return new Uri(string.Format("{0}/OnlineBooking/{1}", BaseUrl, RelativePath)); }
+        }
+
+        protected Uri AdminUrl
+        {
+            get { return new Uri(string.Format("{0}/Admin/{1}", BaseUrl, RelativePath)); }
         }
 
         protected string Email
@@ -153,6 +162,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             SetBasicAuthHeader(http, Business.UserName, Business.Password);
+
+            return Get<TResponse>(http);
+        }
+
+        protected Response AdminAuthenticatedGet<TResponse>(string relativePath)
+        {
+            var url = string.Format("{0}/Admin/{1}", BaseUrl, relativePath);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, AdminUserName, AdminPassword);
+
+            return Get<TResponse>(http);
+        }
+
+        protected Response AdminAuthenticatedGet<TResponse>(string relativePath, string searchParameter)
+        {
+            var url = string.Format("{0}/Admin/{1}/{2}", BaseUrl, relativePath, searchParameter);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, AdminUserName, AdminPassword);
 
             return Get<TResponse>(http);
         }

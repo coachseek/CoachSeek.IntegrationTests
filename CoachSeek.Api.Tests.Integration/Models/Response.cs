@@ -2,7 +2,6 @@
 
 namespace CoachSeek.Api.Tests.Integration.Models
 {
-
     public class Response
     {
         public HttpStatusCode StatusCode { get; private set; }

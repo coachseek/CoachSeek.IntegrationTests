@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -131,13 +132,13 @@
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Random.cs" />
     <Compile Include="StringExtensions.cs" />
+    <Compile Include="Tests\Admin\AdminTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\BookingAddSessionTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddTests.cs" />
     <Compile Include="Tests\Booking\BookingSaveCommandTests.cs" />
-    <Compile Include="Tests\Booking\BookingPostTests.cs" />
     <Compile Include="Tests\Booking\BookingDeleteTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddCourseTests.cs" />
