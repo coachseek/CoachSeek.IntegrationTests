@@ -3,7 +3,11 @@
     public class RandomBusiness : ExpectedBusiness
     {
         public RandomBusiness() 
-            : base(Random.RandomString, Random.RandomEmail)
+            : base(Random.RandomString, "USD", Random.RandomEmail)
+        { }
+
+        public RandomBusiness(string name, string currency, string email)
+            : base(name, currency, email)
         { }
     }
 }

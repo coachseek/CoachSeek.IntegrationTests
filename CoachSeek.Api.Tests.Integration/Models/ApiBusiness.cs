@@ -3,5 +3,6 @@
     public class ApiBusiness
     {
         public string name { get; set; }
+        public string currency { get; set; }
     }
 }

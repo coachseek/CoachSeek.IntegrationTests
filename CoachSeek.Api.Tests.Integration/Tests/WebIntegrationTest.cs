@@ -33,7 +33,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
         
 
-        public RandomBusiness Business { get; set; }
+        public ExpectedBusiness Business { get; set; }
 
 
         protected abstract string RelativePath { get; }

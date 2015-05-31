@@ -10,26 +10,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
     [TestFixture]
     public class BusinessRegistrationTests : WebIntegrationTest
     {
-        private string BusinessName { get; set; }
-        private string Domain { get; set; }
-        private string FirstName { get; set; }
-        private string LastName { get; set; }
-
         protected override string RelativePath
         {
             get { return "BusinessRegistration"; }
-        }
-
-
-        [SetUp]
-        public void Setup()
-        {
-            BusinessName = Random.RandomString;
-            Domain = BusinessName;
-            FirstName = "Isaac";
-            LastName = "Newton";
-            Email = Random.RandomEmail;
-            Password = "password1";
         }
 
 
@@ -60,9 +43,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         [Test]
         public void GivenMultipleErrorsOnProperties_WhenTryRegisterBusiness_ThenReturnMultipleErrorResponse()
         {
-            var command = GivenMultipleErrorsOnProperties();
-            var response = WhenTryRegisterBusiness(command);
+            var business = GivenMultipleErrorsOnProperties();
+            var response = WhenTryRegisterBusiness(business);
             ThenReturnMultipleErrorResponse(response);
+        }
+
+        [Test]
+        public void GivenInvalidCurrency_WhenTryRegisterBusiness_ThenReturnsCurrencyNotSupportedError()
+        {
+            var business = GivenInvalidCurrency();
+            var response = WhenTryRegisterBusiness(business);
+            ThenReturnsCurrencyNotSupportedError(response);
         }
 
         [Test]
@@ -76,17 +67,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         [Test]
         public void GivenUniqueBusinessAdmin_WhenTryRegisterBusinessUsingHttp_ThenReturnForbiddenError()
         {
-            var command = GivenUniqueBusinessAdmin();
-            var response = WhenTryRegisterBusinessUsingHttp(command);
+            var business = GivenUniqueBusinessAdmin();
+            var response = WhenTryRegisterBusinessUsingHttp(business);
             ThenReturnForbiddenError(response);
         }
 
         [Test]
-        public void GivenUniqueBusinessAdmin_WhenTryRegisterBusiness_ThenReturnNewBusinessSuccessResponse()
+        public void GivenUniqueBusinessAdmin_WhenTryRegisterBusiness_ThenCreateNewBusiness()
         {
-            var command = GivenUniqueBusinessAdmin();
-            var response = WhenTryRegisterBusiness(command);
-            ThenReturnNewBusinessSuccessResponse(response);
+            var business = GivenUniqueBusinessAdmin();
+            var response = WhenTryRegisterBusiness(business);
+            ThenCreateNewBusiness(response, business);
+        }
+
+        [Test]
+        public void GivenNoCurrency_WhenTryRegisterBusiness_ThenUseNewZealandCurrency()
+        {
+            var business = GivenNoCurrency();
+            var response = WhenTryRegisterBusiness(business);
+            ThenUseNewZealandCurrency(response, business);
         }
 
 
@@ -133,21 +132,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             return JsonConvert.SerializeObject(registration);
         }
 
-        private string GivenMultipleErrorsOnProperties()
+        private ExpectedBusiness GivenMultipleErrorsOnProperties()
         {
-            var registration = new ApiBusinessRegistrationCommand
-            {
-                business = new ApiBusiness { name = BusinessName },
-                admin = new ApiBusinessAdmin
-                {
-                    firstName = FirstName,
-                    lastName = LastName,
-                    email = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-                    password = "abcdefghijklmnopqrstuvwxyz01234567890"
-                }
-            };
+            return new ExpectedBusiness(Random.RandomString, 
+                                        "ABCDE",
+                                        "Bob",
+                                        "Smith",
+                                        "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+                                        "abcdefghijklmnopqrstuvwxyz01234567890");
+        }
 
-            return JsonConvert.SerializeObject(registration);
+        private ExpectedBusiness GivenInvalidCurrency()
+        {
+            return new ExpectedBusiness(Random.RandomString, "XX", Random.RandomEmail);
         }
 
         private void GivenDuplicateBusinessAdmin()
@@ -155,10 +152,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             RegisterFirstTime();
         }
 
-        private string GivenUniqueBusinessAdmin()
+        private ExpectedBusiness GivenUniqueBusinessAdmin()
         {
-            return CreateValidBusinessRegistrationCommand();
+            return new ExpectedBusiness(Random.RandomString, "USD", Random.RandomEmail);
         }
+
+        private ExpectedBusiness GivenNoCurrency()
+        {
+            return new ExpectedBusiness(Random.RandomString, "", Random.RandomEmail);
+        }
+
 
         private void RegisterFirstTime()
         {
@@ -166,26 +169,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             BusinessRegistrar.RegisterBusiness(Business);
         }
 
-        private string CreateValidBusinessRegistrationCommand()
-        {
-            var registration = new ApiBusinessRegistrationCommand
-            {
-                business = new ApiBusiness { name = BusinessName },
-                admin = new ApiBusinessAdmin
-                {
-                    firstName = FirstName,
-                    lastName = LastName,
-                    email = Email,
-                    password = Password
-                }
-            };
-
-            return JsonConvert.SerializeObject(registration);
-        }
-
         private Response WhenTryRegisterBusiness()
         {
             return BusinessRegistrar.RegisterBusiness(Business);
+        }
+
+        private Response WhenTryRegisterBusiness(ExpectedBusiness business)
+        {
+            return BusinessRegistrar.RegisterBusiness(business);
         }
 
         private Response WhenTryRegisterBusiness(ApiBusinessRegistrationCommand command)
@@ -200,9 +191,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             return WebClient.AnonymousPost<RegistrationData>(json, RelativePath);
         }
 
-        private Response WhenTryRegisterBusinessUsingHttp(string json)
+        private Response WhenTryRegisterBusinessUsingHttp(ExpectedBusiness business)
         {
-            return WebClient.AnonymousPost<RegistrationData>(json, RelativePath, "http");
+            return BusinessRegistrar.RegisterBusiness(business, "http");
         }
 
 
@@ -232,9 +223,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
             var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(3));
-            AssertMultipleEmailErrors(errors[0], errors[1]);
-            AssertApplicationError(errors[2], "registration.admin.password", "The field password must be a string with a maximum length of 20.");
+            Assert.That(errors.GetLength(0), Is.EqualTo(4));
+            AssertApplicationError(errors[0], "registration.business.currency", "The field currency must be a string with a maximum length of 3.");
+            AssertMultipleEmailErrors(errors[1], errors[2]);
+            AssertApplicationError(errors[3], "registration.admin.password", "The field password must be a string with a maximum length of 20.");
         }
 
         private void AssertMultipleEmailErrors(ApplicationError error1, ApplicationError error2)
@@ -249,6 +241,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 AssertApplicationError(error1, "registration.admin.email", "The email field is not a valid e-mail address.");
                 AssertApplicationError(error2, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
             }
+        }
+
+        private void ThenReturnsCurrencyNotSupportedError(Response response)
+        {
+            AssertSingleError(response, "This currency is not supported.", "registration.business.currency");
         }
 
         private void ThenReturnDuplicateAdminErrorResponse(Response response)
@@ -267,27 +264,68 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             AssertStatusCode(response.StatusCode, HttpStatusCode.Forbidden);
         }
 
-        private void ThenReturnNewBusinessSuccessResponse(Response response)
+        private void ThenCreateNewBusiness(Response response, ExpectedBusiness expectedBusiness)
         {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+            AssertNewBusinessResponse(response, expectedBusiness);
 
-            Assert.That(response.Payload, Is.InstanceOf<RegistrationData>());
-            var registration = (RegistrationData)response.Payload;
+            AssertBusinessGet(expectedBusiness);
+        }
+
+        private void ThenUseNewZealandCurrency(Response response, ExpectedBusiness expectedBusiness)
+        {
+            expectedBusiness.Currency = "NZD";
+
+            AssertNewBusinessResponse(response, expectedBusiness);
+
+            AssertBusinessGet(expectedBusiness);
+        }
+
+
+        private void AssertNewBusinessResponse(Response response, ExpectedBusiness expectedBusiness)
+        {
+            var registration = AssertSuccessResponse<RegistrationData>(response);
+
             var business = registration.business;
             Assert.That(business.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(business.name, Is.EqualTo(BusinessName));
-            Assert.That(business.domain, Is.EqualTo(Domain));
+            Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
+            Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
+            Assert.That(business.currency, Is.EqualTo(expectedBusiness.Currency));
+            Assert.That(business.paymentProvider, Is.Null);
+            Assert.That(business.merchantAccountIdentifier, Is.Null);
+
             var admin = registration.admin;
             Assert.That(admin, Is.Not.Null);
             Assert.That(admin.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(admin.firstName, Is.EqualTo(FirstName));
-            Assert.That(admin.lastName, Is.EqualTo(LastName));
-            Assert.That(admin.email, Is.EqualTo(Email));
-            Assert.That(admin.username, Is.EqualTo(Email));
-            Assert.That(admin.passwordHash, Is.Not.EqualTo(Password));
+            Assert.That(admin.firstName, Is.EqualTo(expectedBusiness.Admin.firstName));
+            Assert.That(admin.lastName, Is.EqualTo(expectedBusiness.Admin.lastName));
+            Assert.That(admin.email, Is.EqualTo(expectedBusiness.Admin.email));
+            Assert.That(admin.username, Is.EqualTo(expectedBusiness.Admin.email));
+            Assert.That(admin.passwordHash, Is.Not.EqualTo(expectedBusiness.Admin.password));
             Assert.That(admin.businessId, Is.EqualTo(business.id));
             Assert.That(admin.businessName, Is.EqualTo(business.name));
+
+            expectedBusiness.Id = business.id;
+        }
+
+        public void AssertBusinessData(BusinessData business, ExpectedBusiness expectedBusiness)
+        {
+            Assert.That(business, Is.Not.Null);
+            Assert.That(business.id, Is.EqualTo(expectedBusiness.Id));
+            Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
+            Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
+            Assert.That(business.currency, Is.EqualTo(expectedBusiness.Currency));
+            Assert.That(business.paymentProvider, Is.EqualTo(null));
+            Assert.That(business.merchantAccountIdentifier, Is.EqualTo(null));
+        }
+
+        private void AssertBusinessGet(ExpectedBusiness expectedBusiness)
+        {
+            var getBusinessUrl = string.Format("{0}/Business", BaseUrl);
+            Business = expectedBusiness;
+            var response = AuthenticatedGet<BusinessData>(getBusinessUrl);
+            var business = (BusinessData)response.Payload;
+
+            AssertBusinessData(business, expectedBusiness);
         }
     }
 }

@@ -4,21 +4,8 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
 {
     [TestFixture]
-    public class BusinessGetTests : WebIntegrationTest
+    public class BusinessGetTests : BusinessTests
     {
-        protected override string RelativePath
-        {
-            get { return "Business"; }
-        }
-
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-        }
-
-
         [Test]
         public void WhenGetBusiness_ThenReturnBusiness()
         {

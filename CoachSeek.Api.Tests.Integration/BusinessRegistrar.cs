@@ -9,15 +9,16 @@ namespace CoachSeek.Api.Tests.Integration
     {
 
 
-        public static Response RegisterBusiness(ExpectedBusiness business)
+        public static Response RegisterBusiness(ExpectedBusiness business, string scheme = "https")
         {
             var json = CreateNewBusinessSaveCommand(business);
-            var response = WebClient.AnonymousPost<RegistrationData>(json, "BusinessRegistration");
+            var response = WebClient.AnonymousPost<RegistrationData>(json, "BusinessRegistration", scheme);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var registration = ((RegistrationData)response.Payload);
                 business.Id = registration.business.id;
                 business.Domain = registration.business.domain;
+                business.Currency = registration.business.currency;
             }
             return response;
         }
@@ -26,7 +27,7 @@ namespace CoachSeek.Api.Tests.Integration
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                business = new ApiBusiness { name = expectedBusiness.Name },
+                business = new ApiBusiness { name = expectedBusiness.Name, currency = expectedBusiness.Currency },
                 admin = expectedBusiness.Admin
             };
 
