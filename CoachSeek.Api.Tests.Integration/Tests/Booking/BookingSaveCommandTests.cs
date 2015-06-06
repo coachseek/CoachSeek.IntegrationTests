@@ -65,7 +65,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private Response WhenTryBookAnonymously(string json)
         {
-            return PostAnonymously<BookingData>(json);
+            return PostAnonymouslyToBusiness<BookingData>(json);
         }
     }
 }

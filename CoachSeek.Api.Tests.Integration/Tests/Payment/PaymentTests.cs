@@ -1,0 +1,29 @@
+﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
+using CoachSeek.Api.Tests.Integration.Models;
+using NUnit.Framework;
+
+namespace CoachSeek.Api.Tests.Integration.Tests.Payment
+{
+    [TestFixture]
+    public class PaymentTests : WebIntegrationTest
+    {
+        [Test]
+        public void TestApiIpnEndpoint()
+        {
+            var command = "hello world!";
+            var response = WhenTryPostAnonymously(command);
+        }
+
+
+        private ApiResponse WhenTryPostAnonymously(string json)
+        {
+            return new TestAnonymousApiClient().Post<string>(json, RelativePath);
+        }
+
+        protected override string RelativePath
+        {
+            get { return "Paypal"; }
+        }
+    }
+}

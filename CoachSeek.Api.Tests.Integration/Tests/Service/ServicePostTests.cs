@@ -855,7 +855,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private Response WhenTryPostAnonymously(string json)
         {
-            return PostAnonymously<ServiceData>(json);
+            return PostAnonymouslyToBusiness<ServiceData>(json);
         }
     }
 }

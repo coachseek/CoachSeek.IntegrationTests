@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
@@ -6,7 +7,7 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
     [TestFixture]
-    public class CourseUpdateExistingTests : ScheduleTests
+    public class  CourseUpdateExistingTests : ScheduleTests
     {
         [SetUp]
         public void Setup()
@@ -217,7 +218,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return command;
         }
 
-        private void ThenUpdatesCourseButLeavesSessionStartDatesTheSame(Response response)
+        private void ThenUpdatesCourseButLeavesSessionStartDatesTheSame(ApiResponse response)
         {
             var course = AssertSuccessResponse<CourseData>(response);
 
@@ -274,7 +275,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPresentation(thirdSession.presentation, "orange");
         }
 
-        private void ThenUpdatesCourseAndMovesSessionStartDates(Response response)
+        private void ThenUpdatesCourseAndMovesSessionStartDates(ApiResponse response)
         {
             var course = AssertSuccessResponse<CourseData>(response);
 
@@ -395,27 +396,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        private void ThenReturnInvalidLocationErrorResponse(Response response)
+        private void ThenReturnInvalidLocationErrorResponse(ApiResponse response)
         {
             AssertSingleError(response, "Invalid location.");
         }
 
-        private void ThenReturnInvalidCoachErrorResponse(Response response)
+        private void ThenReturnInvalidCoachErrorResponse(ApiResponse response)
         {
             AssertSingleError(response, "Invalid coach.");
         }
 
-        private void ThenReturnInvalidServiceErrorResponse(Response response)
+        private void ThenReturnInvalidServiceErrorResponse(ApiResponse response)
         {
             AssertSingleError(response, "Invalid service.");
         }
 
-        private void ThenReturnsCannotUpdateRepetitionOfCourseError(Response response)
+        private void ThenReturnsCannotUpdateRepetitionOfCourseError(ApiResponse response)
         {
             AssertSingleError(response, "Cannot change the repetition of a course.");
         }
 
-        private void ThenReturnsSessionTimeUpdatedResponse(Response response)
+        private void ThenReturnsSessionTimeUpdatedResponse(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
@@ -434,7 +435,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPresentation(session.presentation, "red");
         }
 
-        private void ThenReturnsSessionUpdatedResponse(Response response)
+        private void ThenReturnsSessionUpdatedResponse(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
@@ -453,7 +454,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPresentation(session.presentation, "green");
         }
 
-        private void ThenReturnsInvalidRepetitionErrorResponse(Response response)
+        private void ThenReturnsInvalidRepetitionErrorResponse(ApiResponse response)
         {
             AssertSingleError(response, "Cannot change a session to a course.");
         }

@@ -202,7 +202,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
         private Response WhenTryPostAnonymously(string json)
         {
-            return PostAnonymously<LocationData>(json);
+            return PostAnonymouslyToBusiness<LocationData>(json);
         }
 
 

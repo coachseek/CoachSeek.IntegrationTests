@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
@@ -89,7 +90,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return sessionCommand;
         }
 
-        private void ThenReturnsCannotChangeSessionToCourseError(Response response)
+        private void ThenReturnsCannotChangeSessionToCourseError(ApiResponse response)
         {
             AssertSingleError(response, "Cannot change a session to a course.");
         }
@@ -199,7 +200,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             };
         }
 
-        private SessionData ThenSessionWasUpdatedResponse(Response response, string startDate, string startTime)
+        private SessionData ThenSessionWasUpdatedResponse(ApiResponse response, string startDate, string startTime)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
@@ -220,7 +221,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private void ThenReturnCompletelyChangedSessionWasUpdatedResponse(Response response)
+        private void ThenReturnCompletelyChangedSessionWasUpdatedResponse(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 

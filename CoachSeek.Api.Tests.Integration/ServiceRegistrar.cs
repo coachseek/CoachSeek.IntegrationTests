@@ -1,4 +1,6 @@
-﻿using CoachSeek.Api.Tests.Integration.Models;
+﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
+using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using Newtonsoft.Json;
@@ -35,9 +37,9 @@ namespace CoachSeek.Api.Tests.Integration
             return JsonConvert.SerializeObject(service);
         }
 
-        private static Response PostService(ExpectedBusiness business, string json)
+        private static ApiResponse PostService(ExpectedBusiness business, string json)
         {
-            return WebClient.AuthenticatedPost<ServiceData>(business.UserName, business.Password, "Services", json);
+            return new TestAuthenticatedApiClient().Post<ServiceData>(json, business.UserName, business.Password, "Services");
         }
     }
 }

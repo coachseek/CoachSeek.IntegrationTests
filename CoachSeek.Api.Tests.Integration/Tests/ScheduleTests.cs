@@ -1,4 +1,6 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
@@ -189,33 +191,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        protected Response WhenPostSession(string json)
+        protected ApiResponse WhenPostSession(string json)
         {
-            return Post<SessionData>(json);
+            return new TestAuthenticatedApiClient().Post<SessionData>(json, Business.UserName, Business.Password, "Sessions");
         }
 
-        protected Response WhenPostCourse(string json)
+        protected ApiResponse WhenPostCourse(string json)
         {
-            return Post<CourseData>(json);
+            return new TestAuthenticatedApiClient().Post<CourseData>(json, Business.UserName, Business.Password, "Sessions");
         }
 
 
-        protected Response WhenTryCreateSession(ApiSessionSaveCommand command)
-        {
-            return WhenPostSession(JsonConvert.SerializeObject(command));
-        }
-
-        protected Response WhenTryUpdateSession(ApiSessionSaveCommand command)
+        protected ApiResponse WhenTryCreateSession(ApiSessionSaveCommand command)
         {
             return WhenPostSession(JsonConvert.SerializeObject(command));
         }
 
-        protected Response WhenTryCreateCourse(ApiSessionSaveCommand command)
+        protected ApiResponse WhenTryUpdateSession(ApiSessionSaveCommand command)
+        {
+            return WhenPostSession(JsonConvert.SerializeObject(command));
+        }
+
+        protected ApiResponse WhenTryCreateCourse(ApiSessionSaveCommand command)
         {
             return WhenPostCourse(JsonConvert.SerializeObject(command));
         }
 
-        protected Response WhenTryUpdateCourse(ApiSessionSaveCommand command)
+        protected ApiResponse WhenTryUpdateCourse(ApiSessionSaveCommand command)
         {
             return WhenPostCourse(JsonConvert.SerializeObject(command));
         }

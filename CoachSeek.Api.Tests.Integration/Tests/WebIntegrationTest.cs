@@ -1,4 +1,5 @@
-﻿using CoachSeek.Api.Tests.Integration.Models;
+﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using Newtonsoft.Json;
@@ -7,15 +8,12 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using ApplicationError = CoachSeek.Api.Tests.Integration.Models.ApplicationError;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class WebIntegrationTest
     {
-        protected const string AdminUserName = "userZvFXUEmjht1hFJGn+H0YowMqO+5u5tEI";
-        protected const string AdminPassword = "passYBoVaaWVp1W9ywZOHK6E6QXFh3z3+OUf";
-
-
         protected CoachSteve Steve { get; set; }
         protected CoachAaron Aaron { get; set; }
         protected CoachBobby Bobby { get; set; }
@@ -67,7 +65,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected string Password { get; set; }
 
 
-        public Response PostAnonymously<TResponse>(string json)
+        //public Response PostAnonymously<TResponse>(string json)
+        //{
+        //    var http = CreateAnonymousWebRequest(Url);
+        //    return Post<TResponse>(json, http);
+        //}
+
+        public Response PostAnonymouslyToBusiness<TResponse>(string json)
         {
             var http = CreateAnonymousWebRequest(Url);
             return Post<TResponse>(json, http);
@@ -162,24 +166,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             SetBasicAuthHeader(http, Business.UserName, Business.Password);
-
-            return Get<TResponse>(http);
-        }
-
-        protected Response AdminAuthenticatedGet<TResponse>(string relativePath)
-        {
-            var url = string.Format("{0}/Admin/{1}", BaseUrl, relativePath);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, AdminUserName, AdminPassword);
-
-            return Get<TResponse>(http);
-        }
-
-        protected Response AdminAuthenticatedGet<TResponse>(string relativePath, string searchParameter)
-        {
-            var url = string.Format("{0}/Admin/{1}/{2}", BaseUrl, relativePath, searchParameter);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, AdminUserName, AdminPassword);
 
             return Get<TResponse>(http);
         }
@@ -327,12 +313,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
         }
 
+        protected void AssertNotFound(ApiResponse response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
         protected void AssertUnauthorised(Response response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
         }
 
         protected T AssertSuccessResponse<T>(Response response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.That(response.Payload, Is.InstanceOf<T>());
+            return (T)response.Payload;
+        }
+
+        protected T AssertSuccessResponse<T>(ApiResponse response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
@@ -350,7 +350,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return (ApplicationError[])response.Payload;
         }
 
+        protected ApiApplicationError[] AssertErrorResponse(ApiResponse response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
+
+            Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
+            return (ApiApplicationError[])response.Payload;
+        }
+
         protected ApplicationError AssertSingleError(Response response, string message, string field = null)
+        {
+            var errors = AssertErrorResponse(response);
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], field, message);
+
+            return errors[0];
+        }
+
+        protected ApiApplicationError AssertSingleError(ApiResponse response, string message, string field = null)
         {
             var errors = AssertErrorResponse(response);
 
@@ -373,7 +392,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
         }
 
+        protected void AssertMultipleErrors(ApiResponse response, string[,] expectedErrors)
+        {
+            var errors = AssertErrorResponse(response);
+            Assert.That(errors.GetLength(0), Is.EqualTo(expectedErrors.GetLength(0)));
+
+            var i = 0;
+            foreach (var error in errors)
+            {
+                AssertApplicationError(error, expectedErrors[i, 1], expectedErrors[i, 0]);
+                i++;
+            }
+        }
+
         protected void AssertApplicationError(ApplicationError error, string field, string message)
+        {
+            Assert.That(error.field, Is.EqualTo(field));
+            Assert.That(error.message, Is.EqualTo(message));
+        }
+
+        protected void AssertApplicationError(ApiApplicationError error, string field, string message)
         {
             Assert.That(error.field, Is.EqualTo(field));
             Assert.That(error.message, Is.EqualTo(message));

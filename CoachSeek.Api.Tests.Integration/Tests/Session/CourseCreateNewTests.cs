@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
@@ -194,7 +195,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        private SessionData ThenCreatesCourseWithCoursePriceOnly(Response response)
+        private SessionData ThenCreatesCourseWithCoursePriceOnly(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
             AssertSessionPricing(session.pricing, null, 50);
@@ -202,7 +203,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private SessionData ThenCreatesCourseWithSessionPriceOnly(Response response)
+        private SessionData ThenCreatesCourseWithSessionPriceOnly(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
             AssertSessionPricing(session.pricing, 12.5m, null);
@@ -210,7 +211,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private SessionData ThenCreatesCourseWithSessionPriceAndCoursePrice(Response response)
+        private SessionData ThenCreatesCourseWithSessionPriceAndCoursePrice(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
             AssertSessionPricing(session.pricing, 12.5m, 75);
@@ -218,7 +219,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private SessionData ThenCreatesCourseWithZeroSessionPrice(Response response)
+        private SessionData ThenCreatesCourseWithZeroSessionPrice(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
             AssertSessionPricing(session.pricing, 0, null);
@@ -226,7 +227,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private SessionData ThenCreatesCourseWith24HrStartTime(Response response)
+        private SessionData ThenCreatesCourseWith24HrStartTime(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 

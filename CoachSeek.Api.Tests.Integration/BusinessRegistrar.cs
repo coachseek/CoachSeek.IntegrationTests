@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
@@ -7,12 +9,10 @@ namespace CoachSeek.Api.Tests.Integration
 {
     public static class BusinessRegistrar
     {
-
-
-        public static Response RegisterBusiness(ExpectedBusiness business, string scheme = "https")
+        public static ApiResponse RegisterBusiness(ExpectedBusiness business, string scheme = "https")
         {
             var json = CreateNewBusinessSaveCommand(business);
-            var response = WebClient.AnonymousPost<RegistrationData>(json, "BusinessRegistration", scheme);
+            var response = new TestAnonymousApiClient().Post<RegistrationData>(json, "BusinessRegistration", scheme);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var registration = ((RegistrationData)response.Payload);

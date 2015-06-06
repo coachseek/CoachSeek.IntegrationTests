@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -95,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return command;
         }
 
-        private SessionData ThenCreateNewSession(Response response)
+        private SessionData ThenCreateNewSession(ApiResponse response)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 

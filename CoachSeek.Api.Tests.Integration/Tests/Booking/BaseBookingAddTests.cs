@@ -1,4 +1,6 @@
-﻿using CoachSeek.Api.Tests.Integration.Models;
+﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
+using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -6,16 +8,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
     public abstract class BaseBookingAddTests : BaseBookingTests
     {
         // Session
-        protected Response WhenTryBookSession(ApiBookingSaveCommand command)
+        protected ApiResponse WhenTryBookSession(ApiBookingSaveCommand command)
         {
             var json = JsonConvert.SerializeObject(command);
 
             return WhenTryBookSession(json);
         }
 
-        protected Response WhenTryBookSession(string json)
+        protected ApiResponse WhenTryBookSession(string json)
         {
-            return Post<SingleSessionBookingData>(json);
+            return new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json, Business.UserName, Business.Password, RelativePath);
         }
 
         protected Response WhenTryBookOnlineSession(ApiBookingSaveCommand command)

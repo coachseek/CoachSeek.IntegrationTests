@@ -248,7 +248,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private Response WhenTryUpdateBusinessAnonymously(string json)
         {
-            return PostAnonymously<BusinessData>(json);
+            return PostAnonymouslyToBusiness<BusinessData>(json);
         }
 
 

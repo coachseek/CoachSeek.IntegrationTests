@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Web;
-using CoachSeek.Api.Tests.Integration.Models;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Admin
@@ -94,26 +95,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         }
 
 
-        private Response WhenTryGetIsEmailUnsubscribed(string emailAddress)
+        private ApiResponse WhenTryGetIsEmailUnsubscribed(string emailAddress)
         {
             return GetIsEmailUnsubscribed(emailAddress);
         }
 
-        private Response GetIsEmailUnsubscribed(string emailAddress)
+        private ApiResponse GetIsEmailUnsubscribed(string emailAddress)
         {
             var url = string.Format("Email/IsUnsubscribed?email={0}", HttpUtility.UrlEncode(emailAddress));
-            return AdminAuthenticatedGet<bool>(url);
+            return new TestAdminApiClient().Get<bool>(url);
         }
 
-        private Response WhenTryUnsubscribeEmail(string emailAddress)
+        private ApiResponse WhenTryUnsubscribeEmail(string emailAddress)
         {
             return UnsubscribeEmail(emailAddress);
         }
 
-        private Response UnsubscribeEmail(string emailAddress)
+        private ApiResponse UnsubscribeEmail(string emailAddress)
         {
             var url = string.Format("Email/Unsubscribe?email={0}", HttpUtility.UrlEncode(emailAddress));
-            return AdminAuthenticatedGet<string>(url);
+            return new TestAdminApiClient().Get<string>(url);
         }
 
 

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using ApplicationError = CoachSeek.Api.Tests.Integration.Models.ApplicationError;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
 {
@@ -169,29 +172,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             BusinessRegistrar.RegisterBusiness(Business);
         }
 
-        private Response WhenTryRegisterBusiness()
+        private ApiResponse WhenTryRegisterBusiness()
         {
             return BusinessRegistrar.RegisterBusiness(Business);
         }
 
-        private Response WhenTryRegisterBusiness(ExpectedBusiness business)
+        private ApiResponse WhenTryRegisterBusiness(ExpectedBusiness business)
         {
             return BusinessRegistrar.RegisterBusiness(business);
         }
 
-        private Response WhenTryRegisterBusiness(ApiBusinessRegistrationCommand command)
+        private ApiResponse WhenTryRegisterBusiness(string json)
         {
-            var json = JsonConvert.SerializeObject(command);
-
-            return WhenTryRegisterBusiness(json);
+            return new TestAnonymousApiClient().Post<RegistrationData>(json, RelativePath);
         }
 
-        private Response WhenTryRegisterBusiness(string json)
-        {
-            return WebClient.AnonymousPost<RegistrationData>(json, RelativePath);
-        }
-
-        private Response WhenTryRegisterBusinessUsingHttp(ExpectedBusiness business)
+        private ApiResponse WhenTryRegisterBusinessUsingHttp(ExpectedBusiness business)
         {
             return BusinessRegistrar.RegisterBusiness(business, "http");
         }
@@ -202,7 +198,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+        private void ThenReturnNoDataErrorResponse(ApiResponse response)
+        {
+            AssertSingleError(response, "Please post us some data!");
+        }
+
+        private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "The business field is required.", "registration.business" },
                                                     { "The admin field is required.", "registration.admin" } });
@@ -217,12 +218,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                                                     { "The password field is required.", "registration.admin.password" } });
         }
 
-        private void ThenReturnMultipleErrorResponse(Response response)
+        private void ThenReturnMissingPropertiesErrorResponse(ApiResponse response)
+        {
+            AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
+                                                    { "The firstName field is required.", "registration.admin.firstName" },
+                                                    { "The lastName field is required.", "registration.admin.lastName" },
+                                                    { "The email field is required.", "registration.admin.email" },
+                                                    { "The password field is required.", "registration.admin.password" } });
+        }
+
+        private void ThenReturnMultipleErrorResponse(ApiResponse response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
+            Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
+            var errors = (ApiApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(4));
             AssertApplicationError(errors[0], "registration.business.currency", "The field currency must be a string with a maximum length of 3.");
             AssertMultipleEmailErrors(errors[1], errors[2]);
@@ -243,35 +253,49 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             }
         }
 
-        private void ThenReturnsCurrencyNotSupportedError(Response response)
+        private void AssertMultipleEmailErrors(ApiApplicationError error1, ApiApplicationError error2)
+        {
+            if (error1.message.Contains("maximum length"))
+            {
+                AssertApplicationError(error1, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
+                AssertApplicationError(error2, "registration.admin.email", "The email field is not a valid e-mail address.");
+            }
+            else
+            {
+                AssertApplicationError(error1, "registration.admin.email", "The email field is not a valid e-mail address.");
+                AssertApplicationError(error2, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
+            }
+        }
+
+        private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
         {
             AssertSingleError(response, "This currency is not supported.", "registration.business.currency");
         }
 
-        private void ThenReturnDuplicateAdminErrorResponse(Response response)
+        private void ThenReturnDuplicateAdminErrorResponse(ApiResponse response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
 
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
+            Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
+            var errors = (ApiApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(1));
             AssertApplicationError(errors[0], "registration.admin.email", "The user with this email address already exists.");
         }
 
-        private void ThenReturnForbiddenError(Response response)
+        private void ThenReturnForbiddenError(ApiResponse response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.Forbidden);
         }
 
-        private void ThenCreateNewBusiness(Response response, ExpectedBusiness expectedBusiness)
+        private void ThenCreateNewBusiness(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
             AssertNewBusinessResponse(response, expectedBusiness);
 
             AssertBusinessGet(expectedBusiness);
         }
 
-        private void ThenUseNewZealandCurrency(Response response, ExpectedBusiness expectedBusiness)
+        private void ThenUseNewZealandCurrency(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
             expectedBusiness.Currency = "NZD";
 
@@ -281,7 +305,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
 
-        private void AssertNewBusinessResponse(Response response, ExpectedBusiness expectedBusiness)
+        private void AssertNewBusinessResponse(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
             var registration = AssertSuccessResponse<RegistrationData>(response);
 
