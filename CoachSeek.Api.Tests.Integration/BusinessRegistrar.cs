@@ -18,7 +18,7 @@ namespace CoachSeek.Api.Tests.Integration
                 var registration = ((RegistrationData)response.Payload);
                 business.Id = registration.business.id;
                 business.Domain = registration.business.domain;
-                business.Currency = registration.business.currency;
+                business.Payment.currency = registration.business.payment.currency;
             }
             return response;
         }
@@ -27,7 +27,7 @@ namespace CoachSeek.Api.Tests.Integration
         {
             var registration = new ApiBusinessRegistrationCommand
             {
-                business = new ApiBusiness { name = expectedBusiness.Name, currency = expectedBusiness.Currency },
+                business = new ApiBusiness { name = expectedBusiness.Name, currency = expectedBusiness.Payment.currency },
                 admin = expectedBusiness.Admin
             };
 

@@ -5,19 +5,16 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
     public class ExpectedBusiness
     {
         public Guid Id { get; set; }
-        public string Domain { get; set; }
-        public string Currency { get; set; }
-        public string PaymentProvider { get; set; }
-        public string MerchantAccountIdentifier { get; set; }
-
         public string Name { get; private set; }
+        public string Domain { get; set; }
         public ApiBusinessAdmin Admin { get; private set; }
         public string UserName { get; private set; }
         public string Password { get; private set; }
+        public ApiBusinessPaymentOptions Payment { get; private set; }
 
 
         public ExpectedBusiness(string name, string currency, string email)
-            : this(name, currency, null, null, "Bob", "Smith", email, "password1")
+            : this(name, currency, "Bob", "Smith", email, "password1")
         { }
 
         public ExpectedBusiness(string name,
@@ -28,9 +25,6 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string password)
         {
             Name = name;
-            Currency = currency;
-            PaymentProvider = null;
-            MerchantAccountIdentifier = null;
             Admin = new ApiBusinessAdmin
             {
                 firstName = firstName,
@@ -38,10 +32,17 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                 email = UserName = email,
                 password = Password = password
             };
+            Payment = new ApiBusinessPaymentOptions
+            {
+                currency  = currency,
+                isOnlinePaymentEnabled = false
+            };
         }
 
         public ExpectedBusiness(string name,
                                 string currency,
+                                bool isOnlinePaymentEnabled,
+                                bool? forceOnlinePayment,
                                 string paymentProvider,
                                 string merchantAccountIdentifier,
                                 string firstName, 
@@ -50,15 +51,20 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string password)
         {
             Name = name;
-            Currency = currency;
-            PaymentProvider = paymentProvider;
-            MerchantAccountIdentifier = merchantAccountIdentifier;
             Admin = new ApiBusinessAdmin
             {
                 firstName = firstName,
                 lastName = lastName,
                 email = UserName = email,
                 password = Password = password
+            };
+            Payment = new ApiBusinessPaymentOptions
+            {
+                currency = currency,
+                isOnlinePaymentEnabled = isOnlinePaymentEnabled,
+                forceOnlinePayment = forceOnlinePayment,
+                paymentProvider = paymentProvider,
+                merchantAccountIdentifier = merchantAccountIdentifier
             };
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Clients;
-using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Payment

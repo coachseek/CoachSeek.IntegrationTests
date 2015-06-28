@@ -49,7 +49,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return new ApiBusinessSaveCommand
                 {
                     name = Random.RandomString,
-                    currency = "EUR"
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "EUR",
+                        isOnlinePaymentEnabled = true,
+                        forceOnlinePayment = false,
+                        paymentProvider = "PayPal",
+                        merchantAccountIdentifier = "olaf@coachseek.com"
+                    }
                 };
             }
         }
@@ -57,6 +64,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         [TestFixture]
         public class BusinessExistingTests : BusinessUpdateTests
         {
+            [Test]
+            public void GivenEmptyPayment_WhenTryUpdateBusiness_ThenReturnsRequiredPaymentOptionErrors()
+            {
+                var command = GivenEmptyPayment();
+                var response = WhenTryUpdateBusiness(command);
+                ThenReturnsRequiredPaymentOptionErrors(response);
+            }
+
             [Test]
             public void GivenInvalidCurrency_WhenTryUpdateBusiness_ThenReturnsCurrencyNotSupportedError()
             {
@@ -97,21 +112,37 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 ThenUpdateTheBusinessWithoutPaymentProvider(response, command);
             }
 
-            [Test]
-            public void GivenValidBusinessSaveCommandWithPaymentProvider_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithPaymentProvider()
+            [Test, Ignore("Uncomment when have isOnlinePaymentEnabled and forceOnlinePayment")]
+            public void GivenValidBusinessSaveCommandWithOnlinePaymentOn_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithPaymentOptionsSet()
             {
-                var command = GivenValidBusinessSaveCommandWithPaymentProvider();
+                var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn();
                 var response = WhenTryUpdateBusiness(command);
-                ThenUpdateTheBusinessWithPaymentProvider(response, command);
+                ThenUpdateTheBusinessWithPaymentOptionsSet(response, command);
             }
 
+
+            private ApiBusinessSaveCommand GivenEmptyPayment()
+            {
+                return new ApiBusinessSaveCommand
+                {
+                    name = Business.Name,
+                    payment = new ApiBusinessPaymentOptions()
+                };
+            }
 
             private ApiBusinessSaveCommand GivenInvalidCurrency()
             {
                 return new ApiBusinessSaveCommand
                 {
                     name = Business.Name,
-                    currency = "QQQ"
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "QQQ",
+                        isOnlinePaymentEnabled = false,
+                        forceOnlinePayment = false,
+                        paymentProvider = "PayPal",
+                        merchantAccountIdentifier = "olaf@coachseek.com"
+                    }
                 };
             }
 
@@ -120,8 +151,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return new ApiBusinessSaveCommand
                 {
                     name = Business.Name,
-                    currency = "AUD",
-                    paymentProvider = "ABC"
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "AUD",
+                        isOnlinePaymentEnabled = false,
+                        forceOnlinePayment = false,
+                        paymentProvider = "ABC"
+                    }
                 };
             }
 
@@ -130,8 +166,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return new ApiBusinessSaveCommand
                 {
                     name = Business.Name,
-                    currency = "AUD",
-                    paymentProvider = "PayPal"
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "AUD",
+                        isOnlinePaymentEnabled = true,
+                        forceOnlinePayment = false,
+                        paymentProvider = "PayPal"
+                    }
                 };
             }
 
@@ -140,31 +181,42 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return new ApiBusinessSaveCommand
                 {
                     name = Business.Name,
-                    currency = "AUD",
-                    paymentProvider = "PayPal",
-                    merchantAccountIdentifier = "abc123"
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "AUD",
+                        isOnlinePaymentEnabled = false,
+                        forceOnlinePayment = false,
+                        paymentProvider = "PayPal",
+                        merchantAccountIdentifier = "abc123"
+                    }
                 };
             }
 
 
+            private void ThenReturnsRequiredPaymentOptionErrors(Response response)
+            {
+                AssertMultipleErrors(response, new[,] { { "The currency field is required.", "business.payment.currency" },
+                                                        { "The isOnlinePaymentEnabled field is required.", "business.payment.isOnlinePaymentEnabled" } });
+            }
+
             private void ThenReturnsCurrencyNotSupportedError(Response response)
             {
-                AssertSingleError(response, "This currency is not supported.", "business.currency");
+                AssertSingleError(response, "This currency is not supported.", "business.payment.currency");
             }
 
             private void ThenReturnsPaymentProviderNotSupportedError(Response response)
             {
-                AssertSingleError(response, "This payment provider is not supported.", "business.paymentProvider");
+                AssertSingleError(response, "This payment provider is not supported.", "business.payment.paymentProvider");
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierError(Response response)
             {
-                AssertSingleError(response, "Missing merchant account identifier.", "business.merchantAccountIdentifier");
+                AssertSingleError(response, "Missing merchant account identifier.", "business.payment.merchantAccountIdentifier");
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierFormatError(Response response)
             {
-                AssertSingleError(response, "Invalid merchant account identifier format.", "business.merchantAccountIdentifier");
+                AssertSingleError(response, "Invalid merchant account identifier format.", "business.payment.merchantAccountIdentifier");
             }
 
             private void ThenUpdateTheBusinessWithoutPaymentProvider(Response response, ApiBusinessSaveCommand command)
@@ -173,7 +225,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
                 Assert.That(responseBusiness.id, Is.EqualTo(Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
-                Assert.That(responseBusiness.currency, Is.EqualTo(command.currency));
+                Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(responseBusiness.domain, Is.EqualTo(Business.Domain));
 
                 var getResponse = AuthenticatedGet<BusinessData>(Url.AbsoluteUri);
@@ -181,30 +233,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
                 Assert.That(getBusiness.id, Is.EqualTo(Business.Id));
                 Assert.That(getBusiness.name, Is.EqualTo(command.name));
-                Assert.That(getBusiness.currency, Is.EqualTo(command.currency));
+                Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(getBusiness.domain, Is.EqualTo(Business.Domain));
             }
 
-            private void ThenUpdateTheBusinessWithPaymentProvider(Response response, ApiBusinessSaveCommand command)
+            private void ThenUpdateTheBusinessWithPaymentOptionsSet(Response response, ApiBusinessSaveCommand command)
             {
                 var responseBusiness = AssertSuccessResponse<BusinessData>(response);
 
                 Assert.That(responseBusiness.id, Is.EqualTo(Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
-                Assert.That(responseBusiness.currency, Is.EqualTo(command.currency));
+                Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(responseBusiness.domain, Is.EqualTo(Business.Domain));
-                Assert.That(responseBusiness.paymentProvider, Is.EqualTo(command.paymentProvider));
-                Assert.That(responseBusiness.merchantAccountIdentifier, Is.EqualTo(command.merchantAccountIdentifier));
+                Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
 
                 var getResponse = AuthenticatedGet<BusinessData>(Url.AbsoluteUri);
                 var getBusiness = (BusinessData)getResponse.Payload;
 
                 Assert.That(getBusiness.id, Is.EqualTo(Business.Id));
                 Assert.That(getBusiness.name, Is.EqualTo(command.name));
-                Assert.That(getBusiness.currency, Is.EqualTo(command.currency));
                 Assert.That(getBusiness.domain, Is.EqualTo(Business.Domain));
-                Assert.That(getBusiness.paymentProvider, Is.EqualTo(command.paymentProvider));
-                Assert.That(getBusiness.merchantAccountIdentifier, Is.EqualTo(command.merchantAccountIdentifier));
+                Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
             }
         }
 
@@ -214,18 +270,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             return new ApiBusinessSaveCommand
             {
                 name = Random.RandomString,
-                currency = "EUR"
+                payment = new ApiBusinessPaymentOptions
+                {
+                    currency = "EUR",
+                    isOnlinePaymentEnabled = false                    
+                }
             };
         }
 
-        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithPaymentProvider()
+        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithOnlinePaymentOn()
         {
             return new ApiBusinessSaveCommand
             {
                 name = Random.RandomString,
-                currency = "EUR",
-                paymentProvider = "PayPal",
-                merchantAccountIdentifier = "bob@example.com"
+                payment = new ApiBusinessPaymentOptions
+                {
+                    currency = "EUR",
+                    isOnlinePaymentEnabled = true,
+                    forceOnlinePayment = true,
+                    paymentProvider = "PayPal",
+                    merchantAccountIdentifier = "bob@example.com"
+                }
             };
         }
 
@@ -260,7 +325,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         private void ThenReturnRootRequiredErrorResponse(Response response)
         {
             AssertMultipleErrors(response, new[,] { { "The name field is required.", "business.name" },
-                                                    { "The currency field is required.", "business.currency" } });
+                                                    { "The payment field is required.", "business.payment" } });
         }
     }
 }

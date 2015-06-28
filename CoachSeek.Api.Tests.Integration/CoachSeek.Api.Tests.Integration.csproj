@@ -51,7 +51,9 @@
     <Compile Include="Clients\TestAdminApiClient.cs" />
     <Compile Include="Clients\TestBusinessAnonymousApiClient.cs" />
     <Compile Include="CustomerRegistrar.cs" />
+    <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
+    <Compile Include="Models\BusinessPaymentData.cs" />
     <Compile Include="Models\Expectations\Course\CourseAaronRemuera9To10For4Weeks.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerBamBam.cs" />
     <Compile Include="Models\Expectations\Service\ServiceHolidayCamp.cs" />

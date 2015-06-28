@@ -20,27 +20,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
 
         [Test]
-        public void GivenNoBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnNoDataErrorResponse()
+        public void GivenNoBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnNoDataError()
         {
             var command = GivenNoBusinessRegistrationCommand();
             var response = WhenTryRegisterBusiness(command);
-            ThenReturnNoDataErrorResponse(response);
+            ThenReturnNoDataError(response);
         }
 
         [Test]
-        public void GivenEmptyBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnRootRequiredErrorResponse()
+        public void GivenEmptyBusinessRegistrationCommand_WhenTryRegisterBusiness_ThenReturnRootRequiredError()
         {
             var command = GivenEmptyBusinessRegistrationCommand();
             var response = WhenTryRegisterBusiness(command);
-            ThenReturnRootRequiredErrorResponse(response);
+            ThenReturnRootRequiredError(response);
         }
 
         [Test]
-        public void GivenMissingProperties_WhenTryRegisterBusiness_ThenReturnMissingPropertiesErrorResponse()
+        public void GivenMissingProperties_WhenTryRegisterBusiness_ThenReturnMissingPropertiesError()
         {
             var command = GivenMissingProperties();
             var response = WhenTryRegisterBusiness(command);
-            ThenReturnMissingPropertiesErrorResponse(response);
+            ThenReturnMissingPropertiesError(response);
         }
 
         [Test]
@@ -193,23 +193,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
 
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private void ThenReturnNoDataError(ApiResponse response)
         {
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnNoDataErrorResponse(ApiResponse response)
-        {
-            AssertSingleError(response, "Please post us some data!");
-        }
-
-        private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
+        private void ThenReturnRootRequiredError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "The business field is required.", "registration.business" },
                                                     { "The admin field is required.", "registration.admin" } });
         }
 
-        private void ThenReturnMissingPropertiesErrorResponse(Response response)
+        private void ThenReturnMissingPropertiesError(Response response)
         {
             AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
                                                     { "The firstName field is required.", "registration.admin.firstName" },
@@ -218,7 +213,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                                                     { "The password field is required.", "registration.admin.password" } });
         }
 
-        private void ThenReturnMissingPropertiesErrorResponse(ApiResponse response)
+        private void ThenReturnMissingPropertiesError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
                                                     { "The firstName field is required.", "registration.admin.firstName" },
@@ -297,7 +292,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenUseNewZealandCurrency(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
-            expectedBusiness.Currency = "NZD";
+            expectedBusiness.Payment.currency = "NZD";
 
             AssertNewBusinessResponse(response, expectedBusiness);
 
@@ -313,9 +308,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
-            Assert.That(business.currency, Is.EqualTo(expectedBusiness.Currency));
-            Assert.That(business.paymentProvider, Is.Null);
-            Assert.That(business.merchantAccountIdentifier, Is.Null);
+            Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
+            Assert.That(business.payment.isOnlinePaymentEnabled, Is.False);
+            Assert.That(business.payment.forceOnlinePayment, Is.False);
+            Assert.That(business.payment.paymentProvider, Is.Null);
+            Assert.That(business.payment.merchantAccountIdentifier, Is.Null);
 
             var admin = registration.admin;
             Assert.That(admin, Is.Not.Null);
@@ -337,9 +334,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.id, Is.EqualTo(expectedBusiness.Id));
             Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
-            Assert.That(business.currency, Is.EqualTo(expectedBusiness.Currency));
-            Assert.That(business.paymentProvider, Is.EqualTo(null));
-            Assert.That(business.merchantAccountIdentifier, Is.EqualTo(null));
+            Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
+            Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(false));
+            Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(false));
+            Assert.That(business.payment.paymentProvider, Is.EqualTo(null));
+            Assert.That(business.payment.merchantAccountIdentifier, Is.EqualTo(null));
         }
 
         private void AssertBusinessGet(ExpectedBusiness expectedBusiness)
