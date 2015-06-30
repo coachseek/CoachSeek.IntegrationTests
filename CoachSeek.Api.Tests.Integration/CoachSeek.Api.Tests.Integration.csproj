@@ -51,6 +51,7 @@
     <Compile Include="Clients\TestAdminApiClient.cs" />
     <Compile Include="Clients\TestBusinessAnonymousApiClient.cs" />
     <Compile Include="CustomerRegistrar.cs" />
+    <Compile Include="Models\ApiBookingSetAttendanceCommand.cs" />
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
     <Compile Include="Models\BusinessPaymentData.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Clients\TestAnonymousApiClient.cs" />
     <Compile Include="Clients\TestAuthenticatedApiClient.cs" />
     <Compile Include="Tests\Admin\AdminTests.cs" />
+    <Compile Include="Tests\Attendance\AttendanceTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddCourseTests.cs" />
@@ -210,6 +212,7 @@
       <Name>Coachseek.API.Client</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
