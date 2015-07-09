@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -11,94 +13,95 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class AnonymousLocationGetTests : LocationGetTests
         {
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetLocationByIdAnonymously_ThenReturnNotAuthorised()
             {
-                GivenNoBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(OrakeiId);
-                ThenReturnNotAuthorised(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var businessDomain = GivenNoBusinessDomain();
+                var response = WhenTryGetLocationByIdAnonymously(setup.Orakei.Id, businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetLocationByIdAnonymously_ThenReturnNotAuthorised()
             {
-                GivenInvalidBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(OrakeiId);
-                ThenReturnNotAuthorised(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var businessDomain = GivenInvalidBusinessDomain();
+                var response = WhenTryGetLocationByIdAnonymously(setup.Orakei.Id, businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnLocation()
+            public void GivenValidBusinessDomain_WhenTryGetLocationByIdAnonymously_ThenReturnLocation()
             {
-                GivenValidBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(OrakeiId);
-                ThenReturnLocation(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var businessDomain = GivenValidBusinessDomain(setup);
+                var response = WhenTryGetLocationByIdAnonymously(setup.Orakei.Id, businessDomain);
+                ThenReturnLocation(response, setup);
             }
 
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetAllLocationsAnonymously_ThenReturnNotAuthorised()
             {
-                GivenNoBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnNotAuthorised(response);
+                var businessDomain = GivenNoBusinessDomain();
+                var response = WhenTryGetAllLocationsAnonymously(businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetAllLocationsAnonymously_ThenReturnNotAuthorised()
             {
-                GivenInvalidBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnNotAuthorised(response);
+                var businessDomain = GivenInvalidBusinessDomain();
+                var response = WhenTryGetAllLocationsAnonymously(businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnAllLocations()
+            public void GivenValidBusinessDomain_WhenTryGetAllLocationsAnonymously_ThenReturnAllLocations()
             {
-                GivenValidBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnAllLocations(response);
+                var setup = RegisterBusiness();
+                RegisterTestLocations(setup);
+
+                var businessDomain = GivenValidBusinessDomain(setup);
+                var response = WhenTryGetAllLocationsAnonymously(businessDomain);
+                ThenReturnAllLocations(response, setup);
             }
 
 
-            //[Test]
-            //public void TestTracing()
-            //{
-            //    GivenValidBusinessDomain();
-            //    var url = string.Format("{0}/{1}/{2}", BaseUrl, RelativePath, Guid.Empty);
-            //    var response = GetAnonymously<LocationData>(url);
-            //}
-
-
-
-            private void GivenNoBusinessDomain()
+            private string GivenNoBusinessDomain()
             {
-                Business.Domain = null;
+                return null;
             }
 
-            private void GivenInvalidBusinessDomain()
+            private string GivenInvalidBusinessDomain()
             {
-                Business.Domain = "abc123";
+                return "abc123";
             }
 
-            private void GivenValidBusinessDomain()
+            private string GivenValidBusinessDomain(SetupData setup)
             {
-                // Valid domain is already set.
+                return setup.Business.Domain;
             }
 
 
-            private Response WhenTryGetByIdAnonymously(Guid locationId)
+            private ApiResponse WhenTryGetLocationByIdAnonymously(Guid locationId, string businessDomain)
             {
-                var url = BuildGetByIdUrl(locationId);
-                return GetAnonymously<LocationData>(url);
+                var url = string.Format("{0}/{1}", RelativePath, locationId);
+                return new TestBusinessAnonymousApiClient().Get<LocationData>(businessDomain, url);
             }
 
-            private Response WhenTryGetAllAnonymously()
+            private ApiResponse WhenTryGetAllLocationsAnonymously(string businessDomain)
             {
-                var url = BuildGetAllUrl();
-                return GetAnonymously<List<LocationData>>(url);
+                return new TestBusinessAnonymousApiClient().Get<List<LocationData>>(businessDomain, RelativePath);
             }
 
 
-            private void ThenReturnNotAuthorised(Response response)
+            private void ThenReturnUnauthorised(ApiResponse response)
             {
                 AssertUnauthorised(response);
             }
@@ -109,26 +112,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class AuthenticatedLocationGetTests : LocationGetTests
         {
             [Test]
-            public void WhenTryGetAll_ThenReturnAllLocations()
+            public void WhenTryGetAllLocations_ThenReturnAllLocations()
             {
-                var response = WhenTryGetAll();
-                ThenReturnAllLocations(response);
+                var setup = RegisterBusiness();
+                RegisterTestLocations(setup);
+
+                var response = WhenTryGetAllLocations(setup);
+                ThenReturnAllLocations(response, setup);
             }
 
             [Test]
-            public void GivenInvalidLocationId_WhenTryGetById_ThenReturnNotFound()
+            public void GivenInvalidLocationId_WhenTryGetLocationById_ThenReturnNotFound()
             {
+                var setup = RegisterBusiness();
+
                 var locationId = GivenInvalidLocationId();
-                var response = WhenTryGetById(locationId);
+                var response = WhenTryGetLocationById(locationId, setup);
                 ThenReturnNotFound(response);
             }
 
             [Test]
-            public void GivenValidLocationId_WhenTryGetById_ThenReturnLocation()
+            public void GivenValidLocationId_WhenTryGetLocationById_ThenReturnLocation()
             {
-                var locationId = GivenValidLocationId();
-                var response = WhenTryGetById(locationId);
-                ThenReturnLocation(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var locationId = GivenValidLocationId(setup);
+                var response = WhenTryGetLocationById(locationId, setup);
+                ThenReturnLocation(response, setup);
             }
         }
 
@@ -138,42 +149,45 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidLocationId()
+        private Guid GivenValidLocationId(SetupData setup)
         {
-            return OrakeiId;
+            return setup.Orakei.Id;
         }
 
 
-        private Response WhenTryGetAll()
+        private ApiResponse WhenTryGetAllLocations(SetupData setup)
         {
-            var url = BuildGetAllUrl();
-            return AuthenticatedGet<List<LocationData>>(url);
+            return new TestAuthenticatedApiClient().Get<List<LocationData>>(setup.Business.UserName,
+                                                                            setup.Business.Password, 
+                                                                            RelativePath);
         }
 
-        private Response WhenTryGetById(Guid locationId)
+        private ApiResponse WhenTryGetLocationById(Guid locationId, SetupData setup)
         {
-            var url = BuildGetByIdUrl(locationId);
-            return AuthenticatedGet<LocationData>(url);
+            var url = string.Format("{0}/{1}", RelativePath, locationId);
+            return new TestAuthenticatedApiClient().Get<LocationData>(setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      url);
         }
 
 
-        private void ThenReturnNotFound(Response response)
+        private void ThenReturnNotFound(ApiResponse response)
         {
             AssertNotFound(response);
         }
 
-        private void ThenReturnAllLocations(Response response)
+        private void ThenReturnAllLocations(ApiResponse response, SetupData setup)
         {
             var locations = AssertSuccessResponse<List<LocationData>>(response);
             Assert.That(locations.Count, Is.EqualTo(2));
-            AssertLocation(locations[0], OrakeiId, ORAKEI_NAME);
-            AssertLocation(locations[1], RemueraId, REMUERA_NAME);
+            AssertLocation(locations[0], setup.Orakei.Id, setup.Orakei.Name);
+            AssertLocation(locations[1], setup.Remuera.Id, setup.Remuera.Name);
         }
 
-        private void ThenReturnLocation(Response response)
+        private void ThenReturnLocation(ApiResponse response, SetupData setup)
         {
             var location = AssertSuccessResponse<LocationData>(response);
-            AssertLocation(location, OrakeiId, ORAKEI_NAME);
+            AssertLocation(location, setup.Orakei.Id, setup.Orakei.Name);
         }
 
         private void AssertLocation(LocationData location, Guid expectedId, string expectedName)

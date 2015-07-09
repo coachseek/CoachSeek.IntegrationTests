@@ -111,7 +111,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(thirdSession.timing.startTime, Is.EqualTo("9:00"));
 
             var fourthSession = sessions[3];
-            Assert.That(fourthSession.id, Is.EqualTo(AaronOrakei16To17.Id));
+            Assert.That(fourthSession.id, Is.EqualTo(AaronOrakeiMiniRed16To17.Id));
             Assert.That(fourthSession.parentId, Is.Null);
             Assert.That(fourthSession.coach.id, Is.EqualTo(Aaron.Id));
             Assert.That(fourthSession.coach.name, Is.EqualTo(Aaron.Name));
@@ -130,7 +130,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(sixthSession.timing.startTime, Is.EqualTo("9:00"));
 
             var seventhSession = sessions[6];
-            Assert.That(seventhSession.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(seventhSession.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(seventhSession.parentId, Is.Null);
             Assert.That(seventhSession.coach.id, Is.EqualTo(Aaron.Id));
             Assert.That(seventhSession.coach.name, Is.EqualTo(Aaron.Name));

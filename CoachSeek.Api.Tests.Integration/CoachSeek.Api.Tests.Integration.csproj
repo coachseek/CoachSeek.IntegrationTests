@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-Testing|AnyCPU'">
+    <OutputPath>bin\Release-Testing\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Testing|AnyCPU'">
+    <OutputPath>bin\Testing\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -56,9 +74,18 @@
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
     <Compile Include="Models\BusinessPaymentData.cs" />
+    <Compile Include="Models\Expectations\Booking\BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15.cs" />
+    <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed14To15.cs" />
+    <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed16To17.cs" />
+    <Compile Include="Models\Expectations\Booking\BookingFredOnStandaloneAaronOrakeiMiniRed14To15.cs" />
+    <Compile Include="Models\Expectations\Booking\ExpectedBooking.cs" />
+    <Compile Include="Models\Expectations\Course\CourseAaronOrakeiHolidayCamp9To15For3Days.cs" />
     <Compile Include="Models\Expectations\Course\CourseAaronRemuera9To10For4Weeks.cs" />
+    <Compile Include="Models\Expectations\Course\CourseBobbyRemueraMiniBlue9To10For3Weeks.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerBamBam.cs" />
     <Compile Include="Models\Expectations\Service\ServiceHolidayCamp.cs" />
+    <Compile Include="Models\Expectations\Session\ExpectedCourseSession.cs" />
+    <Compile Include="Models\SetupData.cs" />
     <Compile Include="ServiceRegistrar.cs" />
     <Compile Include="LocationRegistrar.cs" />
     <Compile Include="CoachRegistrar.cs" />
@@ -96,8 +123,8 @@
     <Compile Include="Models\Expectations\Service\ServiceMiniBlue.cs" />
     <Compile Include="Models\Expectations\Service\ServiceMiniRed.cs" />
     <Compile Include="Models\Expectations\Session\StandaloneBobbyRemuera12To13.cs" />
-    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakei14To15.cs" />
-    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakei16To17.cs" />
+    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakeiMiniRed14To15.cs" />
+    <Compile Include="Models\Expectations\Session\StandaloneAaronOrakeiMiniRed16To17.cs" />
     <Compile Include="Models\SessionSearchData.cs" />
     <Compile Include="Models\SingleSessionBookingData.cs" />
     <Compile Include="Models\CourseData.cs" />
@@ -145,14 +172,17 @@
     <Compile Include="Tests\Attendance\AttendanceTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
-    <Compile Include="Tests\Booking\BookingAddCourseTests.cs" />
-    <Compile Include="Tests\Booking\BookingAddSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingAddAllCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingAddSeveralCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingAddSingleCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingAddCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingAddStandaloneSessionTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddTests.cs" />
     <Compile Include="Tests\Booking\BookingSaveCommandTests.cs" />
     <Compile Include="Tests\Booking\BookingDeleteTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddCourseTests.cs" />
-    <Compile Include="Tests\Booking\OnlineBookingAddSessionTests.cs" />
+    <Compile Include="Tests\Booking\OnlineBookingAddStandaloneSessionTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingSaveCommandTests.cs" />
     <Compile Include="Tests\Business\BusinessRegistrationTests.cs" />
     <Compile Include="Tests\Business\BusinessGetTests.cs" />
@@ -161,6 +191,7 @@
     <Compile Include="Tests\Coach\CoachPostTests.cs" />
     <Compile Include="Tests\Coach\CoachGetTests.cs" />
     <Compile Include="Tests\Coach\CoachDeleteTests.cs" />
+    <Compile Include="Tests\Coach\CoachTests.cs" />
     <Compile Include="Tests\Customer\CustomerGetTests.cs" />
     <Compile Include="Tests\Customer\OnlineBookingCustomerPostTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
@@ -212,6 +243,10 @@
     <ProjectReference Include="..\..\Coachseek.API\Coachseek.API.Client\Coachseek.API.Client.csproj">
       <Project>{BCE21902-0020-49B4-89C4-347A97055F93}</Project>
       <Name>Coachseek.API.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Coachseek.API\CoachSeek.Common\CoachSeek.Common.csproj">
+      <Project>{2D91E32D-170C-4E38-A9E5-C5232DAA9552}</Project>
+      <Name>CoachSeek.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

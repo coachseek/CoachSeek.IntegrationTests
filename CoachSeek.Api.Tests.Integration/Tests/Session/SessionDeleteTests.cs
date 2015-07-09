@@ -56,12 +56,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Guid GivenStandaloneSessionWithoutBookings()
         {
-            return AaronOrakei16To17.Id;
+            return AaronOrakeiMiniRed16To17.Id;
         }
 
         private Guid GivenStandaloneSessionWithBookings()
         {
-            return AaronOrakei14To15.Id;
+            return AaronOrakeiMiniRed14To15.Id;
         }
 
         private Guid GivenSessionInCourseWithoutBookings()
@@ -80,11 +80,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponse = AuthenticatedGet<SessionData>("Sessions", AaronOrakeiMiniRed16To17.Id);
             AssertNotFound(getResponse);
 
             // Other sessions are still there.
-            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei14To15.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakeiMiniRed14To15.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
@@ -104,7 +104,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertStatusCode(getResponseSession1.StatusCode, HttpStatusCode.OK);
             var getResponseSession3 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
             AssertStatusCode(getResponseSession3.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakeiMiniRed16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);

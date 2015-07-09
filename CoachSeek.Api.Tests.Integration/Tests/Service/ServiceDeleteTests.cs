@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -40,7 +41,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             return Delete<ServiceData>("Services", id);
         }
 
-        private Response WhenTryDeleteAnonymously(Guid id)
+        private ApiResponse WhenTryDeleteAnonymously(Guid id)
         {
             return DeleteAnonymously<ServiceData>("Services", id);
         }

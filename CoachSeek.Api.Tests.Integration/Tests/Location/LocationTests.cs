@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
-    public abstract class LocationTests : WebIntegrationTest
+    public abstract class LocationTests : ScheduleTests
     {
         protected const string ORAKEI_NAME = "Orakei Tennis Club";
         protected const string REMUERA_NAME = "Remuera Racquets Club";
@@ -16,14 +16,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         protected override string RelativePath { get { return "Locations"; } }
 
 
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestLocations();
+        //[SetUp]
+        //public void Setup()
+        //{
+        //    RegisterTestBusiness();
+        //    RegisterTestLocations();
 
-            SetupAddtitional();
-        }
+        //    SetupAddtitional();
+        //}
 
         protected virtual void SetupAddtitional()
         { }

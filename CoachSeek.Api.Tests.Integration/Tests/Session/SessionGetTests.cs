@@ -72,12 +72,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private Guid GivenValidSessionWithoutBookings()
         {
-            return AaronOrakei16To17.Id;
+            return AaronOrakeiMiniRed16To17.Id;
         }
 
         private Guid GivenValidSessionWithBookings()
         {
-            return AaronOrakei14To15.Id;
+            return AaronOrakeiMiniRed14To15.Id;
         }
 
 
@@ -104,7 +104,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei16To17.Id));
+            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed16To17.Id));
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
@@ -123,7 +123,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(session.parentId, Is.Null);
 
             AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);

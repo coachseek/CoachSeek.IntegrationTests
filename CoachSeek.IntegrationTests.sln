@@ -9,24 +9,39 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coachseek.API.Tools", "Coac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coachseek.API.Client", "..\Coachseek.API\Coachseek.API.Client\Coachseek.API.Client.csproj", "{BCE21902-0020-49B4-89C4-347A97055F93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoachSeek.Common", "..\Coachseek.API\CoachSeek.Common\CoachSeek.Common.csproj", "{2D91E32D-170C-4E38-A9E5-C5232DAA9552}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Testing|Any CPU = Testing|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
+		{F1511C87-5859-4738-AFC6-58C1F0D38FA7}.Testing|Any CPU.Build.0 = Testing|Any CPU
 		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
+		{51634E0E-D177-479B-A8E1-08ECF8EF5175}.Testing|Any CPU.Build.0 = Testing|Any CPU
 		{BCE21902-0020-49B4-89C4-347A97055F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BCE21902-0020-49B4-89C4-347A97055F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCE21902-0020-49B4-89C4-347A97055F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCE21902-0020-49B4-89C4-347A97055F93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE21902-0020-49B4-89C4-347A97055F93}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
+		{BCE21902-0020-49B4-89C4-347A97055F93}.Testing|Any CPU.Build.0 = Testing|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
+		{2D91E32D-170C-4E38-A9E5-C5232DAA9552}.Testing|Any CPU.Build.0 = Testing|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

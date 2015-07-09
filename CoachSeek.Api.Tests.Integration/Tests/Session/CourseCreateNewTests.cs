@@ -25,7 +25,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var command = GivenNewCourseClashesWithStandaloneSession();
             var response = WhenTryCreateCourse(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(AaronOrakei14To15.Id.ToString()));
+            Assert.That(error.data, Is.StringContaining(AaronOrakeiMiniRed14To15.Id.ToString()));
         }
 
         [Test]

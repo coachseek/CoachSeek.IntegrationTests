@@ -96,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(standalones.Count, Is.EqualTo(1));
 
             var firstStandalone = standalones[0];
-            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(firstStandalone.parentId, Is.Null);
             Assert.That(firstStandalone.coach.id, Is.EqualTo(Aaron.Id));
             Assert.That(firstStandalone.coach.name, Is.EqualTo(Aaron.Name));
@@ -165,7 +165,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(standalones.Count, Is.EqualTo(1));
 
             var firstStandalone = standalones[0];
-            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(firstStandalone.parentId, Is.Null);
             Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
             Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
@@ -206,7 +206,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(standalones.Count, Is.EqualTo(1));
 
             var firstStandalone = standalones[0];
-            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(firstStandalone.parentId, Is.Null);
             Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
             Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));

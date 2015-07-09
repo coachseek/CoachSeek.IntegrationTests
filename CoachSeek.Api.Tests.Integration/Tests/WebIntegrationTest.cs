@@ -1,4 +1,5 @@
 ﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
@@ -128,6 +129,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Post<TResponse>(json, http);
         }
 
+        protected Response Post<TResponse>(string json, string relativePath, SetupData setup)
+        {
+            var url = string.Format("{0}/{1}", BaseUrl, relativePath);
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, setup.Business.UserName, setup.Business.Password);
+
+            return Post<TResponse>(json, http);
+        }
+
         protected Response Delete<TResponse>(string relativePath, Guid id)
         {
             var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
@@ -137,12 +147,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Delete<TResponse>(http);
         }
 
-        protected Response DeleteAnonymously<TResponse>(string relativePath, Guid id)
+        protected ApiResponse Delete<TResponse>(string relativePath, Guid id, SetupData setup)
         {
-            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            return new TestAuthenticatedApiClient().Delete<TResponse>(setup.Business.UserName, 
+                                                                      setup.Business.Password,
+                                                                      relativePath, 
+                                                                      id);
+        }
 
-            return Delete<TResponse>(http);
+        protected ApiResponse DeleteAnonymously<TResponse>(string relativePath, Guid id)
+        {
+            return new TestAnonymousApiClient().Delete<TResponse>(relativePath, id);
         }
 
 
@@ -162,10 +177,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return AuthenticatedGet<TResponse>(url);
         }
 
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, SetupData setup)
+        {
+            var url = string.Format("{0}/{1}", relativePath, id);
+            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
+                                                                   setup.Business.Password,
+                                                                   url);
+        }
+
         protected Response AuthenticatedGet<TResponse>(string url)
         {
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             SetBasicAuthHeader(http, Business.UserName, Business.Password);
+
+            return Get<TResponse>(http);
+        }
+
+        protected Response AuthenticatedGet<TResponse>(string url, SetupData setup)
+        {
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
+            SetBasicAuthHeader(http, setup.Business.UserName, setup.Business.Password);
 
             return Get<TResponse>(http);
         }
@@ -323,6 +354,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
         }
 
+        protected void AssertUnauthorised(ApiResponse response)
+        {
+            AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
+        }
+
         protected T AssertSuccessResponse<T>(Response response)
         {
             Assert.That(response, Is.Not.Null);
@@ -421,6 +457,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             Business = new RandomBusiness();
             BusinessRegistrar.RegisterBusiness(Business);
+        }
+
+        protected SetupData RegisterBusiness()
+        {
+            var business = new RandomBusiness();
+            var response = BusinessRegistrar.RegisterBusiness(business);
+            return new SetupData((RegistrationData)response.Payload, business.Password);
         }
 
         protected string CreateTestBusinessRegistrationCommand()

@@ -1,351 +1,299 @@
 ﻿using System;
 using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 {
-    [TestFixture]
-    public class CoachPostTests : WebIntegrationTest
+    public class CoachPostTests : CoachTests
     {
-        private const string AARON_FIRST_NAME = "Aaron";
-        private const string BOBBY_FIRST_NAME = "Bobby";
-        private const string SMITH_LAST_NAME = "Smith";
-
-        private Guid AaronId { get; set; }
-        private Guid BobbyId { get; set; }
-
-
-        [SetUp]
-        public void Setup()
+        [TestFixture]
+        public class CoachCommandTests : CoachPostTests
         {
-            RegisterTestBusiness();
-            RegisterTestCoaches();
-
-            //NewLocationName = string.Empty;
-        }
-
-        private void RegisterTestCoaches()
-        {
-            RegisterAaronCoach();
-            RegisterBobbyLocation();
-        }
-
-        private void RegisterAaronCoach()
-        {
-            var json = CreateNewCoachSaveCommand(AARON_FIRST_NAME, SMITH_LAST_NAME);
-            var response = Post<CoachData>(json);
-            AaronId = ((CoachData)response.Payload).id;
-        }
-
-        private void RegisterBobbyLocation()
-        {
-            var json = CreateNewCoachSaveCommand(BOBBY_FIRST_NAME, SMITH_LAST_NAME);
-            var response = Post<CoachData>(json);
-            BobbyId = ((CoachData)response.Payload).id;
-        }
-
-        private string CreateNewCoachSaveCommand(string firstName, string lastName)
-        {
-            var coach = new ApiCoachSaveCommand
+            [Test]
+            public void GivenNoCoachSaveCommand_WhenTryPost_ThenReturnNoDataError()
             {
-                firstName = firstName,
-                lastName = lastName,
-                email = Random.RandomEmail,
-                phone = Random.RandomString,
-                workingHours = SetupStandardWorkingHours()
-            };
+                var setup = RegisterBusiness();
 
-            return JsonConvert.SerializeObject(coach);
-        }
+                var command = GivenNoCoachSaveCommand();
+                var response = WhenTryPost(command, setup);
+                ThenReturnNoDataError(response);
+            }
 
-        protected override string RelativePath
-        {
-            get { return "Coaches"; }
-        }
-
-
-        [Test]
-        public void GivenNoCoachSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
-        {
-            var command = GivenNoCoachSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnNoDataErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenEmptyCoachSaveCommand_WhenPost_ThenReturnRootRequiredErrorResponse()
-        {
-            var command = GivenEmptyCoachSaveCommand();
-            var response = WhenPost(command);
-            ThenReturnRootRequiredErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenMissingWorkingHoursProperties_WhenPost_ThenReturnMissingWorkingHoursPropertyErrorResponse()
-        {
-            var command = GivenMissingWorkingHoursProperties();
-            var response = WhenPost(command);
-            ThenReturnMissingWorkingHoursPropertyErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenInvalidWorkingHoursProperties_WhenPost_ThenReturnInvalidWorkingHoursPropertyErrorResponse()
-        {
-            var command = GivenInvalidWorkingHoursProperties();
-            var response = WhenPost(command);
-            ThenReturnInvalidWorkingHoursPropertyErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNonExistentCoachId_WhenPost_ThenReturnInvalidCoachIdErrorResponse()
-        {
-            var command = GivenNonExistentCoachId();
-            var response = WhenPost(command);
-            ThenReturnInvalidCoachIdErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenNewCoachWithAnAlreadyExistingCoachName_WhenPost_ThenReturnDuplicateCoachErrorResponse()
-        {
-            var command = GivenNewCoachWithAnAlreadyExistingCoachName();
-            var response = WhenPost(command);
-            ThenReturnDuplicateCoachErrorResponse(response);
-        }
-
-        [Test]
-        public void GivenValidNewCoach_WhenPost_ThenReturnNewCoachResponse()
-        {
-            var command = GivenValidNewCoach();
-            var response = WhenPost(command);
-            ThenReturnNewCoachResponse(response);
-        }
-
-        [Test]
-        public void GivenWantToUpdateExistingCoach_WhenPost_ThenReturnUpdatedCoachResponse()
-        {
-            var command = GivenWantToUpdateExistingCoach();
-            var response = WhenPost(command);
-            ThenReturnUpdatedCoachResponse(response);
-        }
-
-
-        private string GivenNoCoachSaveCommand()
-        {
-            return "";
-        }
-
-        private string GivenEmptyCoachSaveCommand()
-        {
-            return "{}";
-        }
-
-        private ApiWeeklyWorkingHours SetupStandardWorkingHours()
-        {
-            return new ApiWeeklyWorkingHours
+            [Test]
+            public void GivenEmptyCoachSaveCommand_WhenTryPost_ThenReturnRootRequiredError()
             {
-                monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                tuesday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                wednesday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                thursday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                friday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                saturday = new ApiDailyWorkingHours(),
-                sunday = new ApiDailyWorkingHours()
-            };
+                var setup = RegisterBusiness();
+
+                var command = GivenEmptyCoachSaveCommand();
+                var response = WhenTryPost(command, setup);
+                ThenReturnRootRequiredError(response);
+            }
+
+
+            private string GivenNoCoachSaveCommand()
+            {
+                return "";
+            }
+
+            private string GivenEmptyCoachSaveCommand()
+            {
+                return "{}";
+            }
         }
 
-        private ApiWeeklyWorkingHours SetupWeekendWorkingHours()
-        {
-            return new ApiWeeklyWorkingHours
-            {
-                monday = new ApiDailyWorkingHours(),
-                tuesday = new ApiDailyWorkingHours(),
-                wednesday = new ApiDailyWorkingHours(),
-                thursday = new ApiDailyWorkingHours(),
-                friday = new ApiDailyWorkingHours(),
-                saturday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                sunday = new ApiDailyWorkingHours(true, "9:00", "17:00")
-            };
-        }
 
-        private string GivenMissingWorkingHoursProperties()
+        [TestFixture]
+        public class CoachNewTests : CoachPostTests
         {
-            var coach = new ApiCoachSaveCommand
+            [Test]
+            public void GivenMissingWorkingHoursProperties_WhenTryPost_ThenReturnMissingWorkingHoursPropertyError()
             {
-                firstName = Random.RandomString,
-                lastName = Random.RandomString,
-                email = Random.RandomEmail,
-                phone = Random.RandomString,
-                workingHours = new ApiWeeklyWorkingHours
+                var setup = RegisterBusiness();
+
+                var command = GivenMissingWorkingHoursProperties();
+                var response = WhenTryPost(command, setup);
+                ThenReturnMissingWorkingHoursPropertyError(response);
+            }
+
+            [Test]
+            public void GivenInvalidWorkingHoursProperties_WhenTryPost_ThenReturnInvalidWorkingHoursPropertyError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenInvalidWorkingHoursProperties();
+                var response = WhenTryPost(command, setup);
+                ThenReturnInvalidWorkingHoursPropertyError(response);
+            }
+
+            [Test]
+            public void GivenNewCoachWithAnAlreadyExistingCoachName_WhenTryPost_ThenReturnDuplicateCoachError()
+            {
+                var setup = RegisterBusiness();
+                RegisterCoachAaron(setup);
+
+                var command = GivenNewCoachWithAnAlreadyExistingCoachName(setup);
+                var response = WhenTryPost(command, setup);
+                ThenReturnDuplicateCoachError(response);
+            }
+
+            [Test]
+            public void GivenValidNewCoach_WhenTryPost_ThenReturnNewCoachResponse()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenValidNewCoach();
+                var response = WhenTryPost(command, setup);
+                ThenReturnNewCoachResponse(response);
+            }
+
+
+            private string GivenMissingWorkingHoursProperties()
+            {
+                var coach = new ApiCoachSaveCommand
                 {
-                    monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                    thursday = new ApiDailyWorkingHours(),
-                    friday = new ApiDailyWorkingHours(true, "10:00", "18:00"),
-                    saturday = new ApiDailyWorkingHours()
-                }
-            };
+                    firstName = Random.RandomString,
+                    lastName = Random.RandomString,
+                    email = Random.RandomEmail,
+                    phone = Random.RandomString,
+                    workingHours = new ApiWeeklyWorkingHours
+                    {
+                        monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
+                        thursday = new ApiDailyWorkingHours(),
+                        friday = new ApiDailyWorkingHours(true, "10:00", "18:00"),
+                        saturday = new ApiDailyWorkingHours()
+                    }
+                };
 
-            return JsonConvert.SerializeObject(coach);
-        }
+                return JsonConvert.SerializeObject(coach);
+            }
 
-        private string GivenInvalidWorkingHoursProperties()
-        {
-            var coach = new ApiCoachSaveCommand
+            private string GivenInvalidWorkingHoursProperties()
             {
-                firstName = Random.RandomString,
-                lastName = Random.RandomString,
-                email = Random.RandomEmail,
-                phone = Random.RandomString,
-                workingHours = new ApiWeeklyWorkingHours
+                var coach = new ApiCoachSaveCommand
                 {
-                    monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
-                    tuesday = new ApiDailyWorkingHours(),
-                    wednesday = new ApiDailyWorkingHours(true, "-4:17", "23:77"),
-                    thursday = new ApiDailyWorkingHours(),
-                    friday = new ApiDailyWorkingHours(true, "hello", "world"),
-                    saturday = new ApiDailyWorkingHours(),
-                    sunday = new ApiDailyWorkingHours()
-                }
-            };
+                    firstName = Random.RandomString,
+                    lastName = Random.RandomString,
+                    email = Random.RandomEmail,
+                    phone = Random.RandomString,
+                    workingHours = new ApiWeeklyWorkingHours
+                    {
+                        monday = new ApiDailyWorkingHours(true, "9:00", "17:00"),
+                        tuesday = new ApiDailyWorkingHours(),
+                        wednesday = new ApiDailyWorkingHours(true, "-4:17", "23:77"),
+                        thursday = new ApiDailyWorkingHours(),
+                        friday = new ApiDailyWorkingHours(true, "hello", "world"),
+                        saturday = new ApiDailyWorkingHours(),
+                        sunday = new ApiDailyWorkingHours()
+                    }
+                };
 
-            return JsonConvert.SerializeObject(coach);
-        }
+                return JsonConvert.SerializeObject(coach);
+            }
 
-        private string GivenNonExistentCoachId()
-        {
-            var coach = new ApiCoachSaveCommand
+            private string GivenNewCoachWithAnAlreadyExistingCoachName(SetupData setup)
             {
-                id = Guid.Empty,
-                firstName = Random.RandomString,
-                lastName = Random.RandomString,
-                email = Random.RandomEmail,
-                phone = Random.RandomString,
-                workingHours = SetupStandardWorkingHours()
-            };
+                var coach = new ApiCoachSaveCommand
+                {
+                    firstName = setup.Aaron.FirstName,
+                    lastName = setup.Aaron.LastName,
+                    email = Random.RandomEmail,
+                    phone = Random.RandomString,
+                    workingHours = SetupStandardWorkingHours()
+                };
 
-            return JsonConvert.SerializeObject(coach);
-        }
+                return JsonConvert.SerializeObject(coach);
+            }
 
-        private string GivenNewCoachWithAnAlreadyExistingCoachName()
-        {
-            var coach = new ApiCoachSaveCommand
+            private string GivenValidNewCoach()
             {
-                firstName = AARON_FIRST_NAME,
-                lastName = SMITH_LAST_NAME,
-                email = Random.RandomEmail,
-                phone = Random.RandomString,
-                workingHours = SetupStandardWorkingHours()
-            };
+                var coach = new ApiCoachSaveCommand
+                {
+                    firstName = "Carl",
+                    lastName = "Carson",
+                    email = "Carl@CoachMaster.com",
+                    phone = "021 69 69 69",
+                    workingHours = SetupStandardWorkingHours()
+                };
 
-            return JsonConvert.SerializeObject(coach);
+                coach.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
+
+                return JsonConvert.SerializeObject(coach);
+            }
         }
 
-        private string GivenValidNewCoach()
+        [TestFixture]
+        public class CoachExistingTests : CoachPostTests
         {
-            var coach = new ApiCoachSaveCommand
+            [Test]
+            public void GivenNonExistentCoachId_WhenTryPost_ThenReturnInvalidCoachIdErrorResponse()
             {
-                firstName = "Carl",
-                lastName = "Carson",
-                email = "Carl@CoachMaster.com",
-                phone = "021 69 69 69",
-                workingHours = SetupStandardWorkingHours()
-            };
+                var setup = RegisterBusiness();
 
-            coach.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
+                var command = GivenNonExistentCoachId();
+                var response = WhenTryPost(command, setup);
+                ThenReturnInvalidCoachIdError(response);
+            }
 
-            return JsonConvert.SerializeObject(coach);
-        }
-
-        private string GivenWantToUpdateExistingCoach()
-        {
-            var coach = new ApiCoachSaveCommand
+            [Test]
+            public void GivenWantToUpdateExistingCoach_WhenTryPost_ThenReturnUpdatedCoachResponse()
             {
-                id = AaronId,
-                firstName = "Adam",
-                lastName = "Ant",
-                email = "Adam@ant.net",
-                phone = "021 0123456",
-                workingHours = SetupWeekendWorkingHours()
-            };
+                var setup = RegisterBusiness();
+                RegisterCoachAaron(setup);
 
-            return JsonConvert.SerializeObject(coach);
+                var command = GivenWantToUpdateExistingCoach(setup);
+                var response = WhenTryPost(command, setup);
+                ThenReturnUpdatedCoachResponse(response, setup);
+            }
+
+
+            private string GivenNonExistentCoachId()
+            {
+                var coach = new ApiCoachSaveCommand
+                {
+                    id = Guid.Empty,
+                    firstName = Random.RandomString,
+                    lastName = Random.RandomString,
+                    email = Random.RandomEmail,
+                    phone = Random.RandomString,
+                    workingHours = SetupStandardWorkingHours()
+                };
+
+                return JsonConvert.SerializeObject(coach);
+            }
+
+            private string GivenWantToUpdateExistingCoach(SetupData setup)
+            {
+                var coach = new ApiCoachSaveCommand
+                {
+                    id = setup.Aaron.Id,
+                    firstName = "Adam",
+                    lastName = "Ant",
+                    email = "Adam@ant.net",
+                    phone = "021 0123456",
+                    workingHours = SetupWeekendWorkingHours()
+                };
+
+                return JsonConvert.SerializeObject(coach);
+            }
+
+
+            private void ThenReturnUpdatedCoachResponse(ApiResponse response, SetupData setup)
+            {
+                Assert.That(response, Is.Not.Null);
+                AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
+
+                Assert.That(response.Payload, Is.InstanceOf<CoachData>());
+                var coach = (CoachData)response.Payload;
+
+                Assert.That(coach.id, Is.EqualTo(setup.Aaron.Id));
+                Assert.That(coach.firstName, Is.EqualTo("Adam"));
+                Assert.That(coach.lastName, Is.EqualTo("Ant"));
+                Assert.That(coach.email, Is.EqualTo("adam@ant.net"));
+                Assert.That(coach.phone, Is.EqualTo("021 0123456"));
+
+                Assert.That(coach.workingHours, Is.Not.Null);
+                AssertStandardWeekendDay(coach.workingHours.monday);
+                AssertStandardWeekendDay(coach.workingHours.tuesday);
+                AssertStandardWeekendDay(coach.workingHours.wednesday);
+                AssertStandardWeekendDay(coach.workingHours.thursday);
+                AssertStandardWeekendDay(coach.workingHours.friday);
+                AssertStandardWorkingDay(coach.workingHours.saturday);
+                AssertStandardWorkingDay(coach.workingHours.sunday);
+            }
         }
 
 
-        private Response WhenPost(string json)
+        protected ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return Post<CoachData>(json);
+            return new TestAuthenticatedApiClient().Post<CoachData>(json,
+                                                                    setup.Business.UserName,
+                                                                    setup.Business.Password,
+                                                                    RelativePath);
         }
 
 
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private void ThenReturnNoDataError(ApiResponse response)
         {
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+        private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(5));
-            AssertApplicationError(errors[0], "coach.firstName", "The firstName field is required.");
-            AssertApplicationError(errors[1], "coach.lastName", "The lastName field is required.");
-            AssertApplicationError(errors[2], "coach.email", "The email field is required.");
-            AssertApplicationError(errors[3], "coach.phone", "The phone field is required.");
-            AssertApplicationError(errors[4], "coach.workingHours", "The workingHours field is required.");
+            AssertMultipleErrors(response, new[,] { { "The firstName field is required.", "coach.firstName" },
+                                                    { "The lastName field is required.", "coach.lastName" },
+                                                    { "The email field is required.", "coach.email" },
+                                                    { "The phone field is required.", "coach.phone" },
+                                                    { "The workingHours field is required.", "coach.workingHours" } });
         }
 
-        private void ThenReturnMissingWorkingHoursPropertyErrorResponse(Response response)
+        private void ThenReturnMissingWorkingHoursPropertyError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(3));
-            AssertApplicationError(errors[0], "coach.workingHours.tuesday", "The tuesday field is required.");
-            AssertApplicationError(errors[1], "coach.workingHours.wednesday", "The wednesday field is required.");
-            AssertApplicationError(errors[2], "coach.workingHours.sunday", "The sunday field is required.");
+            AssertMultipleErrors(response, new[,] { { "The tuesday field is required.", "coach.workingHours.tuesday" },
+                                                    { "The wednesday field is required.", "coach.workingHours.wednesday" },
+                                                    { "The sunday field is required.", "coach.workingHours.sunday" } });
         }
 
-        private void ThenReturnInvalidWorkingHoursPropertyErrorResponse(Response response)
+        private void ThenReturnInvalidWorkingHoursPropertyError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(2));
-            AssertApplicationError(errors[0], "coach.workingHours.wednesday", "The wednesday working hours are not valid.");
-            AssertApplicationError(errors[1], "coach.workingHours.friday", "The friday working hours are not valid.");
+            AssertMultipleErrors(response, new[,] { { "The wednesday working hours are not valid.", "coach.workingHours.wednesday" },
+                                                    { "The friday working hours are not valid.", "coach.workingHours.friday" } });
         }
 
-        private void ThenReturnInvalidCoachIdErrorResponse(Response response)
+        private void ThenReturnInvalidCoachIdError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "coach.id", "This coach does not exist.");
+            AssertSingleError(response, "This coach does not exist.", "coach.id");
         }
 
-        private void ThenReturnDuplicateCoachErrorResponse(Response response)
+        private void ThenReturnDuplicateCoachError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], null, "This coach already exists.");
+            AssertSingleError(response, "This coach already exists.");
         }
 
-        private void ThenReturnNewCoachResponse(Response response)
+        private void ThenReturnNewCoachResponse(ApiResponse response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
@@ -369,30 +317,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             AssertWorkingHours(coach.workingHours.sunday, false, "10:30", "15:45");
         }
 
-        private void ThenReturnUpdatedCoachResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<CoachData>());
-            var coach = (CoachData)response.Payload;
-
-            Assert.That(coach.id, Is.EqualTo(AaronId));
-            Assert.That(coach.firstName, Is.EqualTo("Adam"));
-            Assert.That(coach.lastName, Is.EqualTo("Ant"));
-            Assert.That(coach.email, Is.EqualTo("adam@ant.net"));
-            Assert.That(coach.phone, Is.EqualTo("021 0123456"));
-
-            Assert.That(coach.workingHours, Is.Not.Null);
-            AssertStandardWeekendDay(coach.workingHours.monday);
-            AssertStandardWeekendDay(coach.workingHours.tuesday);
-            AssertStandardWeekendDay(coach.workingHours.wednesday);
-            AssertStandardWeekendDay(coach.workingHours.thursday);
-            AssertStandardWeekendDay(coach.workingHours.friday);
-            AssertStandardWorkingDay(coach.workingHours.saturday);
-            AssertStandardWorkingDay(coach.workingHours.sunday);
-        }
-
         private void AssertStandardWorkingDay(DailyWorkingHoursData workingDay)
         {
             Assert.That(workingDay, Is.Not.Null);
@@ -409,7 +333,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             Assert.That(workingDay.finishTime, Is.Null);
         }
 
-        private void AssertWorkingHours(DailyWorkingHoursData workingDay, bool isAvailable, string startTime, string finishTime)
+        private void AssertWorkingHours(DailyWorkingHoursData workingDay, 
+                                        bool isAvailable, 
+                                        string startTime, 
+                                        string finishTime)
         {
             Assert.That(workingDay, Is.Not.Null);
             Assert.That(workingDay.isAvailable, Is.EqualTo(isAvailable));

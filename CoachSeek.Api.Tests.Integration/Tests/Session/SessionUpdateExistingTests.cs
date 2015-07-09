@@ -58,7 +58,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var response = WhenTryUpdateSession(command);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.code, Is.EqualTo("clashing-session"));
-            Assert.That(error.data, Is.StringContaining(AaronOrakei14To15.Id.ToString()));
+            Assert.That(error.data, Is.StringContaining(AaronOrakeiMiniRed14To15.Id.ToString()));
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var sessionCommand = CreateSessionSaveCommandAaronOrakei16To17();
 
-            sessionCommand.id = AaronOrakei16To17.Id;
+            sessionCommand.id = AaronOrakeiMiniRed16To17.Id;
             sessionCommand.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "w" };
 
             return sessionCommand;
@@ -108,7 +108,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var command = CreateSessionSaveCommandAaronOrakei14To15();
 
-            command.id = AaronOrakei14To15.Id;
+            command.id = AaronOrakeiMiniRed14To15.Id;
             command.booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true };
             command.repetition = new ApiRepetition { sessionCount = 1 };
             command.presentation = new ApiPresentation { colour = "red" };
@@ -122,7 +122,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                id = AaronOrakei14To15.Id,
+                id = AaronOrakeiMiniRed14To15.Id,
                 location = new ApiLocationKey { id = Orakei.Id },
                 coach = new ApiCoachKey { id = Aaron.Id },
                 service = new ApiServiceKey { id = MiniRed.Id },
@@ -138,7 +138,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var command = CreateSessionSaveCommandAaronOrakei16To17();
 
-            command.id = AaronOrakei16To17.Id;
+            command.id = AaronOrakeiMiniRed16To17.Id;
             command.service.id = MiniBlue.Id;
             command.location.id = Remuera.Id;
 
@@ -158,7 +158,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                id = AaronOrakei14To15.Id,
+                id = AaronOrakeiMiniRed14To15.Id,
                 coach = new ApiCoachKey { id = Aaron.Id },
                 location = new ApiLocationKey { id = Remuera.Id },
                 service = new ApiServiceKey { id = MiniBlue.Id },
@@ -174,7 +174,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             var command = CreateSessionSaveCommandAaronOrakei14To15();
 
-            command.id = AaronOrakei14To15.Id;
+            command.id = AaronOrakeiMiniRed14To15.Id;
             command.booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true };
             command.repetition = new ApiRepetition { sessionCount = 1 };
             command.presentation = new ApiPresentation { colour = "red" };
@@ -188,7 +188,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             return new ApiSessionSaveCommand
             {
-                id = AaronOrakei14To15.Id,
+                id = AaronOrakeiMiniRed14To15.Id,
                 location = new ApiLocationKey { id = Remuera.Id },
                 coach = new ApiCoachKey { id = Bobby.Id },
                 service = new ApiServiceKey { id = MiniGreen.Id },
@@ -206,7 +206,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             Assert.That(session, Is.Not.Null);
             Assert.That(session.parentId, Is.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
 
             AssertSessionLocation(session.location, Orakei.Id, "Orakei Tennis Club");
             AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
@@ -226,7 +226,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
 
             AssertSessionLocation(session.location, Remuera.Id, Remuera.Name);
             AssertSessionCoach(session.coach, Bobby.Id, Bobby.Name);

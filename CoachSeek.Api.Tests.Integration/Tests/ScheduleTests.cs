@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Booking;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Course;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Location;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
@@ -36,14 +39,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected ServiceMiniGreen MiniGreen { get; set; }
         protected ServiceHolidayCamp HolidayCamp { get; set; }
 
-        protected StandaloneAaronOrakei14To15 AaronOrakei14To15 { get; set; }
-        protected StandaloneAaronOrakei16To17 AaronOrakei16To17 { get; set; }
+        protected StandaloneAaronOrakeiMiniRed14To15 AaronOrakeiMiniRed14To15 { get; set; }
+        protected StandaloneAaronOrakeiMiniRed16To17 AaronOrakeiMiniRed16To17 { get; set; }
         protected StandaloneBobbyRemuera12To13 BobbyRemuera12To13 { get; set; }
 
         protected CustomerFred Fred { get; set; }
         protected CustomerBarney Barney { get; set; }
         protected CustomerWilma Wilma { get; set; }
         protected CustomerBamBam BamBam { get; set; }
+
+        protected BookingFredOnStandaloneAaronOrakeiMiniRed14To15 FredOnStandaloneAaronOrakeiMiniRed14To15 { get; set; }
 
 
         //protected SessionBookingFredOnBobbyRemuera12To13 FredOnBobbyRemuera12To13 { get; set; }
@@ -88,50 +93,417 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterTestCourses();
             RegisterTestCustomers();
             BookCustomersOntoStandaloneSessions();
-            BookCustomersOntoCourses();
-            BookCustomersOntoCourseSessions();
+            //BookCustomersOntoCourses();
+            //BookCustomersOntoCourseSessions();
         }
 
 
-        private void RegisterTestLocations()
+        protected void RegisterTestLocations()
         {
+            RegisterLocationOrakei();
+            RegisterLocationRemuera();
+        }
+
+        protected void RegisterTestLocations(SetupData setup)
+        {
+            RegisterLocationOrakei(setup);
+            RegisterLocationRemuera(setup);
+        }
+
+        protected void RegisterLocationOrakei()
+        {
+            if (Orakei != null)
+                return;
             Orakei = new LocationOrakei();
             LocationRegistrar.RegisterLocation(Orakei, Business);
+        }
 
+        protected void RegisterLocationOrakei(SetupData setup)
+        {
+            if (setup.Orakei != null)
+                return;
+            var orakei = new LocationOrakei();
+            LocationRegistrar.RegisterLocation(orakei, setup.Business);
+            setup.Orakei = orakei;
+        }
+
+        protected void RegisterLocationRemuera()
+        {
+            if (Remuera != null)
+                return;
             Remuera = new LocationRemuera();
             LocationRegistrar.RegisterLocation(Remuera, Business);
         }
 
-        private void RegisterTestCoaches()
+        protected void RegisterLocationRemuera(SetupData setup)
         {
+            if (setup.Remuera != null)
+                return;
+            var remuera = new LocationRemuera();
+            LocationRegistrar.RegisterLocation(remuera, setup.Business);
+            setup.Remuera = remuera;
+        }
+
+        protected void RegisterTestCoaches()
+        {
+            RegisterCoachAaron();
+            RegisterCoachBobby();
+        }
+
+        protected void RegisterCoachAaron()
+        {
+            if (Aaron != null)
+                return;
             Aaron = new CoachAaron();
             CoachRegistrar.RegisterCoach(Aaron, Business);
+        }
 
+        protected void RegisterCoachAaron(SetupData setup)
+        {
+            if (setup.Aaron != null)
+                return;
+            var aaron = new CoachAaron();
+            CoachRegistrar.RegisterCoach(aaron, setup.Business);
+            setup.Aaron = aaron;
+        }
+
+        protected void RegisterCoachBobby()
+        {
+            if (Bobby != null)
+                return;
             Bobby = new CoachBobby();
             CoachRegistrar.RegisterCoach(Bobby, Business);
         }
 
-        private void RegisterTestServices()
+        protected void RegisterCoachBobby(SetupData setup)
         {
+            if (setup.Bobby != null)
+                return;
+            var bobby = new CoachBobby();
+            CoachRegistrar.RegisterCoach(bobby, setup.Business);
+            setup.Bobby = bobby;
+        }
+
+        protected void RegisterTestCoaches(SetupData setup)
+        {
+            RegisterCoachAaron(setup);
+            RegisterCoachBobby(setup);
+        }
+
+        protected void RegisterTestServices()
+        {
+            RegisterServiceMiniRed();
+            RegisterServiceMiniBlue();
+            RegisterServiceHolidayCamp();
+        }
+
+        protected void RegisterServiceMiniRed()
+        {
+            if (MiniRed != null)
+                return;
             MiniRed = new ServiceMiniRed();
             ServiceRegistrar.RegisterService(MiniRed, Business);
+        }
 
+        protected void RegisterServiceMiniRed(SetupData setup)
+        {
+            if (setup.MiniRed != null)
+                return;
+            var miniRed = new ServiceMiniRed();
+            ServiceRegistrar.RegisterService(miniRed, setup.Business);
+            setup.MiniRed = miniRed;
+        }
+
+        protected void RegisterServiceMiniBlue()
+        {
+            if (MiniBlue != null)
+                return;
             MiniBlue = new ServiceMiniBlue();
             ServiceRegistrar.RegisterService(MiniBlue, Business);
+        }
 
+        protected void RegisterServiceHolidayCamp()
+        {
+            if (HolidayCamp != null)
+                return;
             HolidayCamp = new ServiceHolidayCamp();
             ServiceRegistrar.RegisterService(HolidayCamp, Business);
         }
 
-        private void RegisterTestSessions()
+        protected void RegisterServiceHolidayCamp(SetupData setup)
         {
-            AaronOrakei14To15 = new StandaloneAaronOrakei14To15(Aaron.Id, Orakei.Id, MiniRed.Id, GetDateFormatNumberOfDaysOut(21));
-            RegisterTestSession(AaronOrakei14To15);
-
-            AaronOrakei16To17 = new StandaloneAaronOrakei16To17(Aaron.Id, Orakei.Id, MiniRed.Id, GetDateFormatNumberOfDaysOut(7));
-            RegisterTestSession(AaronOrakei16To17);
+            if (setup.HolidayCamp != null)
+                return;
+            var holidayCamp = new ServiceHolidayCamp();
+            ServiceRegistrar.RegisterService(holidayCamp, setup.Business);
+            setup.HolidayCamp = holidayCamp;
         }
 
+        protected void RegisterTestSessions()
+        {
+            RegisterStandaloneAaronOrakei14To15();
+            RegisterStandaloneAaronOrakei16To17();
+        }
+
+        protected void RegisterStandaloneAaronOrakei14To15()
+        {
+            if (AaronOrakeiMiniRed14To15 != null)
+                return;
+
+            RegisterCoachAaron();
+            RegisterLocationOrakei();
+            RegisterServiceMiniRed();
+
+            AaronOrakeiMiniRed14To15 = new StandaloneAaronOrakeiMiniRed14To15(Aaron.Id, Orakei.Id, MiniRed.Id, GetDateFormatNumberOfDaysOut(21));
+            RegisterTestSession(AaronOrakeiMiniRed14To15);            
+        }
+
+        protected void RegisterStandaloneAaronOrakeiMiniRed14To15(SetupData setup)
+        {
+            if (setup.AaronOrakeiMiniRed14To15 != null)
+                return;
+            
+            RegisterCoachAaron(setup);
+            RegisterLocationOrakei(setup);
+            RegisterServiceMiniRed(setup);
+
+            var aaronOrakeiMiniRed14To15 = new StandaloneAaronOrakeiMiniRed14To15(setup.Aaron.Id, 
+                                                                                  setup.Orakei.Id,
+                                                                                  setup.MiniRed.Id, 
+                                                                                  GetDateFormatNumberOfDaysOut(21));
+            RegisterTestSession(aaronOrakeiMiniRed14To15, setup);
+            setup.AaronOrakeiMiniRed14To15 = aaronOrakeiMiniRed14To15;
+        }
+
+        protected void RegisterStandaloneAaronOrakei16To17(SetupData setup)
+        {
+            if (setup.AaronOrakeiMiniRed16To17 != null)
+                return;
+
+            RegisterCoachAaron(setup);
+            RegisterLocationOrakei(setup);
+            RegisterServiceMiniRed(setup);
+
+            var aaronOrakeiMiniRed16To17 = new StandaloneAaronOrakeiMiniRed16To17(setup.Aaron.Id,
+                                                                                  setup.Orakei.Id,
+                                                                                  setup.MiniRed.Id,
+                                                                                  GetDateFormatNumberOfDaysOut(7));
+            RegisterTestSession(aaronOrakeiMiniRed16To17, setup);
+            setup.AaronOrakeiMiniRed16To17 = aaronOrakeiMiniRed16To17;
+        }
+
+
+        protected void RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.AaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCoachAaron(setup);
+            RegisterLocationOrakei(setup);
+            RegisterServiceHolidayCamp(setup);
+
+            var aaronOrakeiHolidayCamp9To15For3Days = new CourseAaronOrakeiHolidayCamp9To15For3Days(setup.Aaron.Id,
+                                                                                                    setup.Orakei.Id,
+                                                                                                    setup.HolidayCamp.Id,
+                                                                                                    GetDateFormatNumberOfDaysOut(14));
+            RegisterTestCourse(aaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.AaronOrakeiHolidayCamp9To15For3Days = aaronOrakeiHolidayCamp9To15For3Days;
+        }
+
+        protected void RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(SetupData setup)
+        {
+            if (setup.BobbyRemueraMiniRed9To10For3Weeks != null)
+                return;
+
+            RegisterCoachBobby(setup);
+            RegisterLocationRemuera(setup);
+            RegisterServiceMiniRed(setup);
+
+            var bobbyRemueraMiniRed9To10For3Weeks = new CourseBobbyRemueraMiniRed9To10For3Weeks(setup.Aaron.Id,
+                                                                                                setup.Orakei.Id,
+                                                                                                setup.HolidayCamp.Id,
+                                                                                                GetDateFormatNumberOfDaysOut(10));
+            RegisterTestCourse(bobbyRemueraMiniRed9To10For3Weeks, setup);
+            setup.BobbyRemueraMiniRed9To10For3Weeks = bobbyRemueraMiniRed9To10For3Weeks;
+        }
+
+
+        protected void RegisterFullyBookedStandaloneAaronOrakeiMiniRed14To15(SetupData setup)
+        {
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterWilmaOnStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterBarneyOnStandaloneAaronOrakeiMiniRed14To15(setup);
+        }
+
+        protected void RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            RegisterFredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterWilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterBarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+        }
+
+        protected void RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(SetupData setup)
+        {
+            if (setup.FredOnAaronOrakeiMiniRed14To15 != null)
+                return;
+
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCustomerFred(setup);
+
+            var fredOnAaronOrakeiMiniRed14To15 = new BookingFredOnStandaloneAaronOrakeiMiniRed14To15(setup.AaronOrakeiMiniRed14To15.Id,
+                                                                                                     setup.Fred.Id);
+            RegisterTestBooking(fredOnAaronOrakeiMiniRed14To15, setup);
+            setup.FredOnAaronOrakeiMiniRed14To15 = fredOnAaronOrakeiMiniRed14To15;
+        }
+
+        protected void RegisterWilmaOnStandaloneAaronOrakeiMiniRed14To15(SetupData setup)
+        {
+            if (setup.WilmaOnAaronOrakeiMiniRed14To15 != null)
+                return;
+
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCustomerWilma(setup);
+
+            var wilmaOnAaronOrakeiMiniRed14To15 = new BookingWilmaOnStandaloneAaronOrakeiMiniRed14To15(setup.AaronOrakeiMiniRed14To15.Id,
+                                                                                                       setup.Wilma.Id);
+            RegisterTestBooking(wilmaOnAaronOrakeiMiniRed14To15, setup);
+            setup.WilmaOnAaronOrakeiMiniRed14To15 = wilmaOnAaronOrakeiMiniRed14To15;
+        }
+
+        protected void RegisterBarneyOnStandaloneAaronOrakeiMiniRed14To15(SetupData setup)
+        {
+            if (setup.BarneyOnAaronOrakeiMiniRed14To15 != null)
+                return;
+
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCustomerBarney(setup);
+
+            var barneyOnAaronOrakeiMiniRed14To15 = new BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15(setup.AaronOrakeiMiniRed14To15.Id,
+                                                                                                         setup.Barney.Id);
+            RegisterTestBooking(barneyOnAaronOrakeiMiniRed14To15, setup);
+            setup.BarneyOnAaronOrakeiMiniRed14To15 = barneyOnAaronOrakeiMiniRed14To15;
+        }
+
+
+        //protected void RegisterFredOnAllCourseSessionsInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        //{
+        //    if (setup.FredOnAaronOrakeiHolidayCamp9To15For3Days != null)
+        //        return;
+
+        //    RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+        //    RegisterCustomerFred(setup);
+
+        //    var fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id,
+        //                                                                                           setup.Fred.Id);
+        //    RegisterTestBooking(fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+        //    setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        //}
+
+        protected void RegisterFredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            var fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id,
+                                                                                                   setup.Fred.Id);
+            RegisterTestBooking(fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        }
+
+        protected void RegisterWilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.WilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerWilma(setup);
+
+            var wilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id,
+                                                                                                    setup.Wilma.Id);
+            RegisterTestBooking(wilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.WilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = wilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        }
+
+        protected void RegisterBarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.BarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerBarney(setup);
+
+            var barneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id,
+                                                                                                     setup.Barney.Id);
+            RegisterTestBooking(barneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.BarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = barneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        }
+
+
+        protected void RegisterWilmaOnStandaloneAaronOrakeiMiniRed16To17(SetupData setup)
+        {
+            if (setup.WilmaOnAaronOrakeiMiniRed16To17 != null)
+                return;
+
+            RegisterStandaloneAaronOrakei16To17(setup);
+            RegisterCustomerWilma(setup);
+
+            var wilmaOnAaronOrakeiMiniRed16To17 = new BookingWilmaOnStandaloneAaronOrakeiMiniRed16To17(setup.AaronOrakeiMiniRed16To17.Id,
+                                                                                                       setup.Wilma.Id);
+            RegisterTestBooking(wilmaOnAaronOrakeiMiniRed16To17, setup);
+            setup.WilmaOnAaronOrakeiMiniRed16To17 = wilmaOnAaronOrakeiMiniRed16To17;
+        }
+
+        protected void RegisterTestBooking(ExpectedBooking booking, SetupData setup)
+        {
+            var json = CreateBookingSaveCommandJson(booking);
+            var response = PostBooking(json, setup);
+            if (response.Payload != null)
+                booking.Id = ((BookingData)response.Payload).id;
+        }
+
+        protected void RegisterStandaloneAaronOrakei16To17()
+        {
+            if (AaronOrakeiMiniRed16To17 != null)
+                return;
+
+            RegisterCoachAaron();
+            RegisterLocationOrakei();
+            RegisterServiceMiniRed();
+
+            AaronOrakeiMiniRed16To17 = new StandaloneAaronOrakeiMiniRed16To17(Aaron.Id, Orakei.Id, MiniRed.Id, GetDateFormatNumberOfDaysOut(7));
+            RegisterTestSession(AaronOrakeiMiniRed16To17);
+        }
+
+        protected void RegisterTestSession(ExpectedStandaloneSession session, SetupData setup)
+        {
+            var json = CreateSessionSaveCommandJson(session);
+            var response = PostSession(json, setup);
+            if (response.Payload != null)
+                session.Id = ((SessionData)response.Payload).id;
+        }
+
+        protected void RegisterTestCourse(ExpectedCourse course, SetupData setup)
+        {
+            var json = CreateCourseSaveCommandJson(course);
+            var response = PostCourse(json, setup);
+            if (response.Payload != null)
+            {
+                var courseResponse = (CourseData)response.Payload;
+                course.Id = courseResponse.id;
+
+                var i = 0;
+                foreach (var session in course.Sessions)
+                {
+                    session.ParentId = course.Id;
+                    session.Id = courseResponse.sessions[i].id;
+
+                    i++;
+                }
+            }
+        }
 
         protected void RegisterTestSession(ExpectedStandaloneSession session)
         {
@@ -223,9 +595,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
+        private ApiResponse PostSession(string json, SetupData setup)
+        {
+            return new TestAuthenticatedApiClient().Post<SessionData>(json,
+                                                                      setup.Business.UserName,
+                                                                      setup.Business.Password, 
+                                                                      "Sessions");
+        }
+
         private Response PostSession(string json)
         {
             return Post<SessionData>(json, "Sessions");
+        }
+
+        private ApiResponse PostCourse(string json, SetupData setup)
+        {
+            return new TestAuthenticatedApiClient().Post<CourseData>(json,
+                                                                     setup.Business.UserName,
+                                                                     setup.Business.Password,
+                                                                     "Sessions");
         }
     
         private Response PostCourse(string json)
@@ -247,6 +635,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 presentation = new ApiPresentation { colour = "red" }
             };
         }
+
         protected ApiSessionSaveCommand CreateSessionSaveCommand(ExpectedStandaloneSession session)
         {
             return new ApiSessionSaveCommand
@@ -262,9 +651,39 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             };
         }
 
+        protected ApiSessionSaveCommand CreateCourseSaveCommand(ExpectedCourse course)
+        {
+            return new ApiSessionSaveCommand
+            {
+                coach = course.Coach,
+                location = course.Location,
+                service = course.Service,
+                timing = course.Timing,
+                booking = course.Booking,
+                repetition = course.Repetition,
+                pricing = course.Pricing,
+                presentation = course.Presentation
+            };
+        }
+
         private string CreateSessionSaveCommandJson(ExpectedStandaloneSession session)
         {
             return JsonConvert.SerializeObject(CreateSessionSaveCommand(session));
+        }
+
+        private string CreateCourseSaveCommandJson(ExpectedCourse course)
+        {
+            return JsonConvert.SerializeObject(CreateCourseSaveCommand(course));
+        }
+
+        protected ApiBookingSaveCommand CreateBookingSaveCommand(ExpectedBooking booking)
+        {
+            return new ApiBookingSaveCommand(booking.Session.id.Value, booking.Customer.id.Value);
+        }
+
+        private string CreateBookingSaveCommandJson(ExpectedBooking booking)
+        {
+            return JsonConvert.SerializeObject(CreateBookingSaveCommand(booking));
         }
 
         protected ApiSessionSaveCommand CreateSessionSaveCommandAaronOrakei16To17()
@@ -352,16 +771,72 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void RegisterTestCustomers()
         {
+            RegisterCustomerFred();
+            RegisterCustomerBarney();
+            RegisterCustomerWilma();
+        }
+
+        public void RegisterTestCustomers(SetupData setup)
+        {
+            RegisterCustomerFred(setup);
+            RegisterCustomerWilma(setup);
+            RegisterCustomerBarney(setup);
+            RegisterCustomerBambam(setup);
+        }
+
+        protected void RegisterCustomerFred()
+        {
             Fred = new CustomerFred();
             CustomerRegistrar.RegisterCustomer(Fred, Business);
+        }
 
+        protected void RegisterCustomerFred(SetupData setup)
+        {
+            if (setup.Fred != null)
+                return;
+            var fred = new CustomerFred();
+            CustomerRegistrar.RegisterCustomer(fred, setup.Business);
+            setup.Fred = fred;
+        }
+
+        protected void RegisterCustomerBarney()
+        {
             Barney = new CustomerBarney();
             CustomerRegistrar.RegisterCustomer(Barney, Business);
+        }
 
+        protected void RegisterCustomerWilma()
+        {
             Wilma = new CustomerWilma();
             CustomerRegistrar.RegisterCustomer(Wilma, Business);
         }
 
+        protected void RegisterCustomerWilma(SetupData setup)
+        {
+            if (setup.Wilma != null)
+                return;
+            var wilma = new CustomerWilma();
+            CustomerRegistrar.RegisterCustomer(wilma, setup.Business);
+            setup.Wilma = wilma;
+        }
+
+        protected void RegisterCustomerBarney(SetupData setup)
+        {
+            if (setup.Barney != null)
+                return;
+            var barney = new CustomerBarney();
+            CustomerRegistrar.RegisterCustomer(barney, setup.Business);
+            setup.Barney = barney;
+        }
+
+        protected void RegisterCustomerBambam(SetupData setup)
+        {
+            if (setup.BamBam != null)
+                return;
+            var bambam = new CustomerBamBam();
+            CustomerRegistrar.RegisterCustomer(bambam, setup.Business);
+            setup.BamBam = bambam;
+        }
 
         private void BookCustomersOntoStandaloneSessions()
         {
@@ -371,7 +846,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookFredFlintstoneOntoAaronOrakei14To15()
         {
-            var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Fred.Id);
+            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniRed14To15.Id, Fred.Id);
             var response = PostBooking(json);
             if (response.Payload != null)
                 FredOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
@@ -379,7 +854,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private void BookBarneyRubbleOntoAaronOrakei14To15()
         {
-            var json = CreateNewBookingSaveCommand(AaronOrakei14To15.Id, Barney.Id);
+            var json = CreateNewBookingSaveCommand(AaronOrakeiMiniRed14To15.Id, Barney.Id);
             var response = PostBooking(json);
             if (response.Payload != null)
                 BarneyOnAaronOrakei14To15SessionId = ((BookingData)response.Payload).id;
@@ -415,7 +890,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             var booking = new ApiBookingSaveCommand
             {
-                session = new ApiSessionKey { id = sessionId },
+                sessions = new List<ApiSessionKey>
+                {
+                    new ApiSessionKey { id = sessionId }
+                },
                 customer = new ApiCustomerKey { id = customerId }
             };
 
@@ -425,6 +903,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         private Response PostBooking(string json)
         {
             return Post<BookingData>(json, "Bookings");
+        }
+
+        private ApiResponse PostBooking(string json, SetupData setup)
+        {
+            return new TestAuthenticatedApiClient().Post<BookingData>(json,
+                                                                      setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      "Bookings");
         }
 
 

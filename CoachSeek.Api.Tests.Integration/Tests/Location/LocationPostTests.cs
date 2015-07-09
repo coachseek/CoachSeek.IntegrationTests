@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -8,39 +10,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 {
     public class LocationPostTests : LocationTests
     {
-        private string NewLocationName { get; set; }
-
-
-        protected override void SetupAddtitional()
-        {
-            NewLocationName = string.Empty;
-        }
-
-
         [TestFixture]
         public class LocationCommandTests : LocationPostTests
         {
             [Test]
             public void GivenNoLocationSaveCommand_WhenTryPost_ThenReturnNoDataError()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenNoLocationSaveCommand();
-                var response = WhenTryPost(command);
-                ThenReturnNoDataErrorResponse(response);
+                var response = WhenTryPost(command, setup);
+                ThenReturnNoDataError(response);
             }
 
             [Test]
             public void GivenEmptyLocationSaveCommand_WhenTryPost_ThenReturnRootRequiredError()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenEmptyLocationSaveCommand();
-                var response = WhenTryPost(command);
-                ThenReturnRootRequiredErrorResponse(response);
+                var response = WhenTryPost(command, setup);
+                ThenReturnRootRequiredError(response);
             }
 
             [Test]
             public void GivenValidLocationSaveCommand_WhenTryPostAnonymously_ThenReturnUnauthorised()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenValidLocationSaveCommand();
-                var response = WhenTryPostAnonymously(command);
+                var response = WhenTryPostAnonymously(command, setup);
                 AssertUnauthorised(response);
             }
 
@@ -71,27 +70,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class LocationNewTests : LocationPostTests
         {
             [Test]
-            public void GivenNewLocationWithAnAlreadyExistingLocationName_WhenTryPost_ThenReturnDuplicateLocationErrorResponse()
+            public void GivenNewLocationWithAnAlreadyExistingLocationName_WhenTryPost_ThenReturnDuplicateLocationError()
             {
-                var command = GivenNewLocationWithAnAlreadyExistingLocationName();
-                var response = WhenTryPost(command);
-                ThenReturnDuplicateLocationErrorResponse(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var command = GivenNewLocationWithAnAlreadyExistingLocationName(setup.Orakei.Name);
+                var response = WhenTryPost(command, setup);
+                ThenReturnDuplicateLocationError(response);
             }
 
             [Test]
-            public void GivenNewUniqueLocation_WhenTryPost_ThenReturnNewLocationSuccessResponse()
+            public void GivenNewUniqueLocation_WhenTryPost_ThenCreateNewLocation()
             {
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
                 var command = GivenNewUniqueLocation();
-                var response = WhenTryPost(command);
-                ThenReturnNewLocationSuccessResponse(response);
+                var response = WhenTryPost(command, setup);
+                ThenCreateNewLocation(response);
             }
 
 
-            private string GivenNewLocationWithAnAlreadyExistingLocationName()
+            private string GivenNewLocationWithAnAlreadyExistingLocationName(string duplicateLocationName)
             {
                 var location = new ApiLocationSaveCommand
                 {
-                    name = ORAKEI_NAME
+                    name = duplicateLocationName
                 };
 
                 return JsonConvert.SerializeObject(location);
@@ -113,35 +118,47 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         public class LocationExistingTests : LocationPostTests
         {
             [Test]
-            public void GivenNonExistentLocationId_WhenTryPost_ThenReturnInvalidLocationIdErrorResponse()
+            public void GivenNonExistentLocationId_WhenTryPost_ThenReturnInvalidLocationIdError()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenNonExistentLocationId();
-                var response = WhenTryPost(command);
-                ThenReturnInvalidLocationIdErrorResponse(response);
+                var response = WhenTryPost(command, setup);
+                ThenReturnInvalidLocationIdError(response);
             }
 
             [Test]
             public void GivenExistingLocationAndChangeToAnAlreadyExistingLocationName_WhenTryPost_ThenReturnDuplicateLocationErrorResponse()
             {
-                var command = GivenExistingLocationAndChangeToAnAlreadyExistingLocationName();
-                var response = WhenTryPost(command);
-                ThenReturnDuplicateLocationErrorResponse(response);
+                var setup = RegisterBusiness();
+                RegisterTestLocations(setup);
+
+                var command = GivenExistingLocationAndChangeToAnAlreadyExistingLocationName(setup);
+                var response = WhenTryPost(command, setup);
+                ThenReturnDuplicateLocationError(response);
             }
 
             [Test]
             public void GivenExistingLocationAndChangeToUniqueLocationName_WhenTryPost_ThenReturnExistingLocationSuccessResponse()
             {
-                var command = GivenExistingLocationAndChangeToUniqueLocationName();
-                var response = WhenTryPost(command);
-                ThenReturnExistingLocationSuccessResponse(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                const string newLocationName = "Orakei Tennis & Squash Club";
+                var command = GivenExistingLocationAndChangeToUniqueLocationName(setup, newLocationName);
+                var response = WhenTryPost(command, setup);
+                ThenReturnExistingLocationSuccessResponse(response, setup, newLocationName);
             }
 
             [Test]
             public void GivenExistingLocationAndKeepLocationNameSame_WhenTryPost_ThenReturnExistingLocationSuccessResponse()
             {
-                var command = GivenExistingLocationAndKeepLocationNameSame();
-                var response = WhenTryPost(command);
-                ThenReturnExistingLocationSuccessResponse(response);
+                var setup = RegisterBusiness();
+                RegisterLocationOrakei(setup);
+
+                var command = GivenExistingLocationAndKeepLocationNameSame(setup);
+                var response = WhenTryPost(command, setup);
+                ThenReturnExistingLocationSuccessResponse(response, setup);
             }
 
             
@@ -149,45 +166,41 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             {
                 var location = new ApiLocationSaveCommand
                 {
-                    id = Guid.Empty,
+                    id = Guid.NewGuid(),
                     name = Random.RandomString
                 };
 
                 return JsonConvert.SerializeObject(location);
             }
 
-            private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName()
+            private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName(SetupData setup)
             {
                 var location = new ApiLocationSaveCommand
                 {
-                    id = RemueraId,
-                    name = ORAKEI_NAME
+                    id = setup.Remuera.Id,
+                    name = setup.Orakei.Name
                 };
 
                 return JsonConvert.SerializeObject(location);
             }
 
-            private string GivenExistingLocationAndChangeToUniqueLocationName()
+            private string GivenExistingLocationAndChangeToUniqueLocationName(SetupData setup, string newLocationName)
             {
-                NewLocationName = "Orakei Tennis & Squash Club";
-
                 var location = new ApiLocationSaveCommand
                 {
-                    id = OrakeiId,
-                    name = NewLocationName
+                    id = setup.Orakei.Id,
+                    name = newLocationName
                 };
 
                 return JsonConvert.SerializeObject(location);
             }
 
-            private string GivenExistingLocationAndKeepLocationNameSame()
+            private string GivenExistingLocationAndKeepLocationNameSame(SetupData setup)
             {
-                NewLocationName = ORAKEI_NAME;
-
                 var location = new ApiLocationSaveCommand
                 {
-                    id = OrakeiId,
-                    name = NewLocationName
+                    id = setup.Orakei.Id,
+                    name = setup.Orakei.Name
                 };
 
                 return JsonConvert.SerializeObject(location);
@@ -195,55 +208,43 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
-        private Response WhenTryPost(string json)
+        private ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return Post<LocationData>(json);
+            return new TestAuthenticatedApiClient().Post<LocationData>(json,
+                                                                       setup.Business.UserName,
+                                                                       setup.Business.Password,
+                                                                       RelativePath);
         }
 
-        private Response WhenTryPostAnonymously(string json)
+        private ApiResponse WhenTryPostAnonymously(string json, SetupData setup)
         {
-            return PostAnonymouslyToBusiness<LocationData>(json);
+            return new TestBusinessAnonymousApiClient().Post<LocationData>(json,
+                                                                           setup.Business.Domain,
+                                                                           RelativePath);
         }
 
 
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private void ThenReturnNoDataError(ApiResponse response)
         {
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+        private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "location.name", "The name field is required.");
+            AssertSingleError(response, "The name field is required.", "location.name");
         }
 
-        private void ThenReturnInvalidLocationIdErrorResponse(Response response)
+        private void ThenReturnInvalidLocationIdError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "location.id", "This location does not exist.");
+            AssertSingleError(response, "This location does not exist.", "location.id");
         }
 
-        private void ThenReturnDuplicateLocationErrorResponse(Response response)
+        private void ThenReturnDuplicateLocationError(ApiResponse response)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            var errors = (ApplicationError[])response.Payload;
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "location.name", "This location already exists.");
+            AssertSingleError(response, "This location already exists.", "location.name");
         }
 
-        private void ThenReturnNewLocationSuccessResponse(Response response)
+        private void ThenCreateNewLocation(ApiResponse response)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
@@ -254,15 +255,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             Assert.That(location.name, Is.EqualTo("Mt Eden Squash Club"));
         }
 
-        private void ThenReturnExistingLocationSuccessResponse(Response response)
+        private void ThenReturnExistingLocationSuccessResponse(ApiResponse response, 
+                                                               SetupData setup, 
+                                                               string newLocationName = null)
         {
             Assert.That(response, Is.Not.Null);
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
             Assert.That(response.Payload, Is.InstanceOf<LocationData>());
             var location = (LocationData)response.Payload;
-            Assert.That(location.id, Is.EqualTo(OrakeiId));
-            Assert.That(location.name, Is.EqualTo(NewLocationName));
+            Assert.That(location.id, Is.EqualTo(setup.Orakei.Id));
+            Assert.That(location.name, Is.EqualTo(newLocationName ?? setup.Orakei.Name));
         }
     }
 }

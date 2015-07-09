@@ -1,61 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 {
     [TestFixture]
-    public class CoachGetTests : WebIntegrationTest
+    public class CoachGetTests : CoachTests
     {
-        protected override string RelativePath
-        {
-            get { return "Coaches"; }
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestCoaches();
-        }
-
-        private void RegisterTestCoaches()
-        {
-            Steve = new CoachSteve();
-            CoachRegistrar.RegisterCoach(Steve, Business);
-
-            Aaron = new CoachAaron();
-            CoachRegistrar.RegisterCoach(Aaron, Business);
-            
-            Bobby = new CoachBobby();
-            CoachRegistrar.RegisterCoach(Bobby, Business);
-        }
-
-
         [Test]
-        public void WhenGetAll_ThenReturnAllCoachesResponse()
+        public void WhenTryGetAllCoaches_ThenReturnAllCoaches()
         {
-            var response = WhenGetAll();
-            ThenReturnAllCoachesResponse(response);
+            var setup = RegisterBusiness();
+            RegisterTestCoaches(setup);
+
+            var response = WhenTryGetAllCoaches(setup);
+            ThenReturnAllCoaches(response, setup);
         }
 
         [Test]
-        public void GivenInvalidCoachId_WhenGetById_ThenReturnNotFoundResponse()
+        public void GivenInvalidCoachId_WhenTryGetCoachById_ThenReturnNotFoundResponse()
         {
+            var setup = RegisterBusiness();
+
             var id = GivenInvalidCoachId();
-            var response = WhenGetById(id);
+            var response = WhenTryGetCoachById(id, setup);
             AssertNotFound(response);
         }
 
         [Test]
-        public void GivenValidCoachId_WhenGetById_ThenReturnCoachResponse()
+        public void GivenValidCoachId_WhenTryGetCoachById_ThenReturnCoach()
         {
-            var id = GivenValidCoachId();
-            var response = WhenGetById(id);
-            ThenReturnCoachResponse(response);
+            var setup = RegisterBusiness();
+            RegisterCoachAaron(setup);
+
+            var id = GivenValidCoachId(setup);
+            var response = WhenTryGetCoachById(id, setup);
+            ThenReturnCoach(response, setup);
         }
 
 
@@ -65,64 +49,61 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidCoachId()
+        private Guid GivenValidCoachId(SetupData setup)
         {
-            return Aaron.Id;
+            return setup.Aaron.Id;
         }
 
 
-        private Response WhenGetAll()
+        private ApiResponse WhenTryGetAllCoaches(SetupData setup)
         {
-            var url = BuildGetAllUrl();
-            return AuthenticatedGet<List<CoachData>>(url);
+            return new TestAuthenticatedApiClient().Get<List<CoachData>>(setup.Business.UserName,
+                                                                         setup.Business.Password,
+                                                                         RelativePath);
         }
 
-        private Response WhenGetById(Guid coachId)
+        private ApiResponse WhenTryGetCoachById(Guid coachId, SetupData setup)
         {
-            var url = BuildGetByIdUrl(coachId);
-            return AuthenticatedGet<CoachData>(url);
+            var url = string.Format("{0}/{1}", RelativePath, coachId);
+            return new TestAuthenticatedApiClient().Get<CoachData>(setup.Business.UserName,
+                                                                   setup.Business.Password,
+                                                                   url);
         }
 
 
-        private void ThenReturnAllCoachesResponse(Response response)
+        private void ThenReturnAllCoaches(ApiResponse response, SetupData setup)
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Payload, Is.Not.Null);
             var coaches = (List<CoachData>)response.Payload;
-            Assert.That(coaches.Count, Is.EqualTo(3));
+            Assert.That(coaches.Count, Is.EqualTo(2));
 
             var coachOne = coaches[0];
-            Assert.That(coachOne.id, Is.EqualTo(Aaron.Id));
-            Assert.That(coachOne.firstName, Is.EqualTo(Aaron.FirstName));
-            Assert.That(coachOne.lastName, Is.EqualTo(Aaron.LastName));
-            Assert.That(coachOne.email, Is.EqualTo(Aaron.Email));
-            Assert.That(coachOne.phone, Is.EqualTo(Aaron.Phone.ToUpper()));
+            Assert.That(coachOne.id, Is.EqualTo(setup.Aaron.Id));
+            Assert.That(coachOne.firstName, Is.EqualTo(setup.Aaron.FirstName));
+            Assert.That(coachOne.lastName, Is.EqualTo(setup.Aaron.LastName));
+            Assert.That(coachOne.email, Is.EqualTo(setup.Aaron.Email));
+            Assert.That(coachOne.phone, Is.EqualTo(setup.Aaron.Phone.ToUpper()));
             
             var coachTwo = coaches[1];
-            Assert.That(coachTwo.id, Is.EqualTo(Bobby.Id));
-            Assert.That(coachTwo.firstName, Is.EqualTo(Bobby.FirstName));
-            Assert.That(coachTwo.lastName, Is.EqualTo(Bobby.LastName));
-            Assert.That(coachTwo.email, Is.EqualTo(Bobby.Email));
-            Assert.That(coachTwo.phone, Is.EqualTo(Bobby.Phone.ToUpper()));
-
-            var coachThree = coaches[2];
-            Assert.That(coachThree.id, Is.EqualTo(Steve.Id));
-            Assert.That(coachThree.firstName, Is.EqualTo(Steve.FirstName));
-            Assert.That(coachThree.lastName, Is.EqualTo(Steve.LastName));
-            Assert.That(coachThree.email, Is.EqualTo(Steve.Email));
-            Assert.That(coachThree.phone, Is.EqualTo(Steve.Phone.ToUpper()));
+            Assert.That(coachTwo.id, Is.EqualTo(setup.Bobby.Id));
+            Assert.That(coachTwo.firstName, Is.EqualTo(setup.Bobby.FirstName));
+            Assert.That(coachTwo.lastName, Is.EqualTo(setup.Bobby.LastName));
+            Assert.That(coachTwo.email, Is.EqualTo(setup.Bobby.Email));
+            Assert.That(coachTwo.phone, Is.EqualTo(setup.Bobby.Phone.ToUpper()));
         }
 
-        private void ThenReturnCoachResponse(Response response)
+        private void ThenReturnCoach(ApiResponse response, SetupData setup)
         {
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             var coach = (CoachData)response.Payload;
-            Assert.That(coach.id, Is.EqualTo(Aaron.Id));
-            Assert.That(coach.firstName, Is.EqualTo(Aaron.FirstName));
-            Assert.That(coach.lastName, Is.EqualTo(Aaron.LastName));
-            Assert.That(coach.email, Is.EqualTo(Aaron.Email));
-            Assert.That(coach.phone, Is.EqualTo(Aaron.Phone.ToUpperInvariant()));
+
+            Assert.That(coach.id, Is.EqualTo(setup.Aaron.Id));
+            Assert.That(coach.firstName, Is.EqualTo(setup.Aaron.FirstName));
+            Assert.That(coach.lastName, Is.EqualTo(setup.Aaron.LastName));
+            Assert.That(coach.email, Is.EqualTo(setup.Aaron.Email));
+            Assert.That(coach.phone, Is.EqualTo(setup.Aaron.Phone.ToUpperInvariant()));
             AssertStandardWorkingHours(coach);
         }
 

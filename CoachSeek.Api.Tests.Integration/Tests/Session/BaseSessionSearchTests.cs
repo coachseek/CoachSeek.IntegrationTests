@@ -97,14 +97,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(standalones.Count, Is.EqualTo(2));
 
             var firstStandalone = standalones[0];
-            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakei16To17.Id));
+            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakeiMiniRed16To17.Id));
             Assert.That(firstStandalone.parentId, Is.Null);
             Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
             Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
             Assert.That(firstStandalone.timing.startTime, Is.EqualTo("16:00"));
 
             var secondStandalone = standalones[1];
-            Assert.That(secondStandalone.id, Is.EqualTo(AaronOrakei14To15.Id));
+            Assert.That(secondStandalone.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
             Assert.That(secondStandalone.parentId, Is.Null);
             Assert.That(secondStandalone.location.id, Is.EqualTo(Orakei.Id));
             Assert.That(secondStandalone.location.name, Is.EqualTo(Orakei.Name));

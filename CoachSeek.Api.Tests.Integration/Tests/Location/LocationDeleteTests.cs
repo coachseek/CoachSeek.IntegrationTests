@@ -1,4 +1,5 @@
 ﻿using System;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -8,18 +9,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
     public class LocationDeleteTests : LocationTests
     {
         [Test]
-        public void GivenNonExistentLocationId_WhenTryDelete_ThenReturnNotFound()
+        public void GivenNonExistentLocationId_WhenTryDeleteLocation_ThenReturnNotFound()
         {
+            var setup = RegisterBusiness();
+
             var id = GivenNonExistentLocationId();
-            var response = WhenTryDelete(id);
+            var response = WhenTryDeleteLocation(id, setup);
             AssertNotFound(response);
         }
 
         [Test]
-        public void GivenValidLocationId_WhenTryDeleteAnonymously_ThenReturnUnauthorised()
+        public void GivenValidLocationId_WhenTryDeleteLocationAnonymously_ThenReturnUnauthorised()
         {
-            var id = GivenValidLocationId();
-            var response = WhenTryDeleteAnonymously(id);
+            var setup = RegisterBusiness();
+            RegisterLocationRemuera(setup);
+
+            var id = GivenValidLocationId(setup);
+            var response = WhenTryDeleteLocationAnonymously(id);
             AssertUnauthorised(response);
         }
 
@@ -29,18 +35,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidLocationId()
+        private Guid GivenValidLocationId(SetupData setup)
         {
-            return RemueraId;
+            return setup.Remuera.Id;
         }
 
 
-        private Response WhenTryDelete(Guid id)
+        private ApiResponse WhenTryDeleteLocation(Guid id, SetupData setup)
         {
-            return Delete<LocationData>("Locations", id);
+            return Delete<LocationData>("Locations", id, setup);
         }
 
-        private Response WhenTryDeleteAnonymously(Guid id)
+        private ApiResponse WhenTryDeleteLocationAnonymously(Guid id)
         {
             return DeleteAnonymously<LocationData>("Locations", id);
         }

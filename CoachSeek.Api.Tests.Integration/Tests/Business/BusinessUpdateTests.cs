@@ -1,4 +1,6 @@
-﻿using CoachSeek.Api.Tests.Integration.Models;
+﻿using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
+using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -12,24 +14,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             [Test]
             public void GivenNoBusinessSaveCommand_WhenTryUpdateBusiness_ThenReturnNoDataError()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenNoBusinessSaveCommand();
-                var response = WhenTryUpdateBusiness(command);
-                ThenReturnNoDataErrorResponse(response);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnNoDataError(response);
             }
 
             [Test]
             public void GivenEmptyBusinessSaveCommand_WhenTryUpdateBusiness_ThenReturnRootRequiredError()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenEmptyBusinessSaveCommand();
-                var response = WhenTryUpdateBusiness(command);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnRootRequiredErrorResponse(response);
             }
 
             [Test]
             public void GivenValidBusinessSaveCommand_WhenTryUpdateBusinessAnonymously_ThenReturnUnauthorised()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenValidBusinessSaveCommand();
-                var response = WhenTryUpdateBusinessAnonymously(command);
+                var response = WhenTryUpdateBusinessAnonymously(command, setup);
                 AssertUnauthorised(response);
             }
 
@@ -67,74 +75,88 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             [Test]
             public void GivenEmptyPayment_WhenTryUpdateBusiness_ThenReturnsRequiredPaymentOptionErrors()
             {
-                var command = GivenEmptyPayment();
-                var response = WhenTryUpdateBusiness(command);
+                var setup = RegisterBusiness();
+
+                var command = GivenEmptyPayment(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsRequiredPaymentOptionErrors(response);
             }
 
             [Test]
             public void GivenInvalidCurrency_WhenTryUpdateBusiness_ThenReturnsCurrencyNotSupportedError()
             {
-                var command = GivenInvalidCurrency();
-                var response = WhenTryUpdateBusiness(command);
+                var setup = RegisterBusiness();
+
+                var command = GivenInvalidCurrency(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsCurrencyNotSupportedError(response);
             }
 
             [Test]
             public void GivenInvalidPaymentProvider_WhenTryUpdateBusiness_ThenReturnsPaymentProviderNotSupportedError()
             {
-                var command = GivenInvalidPaymentProvider();
-                var response = WhenTryUpdateBusiness(command);
+                var setup = RegisterBusiness();
+
+                var command = GivenInvalidPaymentProvider(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsPaymentProviderNotSupportedError(response);
             }
 
             [Test]
             public void GivenNoMerchantAccountIdentifier_WhenTryUpdateBusiness_ThenReturnsMissingMerchantAccountIdentifierError()
             {
-                var command = GivenNoMerchantAccountIdentifier();
-                var response = WhenTryUpdateBusiness(command);
+                var setup = RegisterBusiness();
+
+                var command = GivenNoMerchantAccountIdentifier(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsMissingMerchantAccountIdentifierError(response);
             }
 
             [Test]
             public void GivenInvalidMerchantAccountIdentifierFormat_WhenTryUpdateBusiness_ThenReturnsMissingMerchantAccountIdentifierFormatError()
             {
-                var command = GivenInvalidMerchantAccountIdentifierFormat();
-                var response = WhenTryUpdateBusiness(command);
+                var setup = RegisterBusiness();
+
+                var command = GivenInvalidMerchantAccountIdentifierFormat(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsMissingMerchantAccountIdentifierFormatError(response);
             }
 
             [Test]
             public void GivenValidBusinessSaveCommandWithoutPaymentProvider_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithoutPaymentProvider()
             {
-                var command = GivenValidBusinessSaveCommandWithoutPaymentProvider();
-                var response = WhenTryUpdateBusiness(command);
-                ThenUpdateTheBusinessWithoutPaymentProvider(response, command);
+                var setup = RegisterBusiness();
+
+                var command = GivenValidBusinessSaveCommandWithoutPaymentProvider(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenUpdateTheBusinessWithoutPaymentProvider(response, command, setup);
             }
 
             [Test, Ignore("Uncomment when have isOnlinePaymentEnabled and forceOnlinePayment")]
             public void GivenValidBusinessSaveCommandWithOnlinePaymentOn_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithPaymentOptionsSet()
             {
+                var setup = RegisterBusiness();
+
                 var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn();
-                var response = WhenTryUpdateBusiness(command);
+                var response = WhenTryUpdateBusiness(command, setup);
                 ThenUpdateTheBusinessWithPaymentOptionsSet(response, command);
             }
 
 
-            private ApiBusinessSaveCommand GivenEmptyPayment()
+            private ApiBusinessSaveCommand GivenEmptyPayment(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Business.Name,
+                    name = setup.Business.Name,
                     payment = new ApiBusinessPaymentOptions()
                 };
             }
 
-            private ApiBusinessSaveCommand GivenInvalidCurrency()
+            private ApiBusinessSaveCommand GivenInvalidCurrency(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Business.Name,
+                    name = setup.Business.Name,
                     payment = new ApiBusinessPaymentOptions
                     {
                         currency = "QQQ",
@@ -146,11 +168,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 };
             }
 
-            private ApiBusinessSaveCommand GivenInvalidPaymentProvider()
+            private ApiBusinessSaveCommand GivenInvalidPaymentProvider(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Business.Name,
+                    name = setup.Business.Name,
                     payment = new ApiBusinessPaymentOptions
                     {
                         currency = "AUD",
@@ -161,11 +183,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 };
             }
 
-            private ApiBusinessSaveCommand GivenNoMerchantAccountIdentifier()
+            private ApiBusinessSaveCommand GivenNoMerchantAccountIdentifier(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Business.Name,
+                    name = setup.Business.Name,
                     payment = new ApiBusinessPaymentOptions
                     {
                         currency = "AUD",
@@ -176,11 +198,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 };
             }
 
-            private ApiBusinessSaveCommand GivenInvalidMerchantAccountIdentifierFormat()
+            private ApiBusinessSaveCommand GivenInvalidMerchantAccountIdentifierFormat(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Business.Name,
+                    name = setup.Business.Name,
                     payment = new ApiBusinessPaymentOptions
                     {
                         currency = "AUD",
@@ -193,51 +215,55 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             }
 
 
-            private void ThenReturnsRequiredPaymentOptionErrors(Response response)
+            private void ThenReturnsRequiredPaymentOptionErrors(ApiResponse response)
             {
                 AssertMultipleErrors(response, new[,] { { "The currency field is required.", "business.payment.currency" },
                                                         { "The isOnlinePaymentEnabled field is required.", "business.payment.isOnlinePaymentEnabled" } });
             }
 
-            private void ThenReturnsCurrencyNotSupportedError(Response response)
+            private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
             {
                 AssertSingleError(response, "This currency is not supported.", "business.payment.currency");
             }
 
-            private void ThenReturnsPaymentProviderNotSupportedError(Response response)
+            private void ThenReturnsPaymentProviderNotSupportedError(ApiResponse response)
             {
                 AssertSingleError(response, "This payment provider is not supported.", "business.payment.paymentProvider");
             }
 
-            private void ThenReturnsMissingMerchantAccountIdentifierError(Response response)
+            private void ThenReturnsMissingMerchantAccountIdentifierError(ApiResponse response)
             {
                 AssertSingleError(response, "Missing merchant account identifier.", "business.payment.merchantAccountIdentifier");
             }
 
-            private void ThenReturnsMissingMerchantAccountIdentifierFormatError(Response response)
+            private void ThenReturnsMissingMerchantAccountIdentifierFormatError(ApiResponse response)
             {
                 AssertSingleError(response, "Invalid merchant account identifier format.", "business.payment.merchantAccountIdentifier");
             }
 
-            private void ThenUpdateTheBusinessWithoutPaymentProvider(Response response, ApiBusinessSaveCommand command)
+            private void ThenUpdateTheBusinessWithoutPaymentProvider(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
             {
                 var responseBusiness = AssertSuccessResponse<BusinessData>(response);
 
-                Assert.That(responseBusiness.id, Is.EqualTo(Business.Id));
+                Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
+                Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
                 Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
-                Assert.That(responseBusiness.domain, Is.EqualTo(Business.Domain));
+                Assert.That(responseBusiness.payment.paymentProvider, Is.Null);
 
-                var getResponse = AuthenticatedGet<BusinessData>(Url.AbsoluteUri);
+                var getResponse = new TestAuthenticatedApiClient().Get<BusinessData>(setup.Business.UserName,
+                                                                                     setup.Business.Password,
+                                                                                     RelativePath);
                 var getBusiness = (BusinessData) getResponse.Payload;
 
-                Assert.That(getBusiness.id, Is.EqualTo(Business.Id));
+                Assert.That(getBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(getBusiness.name, Is.EqualTo(command.name));
+                Assert.That(getBusiness.domain, Is.EqualTo(setup.Business.Domain));
                 Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
-                Assert.That(getBusiness.domain, Is.EqualTo(Business.Domain));
+                Assert.That(getBusiness.payment.paymentProvider, Is.Null);
             }
 
-            private void ThenUpdateTheBusinessWithPaymentOptionsSet(Response response, ApiBusinessSaveCommand command)
+            private void ThenUpdateTheBusinessWithPaymentOptionsSet(ApiResponse response, ApiBusinessSaveCommand command)
             {
                 var responseBusiness = AssertSuccessResponse<BusinessData>(response);
 
@@ -265,11 +291,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
 
-        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithoutPaymentProvider()
+        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithoutPaymentProvider(SetupData setup)
         {
             return new ApiBusinessSaveCommand
             {
-                name = Random.RandomString,
+                name = setup.Business.Name,
                 payment = new ApiBusinessPaymentOptions
                 {
                     currency = "EUR",
@@ -294,35 +320,40 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             };
         }
 
-        private Response WhenTryUpdateBusiness(ApiBusinessSaveCommand command)
+        private ApiResponse WhenTryUpdateBusiness(ApiBusinessSaveCommand command, SetupData setup)
         {
             var json = JsonConvert.SerializeObject(command);
-            return WhenTryUpdateBusiness(json);
+            return WhenTryUpdateBusiness(json, setup);
         }
 
-        private Response WhenTryUpdateBusiness(string json)
+        private ApiResponse WhenTryUpdateBusiness(string json, SetupData setup)
         {
-            return Post<BusinessData>(json);
+            return new TestAuthenticatedApiClient().Post<BusinessData>(json, 
+                                                                       setup.Business.UserName,
+                                                                       setup.Business.Password,
+                                                                       RelativePath);
         }
 
-        private Response WhenTryUpdateBusinessAnonymously(ApiBusinessSaveCommand command)
+        private ApiResponse WhenTryUpdateBusinessAnonymously(ApiBusinessSaveCommand command, SetupData setup)
         {
             var json = JsonConvert.SerializeObject(command);
-            return WhenTryUpdateBusinessAnonymously(json);
+            return WhenTryUpdateBusinessAnonymously(json, setup);
         }
 
-        private Response WhenTryUpdateBusinessAnonymously(string json)
+        private ApiResponse WhenTryUpdateBusinessAnonymously(string json, SetupData setup)
         {
-            return PostAnonymouslyToBusiness<BusinessData>(json);
+            return new TestBusinessAnonymousApiClient().Post<BusinessData>(json,
+                                                                           setup.Business.Domain,
+                                                                           RelativePath);
         }
 
 
-        private void ThenReturnNoDataErrorResponse(Response response)
+        private void ThenReturnNoDataError(ApiResponse response)
         {
             AssertSingleError(response, "Please post us some data!");
         }
 
-        private void ThenReturnRootRequiredErrorResponse(Response response)
+        private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "The name field is required.", "business.name" },
                                                     { "The payment field is required.", "business.payment" } });

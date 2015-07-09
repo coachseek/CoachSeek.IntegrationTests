@@ -71,7 +71,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertNotFound(getResponseSession3);
 
             // Other sessions are still there.
-            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakei16To17.Id);
+            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakeiMiniRed16To17.Id);
             AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
             var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
             AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);

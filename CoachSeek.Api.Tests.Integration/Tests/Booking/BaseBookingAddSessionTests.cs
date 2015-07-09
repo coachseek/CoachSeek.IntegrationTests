@@ -9,68 +9,35 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
     public abstract class BaseBookingAddSessionTests : BaseBookingAddTests
     {
-        protected ApiBookingSaveCommand GivenNonExistentSession()
+        protected ApiBookingSaveCommand GivenNonExistentSessionAndCustomer(SetupData setup)
         {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = Guid.NewGuid() },
-                customer = new ApiCustomerKey { id = Fred.Id }
-            };
+            return new ApiBookingSaveCommand(Guid.NewGuid(), Guid.NewGuid());
         }
 
-        protected ApiBookingSaveCommand GivenNonExistentCustomer()
+        protected ApiBookingSaveCommand GivenThisCustomerIsAlreadyBookedOntoThisSession(SetupData setup)
         {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = AaronOrakei14To15.Id },
-                customer = new ApiCustomerKey { id = Guid.NewGuid() }
-            };
+            return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed14To15.Id, setup.Fred.Id);
         }
 
-        protected ApiBookingSaveCommand GivenNonExistentSessionAndCustomer()
+        protected ApiBookingSaveCommand GivenSessionIsOnlineBookable(SetupData setup)
         {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = Guid.NewGuid() },
-                customer = new ApiCustomerKey { id = Guid.NewGuid() }
-            };
+            return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed14To15.Id, setup.Fred.Id);
         }
 
-        protected ApiBookingSaveCommand GivenThisCustomerIsAlreadyBookedOntoThisSession()
+        protected ApiBookingSaveCommand GivenSessionIsNotOnlineBookable(SetupData setup)
         {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = AaronOrakei14To15.Id },
-                customer = new ApiCustomerKey { id = Fred.Id }
-            };
-        }
-
-        protected ApiBookingSaveCommand GivenSessionIsOnlineBookable()
-        {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = AaronOrakei14To15.Id },
-                customer = new ApiCustomerKey { id = BamBam.Id }
-            };
-        }
-
-        protected ApiBookingSaveCommand GivenSessionIsNotOnlineBookable()
-        {
-            return new ApiBookingSaveCommand
-            {
-                session = new ApiSessionKey { id = AaronOrakei16To17.Id },
-                customer = new ApiCustomerKey { id = Wilma.Id }
-            };
+            return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed16To17.Id, setup.Wilma.Id);
         }
 
 
         protected void ThenReturnNonExistentSessionError(Response response)
         {
-            AssertSingleError(response, "This session does not exist.", "booking.session.id");
+            AssertSingleError(response, "This session does not exist.");
         }
+
         protected void ThenReturnNonExistentSessionError(ApiResponse response)
         {
-            AssertSingleError(response, "This session does not exist.", "booking.session.id");
+            AssertSingleError(response, "This session does not exist.");
         }
 
         protected void ThenReturnNonExistentCustomerError(Response response)
@@ -109,14 +76,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertCustomerBooking(bookingOne, bookingId, customer);
         }
 
-        protected void ThenCreateSessionBooking(ApiResponse response, ExpectedStandaloneSession session, ExpectedCustomer customer, int expectedBookingCount = 1)
+        protected void ThenCreateSessionBooking(ApiResponse response, 
+                                                ExpectedStandaloneSession session, 
+                                                ExpectedCustomer customer, 
+                                                SetupData setup,
+                                                int expectedBookingCount = 1)
         {
             var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
 
             AssertSingleSessionBooking(booking, session, customer);
             var bookingId = booking.id;
 
-            var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id);
+            var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id, setup);
             var sessionData = AssertSuccessResponse<SessionData>(sessionResponse);
 
             Assert.That(sessionData.booking.bookings.Count, Is.EqualTo(expectedBookingCount));

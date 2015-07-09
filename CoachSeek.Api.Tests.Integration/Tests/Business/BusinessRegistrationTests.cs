@@ -343,11 +343,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void AssertBusinessGet(ExpectedBusiness expectedBusiness)
         {
-            var getBusinessUrl = string.Format("{0}/Business", BaseUrl);
             Business = expectedBusiness;
-            var response = AuthenticatedGet<BusinessData>(getBusinessUrl);
+            var response = new TestAuthenticatedApiClient().Get<BusinessData>(Business.UserName, 
+                                                                              Business.Password,
+                                                                              "Business");
             var business = (BusinessData)response.Payload;
-
             AssertBusinessData(business, expectedBusiness);
         }
     }

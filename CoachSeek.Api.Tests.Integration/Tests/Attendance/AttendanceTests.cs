@@ -9,27 +9,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
     [TestFixture]
     public class AttendanceTests : BaseBookingTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-        }
-
-
         [Test]
         public void GivenWantToSetToHasAttended_WhenTrySetAttendance_ThenSetsHasAttendedToTrue()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetToHasAttended();
-            WhenTrySetAttendance(command);
-            ThenSetsHasAttendedTo(true);
+            WhenTrySetAttendance(command, setup);
+            ThenSetsHasAttendedTo(true, setup);
         }
 
         [Test]
         public void GivenWantToSetToHasNotAttended_WhenTrySetAttendance_ThenSetsHasAttendedToFalse()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetToHasNotAttended();
-            WhenTrySetAttendance(command);
-            ThenSetsHasAttendedTo(false);
+            WhenTrySetAttendance(command, setup);
+            ThenSetsHasAttendedTo(false, setup);
         }
 
 
@@ -44,26 +43,29 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
         }
 
 
-        private void WhenTrySetAttendance(ApiBookingSetAttendanceCommand command)
+        private void WhenTrySetAttendance(ApiBookingSetAttendanceCommand command, SetupData setup)
         {
             var json = JsonConvert.SerializeObject(command);
-            var relativePath = string.Format("{0}/{1}", RelativePath, FredOnAaronOrakei14To15SessionId);
+            var relativePath = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
 
-            WhenTrySetAttendance(json, relativePath);
+            WhenTrySetAttendance(json, relativePath, setup);
         }
 
-        protected void WhenTrySetAttendance(string json, string relativePath)
+        protected void WhenTrySetAttendance(string json, string relativePath, SetupData setup)
         {
-            var response = new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json, 
-                                                                                           Business.UserName, 
-                                                                                           Business.Password,
+            var response = new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json,
+                                                                                           setup.Business.UserName,
+                                                                                           setup.Business.Password,
                                                                                            relativePath);
         }
 
 
-        private void ThenSetsHasAttendedTo(bool hasAttended)
+        private void ThenSetsHasAttendedTo(bool hasAttended, SetupData setup)
         {
-            var response = AuthenticatedGet<SingleSessionBookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            var url = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
+            var response = new TestAuthenticatedApiClient().Get<SingleSessionBookingData>(setup.Business.UserName,
+                                                                                          setup.Business.Password, 
+                                                                                          url);
             var booking = (SingleSessionBookingData)response.Payload;
 
             Assert.That(booking.hasAttended, Is.EqualTo(hasAttended));

@@ -16,43 +16,48 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
         private const string STATUS_PAID = "paid";
 
 
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-        }
-
-
         [Test]
         public void GivenWantToSetToInvalidPaymentStatus_WhenTrySetPaymentStatus_ThenReturnsInvalidPaymentStatusError()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetTo("Hello world!");
-            var response = WhenTrySetPaymentStatus(command);
+            var response = WhenTrySetPaymentStatus(command, setup);
             ThenReturnsInvalidPaymentStatusError(response);
         }
 
         [Test]
         public void GivenWantToSetToPendingInvoice_WhenTrySetPaymentStatus_ThenSetsPaymentStatusToPendingInvoice()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetTo(STATUS_PENDING_INVOICE);
-            WhenTrySetPaymentStatus(command);
-            ThenSetsPaymentStatusTo(STATUS_PENDING_INVOICE);
+            WhenTrySetPaymentStatus(command, setup);
+            ThenSetsPaymentStatusTo(STATUS_PENDING_INVOICE, setup);
         }
 
         [Test]
         public void GivenWantToSetToPendingPayment_WhenTrySetPaymentStatus_ThenSetsPaymentStatusToPendingPayment()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetTo(STATUS_PENDING_PAYMENT);
-            WhenTrySetPaymentStatus(command);
-            ThenSetsPaymentStatusTo(STATUS_PENDING_PAYMENT);
+            WhenTrySetPaymentStatus(command, setup);
+            ThenSetsPaymentStatusTo(STATUS_PENDING_PAYMENT, setup);
         }
 
         [Test]
         public void GivenWantToSetToPaid_WhenTrySetPaymentStatus_ThenSetsPaymentStatusToPaid()
         {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
             var command = GivenWantToSetTo(STATUS_PAID);
-            WhenTrySetPaymentStatus(command);
-            ThenSetsPaymentStatusTo(STATUS_PAID);
+            WhenTrySetPaymentStatus(command, setup);
+            ThenSetsPaymentStatusTo(STATUS_PAID, setup);
         }
 
 
@@ -62,21 +67,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
         }
 
 
-        private object WhenTrySetPaymentStatus(ApiBookingSetPaymentStatusCommand command)
+        private object WhenTrySetPaymentStatus(ApiBookingSetPaymentStatusCommand command, SetupData setup)
         {
             var json = JsonConvert.SerializeObject(command);
-            var relativePath = string.Format("{0}/{1}", RelativePath, FredOnAaronOrakei14To15SessionId);
+            var relativePath = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
 
-            return WhenTrySetPaymentStatus(json, relativePath);
+            return WhenTrySetPaymentStatus(json, relativePath, setup);
         }
 
-        protected object WhenTrySetPaymentStatus(string json, string relativePath)
+        protected object WhenTrySetPaymentStatus(string json, string relativePath, SetupData setup)
         {
             try
             {
                 return new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json,
-                                                                                       Business.UserName,
-                                                                                       Business.Password,
+                                                                                       setup.Business.UserName,
+                                                                                       setup.Business.Password,
                                                                                        relativePath);
             }
             catch (Exception ex)
@@ -91,9 +96,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
             AssertSingleError((ApiResponse)response, "This payment status does not exist.");
         }
 
-        private void ThenSetsPaymentStatusTo(string paymentStatus)
+        private void ThenSetsPaymentStatusTo(string paymentStatus, SetupData setup)
         {
-            var response = AuthenticatedGet<SingleSessionBookingData>("Bookings", FredOnAaronOrakei14To15SessionId);
+            var response = AuthenticatedGet<SingleSessionBookingData>(RelativePath, 
+                                                                      setup.FredOnAaronOrakeiMiniRed14To15.Id,
+                                                                      setup);
             var booking = (SingleSessionBookingData)response.Payload;
 
             Assert.That(booking.paymentStatus, Is.EqualTo(paymentStatus));
