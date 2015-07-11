@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -22,9 +23,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new Tuple<string, string, Guid?, Guid?, Guid?>("2015-01-01", "2015-01-02", Guid.NewGuid(), null, null);
         }
 
-        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidCoachId()
+        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidCoachId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), Aaron.Id, null, null);
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
+                                                                  GetFormattedDateThreeWeeksOut(),
+                                                                  setup.Aaron.Id, null, null);
         }
 
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenInvalidLocationId()
@@ -32,9 +35,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new Tuple<string, string, Guid?, Guid?, Guid?>("2015-01-01", "2015-01-02", null, Guid.NewGuid(), null);
         }
 
-        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidLocationId()
+        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidLocationId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, Orakei.Id, null);
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
+                                                                  GetFormattedDateThreeWeeksOut(),
+                                                                  null, setup.Orakei.Id, null);
         }
 
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenInvalidServiceId()
@@ -42,9 +47,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new Tuple<string, string, Guid?, Guid?, Guid?>("2015-01-01", "2015-01-02", null, null, Guid.NewGuid());
         }
 
-        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidServiceId()
+        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidServiceId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), GetFormattedDateThreeWeeksOut(), null, null, MiniRed.Id);
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
+                                                                  GetFormattedDateThreeWeeksOut(), 
+                                                                  null, null, setup.MiniRed.Id);
         }
 
 
@@ -56,28 +63,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        protected void ThenReturnInvalidSearchPeriodError(Response response)
+        protected void ThenReturnInvalidSearchPeriodError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "The startDate is not a valid date.", "startDate" },
                                                     { "The endDate is not a valid date.", "endDate" } });
         }
 
-        protected void ThenReturnInvalidCoachIdError(Response response)
+        protected void ThenReturnInvalidCoachIdError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "Not a valid coachId.", "coachId" } });
         }
 
-        protected void ThenReturnInvalidLocationIdError(Response response)
+        protected void ThenReturnInvalidLocationIdError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "Not a valid locationId.", "locationId" } });
         }
 
-        protected void ThenReturnInvalidServiceIdError(Response response)
+        protected void ThenReturnInvalidServiceIdError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "Not a valid serviceId.", "serviceId" } });
         }
 
-        protected void ThenReturnNoSessionOrCourses(Response response)
+        protected void ThenReturnNoSessionOrCourses(ApiResponse response)
         {
             var searchResult = AssertSuccessResponse<SessionSearchData>(response);
 
@@ -88,72 +95,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(courses.Count, Is.EqualTo(0));
         }
 
-        protected void ThenReturnSessionsAndCoursesForService(Response response)
-        {
-            var searchResult = AssertSuccessResponse<SessionSearchData>(response);
-
-            // Standalone sessions
-            var standalones = searchResult.Sessions;
-            Assert.That(standalones.Count, Is.EqualTo(2));
-
-            var firstStandalone = standalones[0];
-            Assert.That(firstStandalone.id, Is.EqualTo(AaronOrakeiMiniRed16To17.Id));
-            Assert.That(firstStandalone.parentId, Is.Null);
-            Assert.That(firstStandalone.location.id, Is.EqualTo(Orakei.Id));
-            Assert.That(firstStandalone.location.name, Is.EqualTo(Orakei.Name));
-            Assert.That(firstStandalone.timing.startTime, Is.EqualTo("16:00"));
-
-            var secondStandalone = standalones[1];
-            Assert.That(secondStandalone.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
-            Assert.That(secondStandalone.parentId, Is.Null);
-            Assert.That(secondStandalone.location.id, Is.EqualTo(Orakei.Id));
-            Assert.That(secondStandalone.location.name, Is.EqualTo(Orakei.Name));
-            Assert.That(secondStandalone.timing.startTime, Is.EqualTo("14:00"));
-            Assert.That(secondStandalone.booking.bookings.Count, Is.EqualTo(2));
-
-            // Courses
-            var courses = searchResult.Courses;
-            Assert.That(courses.Count, Is.EqualTo(1));
-
-            var firstCourse = courses[0];
-            Assert.That(firstCourse.id, Is.EqualTo(AaronRemuera9To10For4WeeksCourseId));
-            Assert.That(firstCourse.parentId, Is.Null);
-            Assert.That(firstCourse.coach.id, Is.EqualTo(Aaron.Id));
-            Assert.That(firstCourse.coach.name, Is.EqualTo(Aaron.Name));
-            Assert.That(firstCourse.timing.startDate, Is.EqualTo(GetDateFormatNumberOfWeeksOut(1)));
-            Assert.That(firstCourse.timing.startTime, Is.EqualTo("9:00"));
-            Assert.That(firstCourse.booking.bookingCount, Is.EqualTo(0));
-            Assert.That(firstCourse.booking.bookings.Count, Is.EqualTo(0));
-            Assert.That(firstCourse.sessions.Count, Is.EqualTo(4));
-
-            var firstSessionFirstCourse = firstCourse.sessions[0];
-            Assert.That(firstSessionFirstCourse.booking.bookingCount, Is.EqualTo(0));
-            Assert.That(firstSessionFirstCourse.booking.bookings.Count, Is.EqualTo(0));
-
-            var secondSessionFirstCourse = firstCourse.sessions[1];
-            Assert.That(secondSessionFirstCourse.booking.bookingCount, Is.EqualTo(0));
-            Assert.That(secondSessionFirstCourse.booking.bookings.Count, Is.EqualTo(0));
-
-            var thirdSessionFirstCourse = firstCourse.sessions[2];
-            Assert.That(thirdSessionFirstCourse.booking.bookingCount, Is.EqualTo(0));
-            Assert.That(thirdSessionFirstCourse.booking.bookings.Count, Is.EqualTo(0));
-
-            var fourthSessionFirstCourse = firstCourse.sessions[3];
-            Assert.That(fourthSessionFirstCourse.booking.bookingCount, Is.EqualTo(0));
-            Assert.That(fourthSessionFirstCourse.booking.bookings.Count, Is.EqualTo(0));
-        }
-
 
         protected string BuildSearchUrl(string startDate, string endDate, Guid? coachId, Guid? locationId, Guid? serviceId)
         {
-            var baseSearchUrl = string.Format("{0}/{1}?startDate={2}&endDate={3}", BaseUrl, RelativePath, startDate, endDate);
+            var searchUrl = string.Format("{0}?startDate={1}&endDate={2}", RelativePath, startDate, endDate);
             if (coachId.HasValue)
-                baseSearchUrl = string.Format("{0}&coachId={1}", baseSearchUrl, coachId.Value);
+                searchUrl = string.Format("{0}&coachId={1}", searchUrl, coachId.Value);
             if (locationId.HasValue)
-                baseSearchUrl = string.Format("{0}&locationId={1}", baseSearchUrl, locationId.Value);
+                searchUrl = string.Format("{0}&locationId={1}", searchUrl, locationId.Value);
             if (serviceId.HasValue)
-                baseSearchUrl = string.Format("{0}&serviceId={1}", baseSearchUrl, serviceId.Value);
-            return baseSearchUrl;
+                searchUrl = string.Format("{0}&serviceId={1}", searchUrl, serviceId.Value);
+            return searchUrl;
         }
     }
 }

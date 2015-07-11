@@ -349,6 +349,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
         }
 
+        protected void ThenReturnNotFound(ApiResponse response)
+        {
+            AssertNotFound(response);
+        }
+
         protected void AssertUnauthorised(Response response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);

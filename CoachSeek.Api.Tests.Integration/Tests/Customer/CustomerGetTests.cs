@@ -1,108 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 {
     [TestFixture]
-    public class CustomerGetTests : WebIntegrationTest
+    public class CustomerGetTests : CustomerTests
     {
-        private const string BAMBAM_FIRST_NAME = "BamBam";
-        private const string FRED_FIRST_NAME = "Fred";
-        private const string WILMA_FIRST_NAME = "Wilma";
-        private const string RUBBLE_LAST_NAME = "Rubble";
-        private const string FLINTSTONE_LAST_NAME = "Flintstone";
-
-        private Guid BambamId { get; set; }
-        private Guid FredId { get; set; }
-        private Guid WilmaId { get; set; }
-        private string FredEmail { get; set; }
-        private string FredPhone { get; set; }
-        private string BambamPhone { get; set; }
-
-        protected override string RelativePath
-        {
-            get { return "Customers"; }
-        }
-
-
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-            RegisterTestCustomers();
-        }
-
-        private void RegisterTestCustomers()
-        {
-            RegisterBamBamRubbleCustomer();
-            RegisterFredFlintstoneCustomer();
-            RegisterWilmaFlintstoneCustomer();
-        }
-
-        private void RegisterFredFlintstoneCustomer()
-        {
-            FredEmail = Random.RandomEmail;
-            FredPhone = Random.RandomString;
-            var json = CreateNewCustomerSaveCommand(FRED_FIRST_NAME, FLINTSTONE_LAST_NAME, FredEmail, FredPhone);
-            var response = Post<CustomerData>(json);
-            FredId = ((CustomerData)response.Payload).id;
-        }
-
-        private void RegisterWilmaFlintstoneCustomer()
-        {
-            var json = CreateNewCustomerSaveCommand(WILMA_FIRST_NAME, FLINTSTONE_LAST_NAME);
-            var response = Post<CustomerData>(json);
-            WilmaId = ((CustomerData)response.Payload).id;
-        }
-
-        private void RegisterBamBamRubbleCustomer()
-        {
-            BambamPhone = "021 666 666";
-            var json = CreateNewCustomerSaveCommand(BAMBAM_FIRST_NAME, RUBBLE_LAST_NAME, null, BambamPhone);
-            var response = Post<CustomerData>(json);
-            BambamId = ((CustomerData)response.Payload).id;
-        }
-
-
-        private string CreateNewCustomerSaveCommand(string firstName, string lastName, string email = null, string phone = null)
-        {
-            var customer = new ApiCustomerSaveCommand
-            {
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                phone = phone
-            };
-
-            return JsonConvert.SerializeObject(customer);
-        }
-
-
         [Test]
-        public void WhenGetAll_ThenReturnAllCustomersResponse()
+        public void WhenTryGetAllCustomers_ThenReturnAllCustomers()
         {
-            var response = WhenGetAll();
-            ThenReturnAllCustomersResponse(response);
+            var setup = RegisterBusiness();
+            RegisterTestCustomers(setup);
+
+            var response = WhenTryGetAllCustomers(setup);
+            ThenReturnAllCustomers(response, setup);
         }
 
         [Test]
-        public void GivenInvalidCustomerId_WhenGetById_ThenReturnNotFoundResponse()
+        public void GivenInvalidCustomerId_WhenTryGetCustomerById_ThenReturnNotFound()
         {
+            var setup = RegisterBusiness();
+
             var id = GivenInvalidCustomerId();
-            var response = WhenGetById(id);
-            ThenReturnNotFoundResponse(response);
+            var response = WhenTryGetCustomerById(id, setup);
+            ThenReturnNotFound(response);
         }
 
         [Test]
-        public void GivenValidCustomerId_WhenGetById_ThenReturnCustomerResponse()
+        public void GivenValidCustomerId_WhenTryGetCustomerById_ThenReturnCustomer()
         {
-            var id = GivenValidCustomerId();
-            var response = WhenGetById(id);
-            ThenReturnCustomerResponse(response);
+            var setup = RegisterBusiness();
+            RegisterCustomerFred(setup);
+
+            var id = GivenValidCustomerId(setup);
+            var response = WhenTryGetCustomerById(id, setup);
+            ThenReturnCustomer(response, setup);
         }
 
 
@@ -111,70 +48,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidCustomerId()
+        private Guid GivenValidCustomerId(SetupData setup)
         {
-            return FredId;
+            return setup.Fred.Id;
         }
 
 
-        private Response WhenGetAll()
+        private ApiResponse WhenTryGetAllCustomers(SetupData setup)
         {
-            var url = BuildGetAllUrl();
-            return AuthenticatedGet<List<CustomerData>>(url);
+            return new TestAuthenticatedApiClient().Get<List<CustomerData>>(setup.Business.UserName,
+                                                                            setup.Business.Password,
+                                                                            RelativePath);
         }
 
-        private Response WhenGetById(Guid customerId)
+        private ApiResponse WhenTryGetCustomerById(Guid customerId, SetupData setup)
         {
-            var url = BuildGetByIdUrl(customerId);
-            return AuthenticatedGet<CustomerData>(url);
+            var url = string.Format("{0}/{1}", RelativePath, customerId);
+            return new TestAuthenticatedApiClient().Get<CustomerData>(setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      url);
         }
 
 
-        private void ThenReturnAllCustomersResponse(Response response)
+        private void ThenReturnAllCustomers(ApiResponse response, SetupData setup)
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Payload, Is.Not.Null);
             var customers = (List<CustomerData>)response.Payload;
-            Assert.That(customers.Count, Is.EqualTo(3));
+            Assert.That(customers.Count, Is.EqualTo(4));
 
-            var customerOne = customers[0];
-            Assert.That(customerOne.id, Is.EqualTo(FredId));
-            Assert.That(customerOne.firstName, Is.EqualTo(FRED_FIRST_NAME));
-            Assert.That(customerOne.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(customerOne.email, Is.EqualTo(FredEmail));
-            Assert.That(customerOne.phone, Is.EqualTo(FredPhone.ToUpper()));
-
-            var customerTwo = customers[1];
-            Assert.That(customerTwo.id, Is.EqualTo(WilmaId));
-            Assert.That(customerTwo.firstName, Is.EqualTo(WILMA_FIRST_NAME));
-            Assert.That(customerTwo.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(customerTwo.email, Is.Null);
-            Assert.That(customerTwo.phone, Is.Null);
-
-            var customerThree = customers[2];
-            Assert.That(customerThree.id, Is.EqualTo(BambamId));
-            Assert.That(customerThree.firstName, Is.EqualTo(BAMBAM_FIRST_NAME));
-            Assert.That(customerThree.lastName, Is.EqualTo(RUBBLE_LAST_NAME));
-            Assert.That(customerThree.email, Is.Null);
-            Assert.That(customerThree.phone, Is.EqualTo(BambamPhone));
-
+            setup.Fred.Assert(customers[0]);
+            setup.Wilma.Assert(customers[1]);
+            setup.BamBam.Assert(customers[2]);
+            setup.Barney.Assert(customers[3]);
         }
 
-        private void ThenReturnNotFoundResponse(Response response)
-        {
-            AssertNotFound(response);
-        }
-
-        private void ThenReturnCustomerResponse(Response response)
+        private void ThenReturnCustomer(ApiResponse response, SetupData setup)
         {
             var customer = AssertSuccessResponse<CustomerData>(response);
-
-            Assert.That(customer.id, Is.EqualTo(FredId));
-            Assert.That(customer.firstName, Is.EqualTo(FRED_FIRST_NAME));
-            Assert.That(customer.lastName, Is.EqualTo(FLINTSTONE_LAST_NAME));
-            Assert.That(customer.email, Is.EqualTo(FredEmail));
-            Assert.That(customer.phone, Is.EqualTo(FredPhone.ToUpperInvariant()));
+            setup.Fred.Assert(customer);
         }
     }
 }

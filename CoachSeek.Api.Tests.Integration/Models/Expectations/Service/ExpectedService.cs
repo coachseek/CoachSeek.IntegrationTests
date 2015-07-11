@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Service
 {
@@ -62,6 +63,21 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Service
                 Pricing = new ApiPricing { sessionPrice = sessionPrice, coursePrice = coursePrice };
             if (studentCapacity != null || isOnlineBookable != null)
                 Booking = new ApiServiceBooking { studentCapacity = studentCapacity, isOnlineBookable = isOnlineBookable };
+        }
+
+        public void Assert(ServiceData actualService)
+        {
+            NUnit.Framework.Assert.That(actualService.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(actualService.name, Is.EqualTo(Name));
+            NUnit.Framework.Assert.That(actualService.description, Is.EqualTo(Description));
+            NUnit.Framework.Assert.That(actualService.timing.duration, Is.EqualTo(Timing.duration));
+            NUnit.Framework.Assert.That(actualService.booking.studentCapacity, Is.EqualTo(Booking.studentCapacity));
+            NUnit.Framework.Assert.That(actualService.booking.isOnlineBookable, Is.EqualTo(Booking.isOnlineBookable));
+            NUnit.Framework.Assert.That(actualService.presentation.colour, Is.EqualTo(Presentation.colour.ToLowerInvariant()));
+            NUnit.Framework.Assert.That(actualService.repetition.sessionCount, Is.EqualTo(Repetition.sessionCount));
+            NUnit.Framework.Assert.That(actualService.repetition.repeatFrequency, Is.EqualTo(Repetition.repeatFrequency));
+            NUnit.Framework.Assert.That(actualService.pricing.sessionPrice, Is.EqualTo(Pricing.sessionPrice));
+            NUnit.Framework.Assert.That(actualService.pricing.coursePrice, Is.EqualTo(Pricing.coursePrice));
         }
     }
 }

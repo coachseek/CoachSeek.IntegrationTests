@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -8,73 +9,70 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     [TestFixture]
     public class CourseDeleteTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
+        [Test]
+        public void GivenNonExistentCourseId_WhenTryDeleteCourse_ThenReturnNotFound()
         {
-            FullySetupNewTestBusiness();
+            var setup = RegisterBusiness();
+
+            var id = GivenNonExistentCourseId();
+            var response = WhenTryDeleteCourse(id, setup);
+            AssertNotFound(response);
         }
 
-
-        //[Test]
-        //public void GivenNonExistentCourseId_WhenTryDelete_ThenReturnNotFound()
-        //{
-        //    var id = GivenNonExistentCourseId();
-        //    var response = WhenTryDelete(id);
-        //    AssertNotFound(response);
-        //}
-
         [Test]
-        public void GivenCourseWithoutBookings_WhenTryDelete_ThenCourseIsDeleted()
+        public void GivenCourseWithoutBookings_WhenTryDeleteCourse_ThenCourseIsDeleted()
         {
-            var id = GivenCourseWithoutBookings();
-            var response = WhenTryDelete(id);
-            ThenCourseIsDeleted(response);
+            var setup = RegisterBusiness();
+
+            var id = GivenCourseWithoutBookings(setup);
+            var response = WhenTryDeleteCourse(id, setup);
+            ThenCourseIsDeleted(response, setup);
         }
 
         [Test]
         public void GivenCourseWithBookings_WhenTryDelete_ThenReturnCannotDeleteCourseError()
         {
-            var id = GivenCourseWithBookings();
-            var response = WhenTryDelete(id);
+            var setup = RegisterBusiness();
+
+            var id = GivenCourseWithBookings(setup);
+            var response = WhenTryDeleteCourse(id, setup);
             AssertSingleError(response, "Cannot delete course as it has one or more bookings.");
         }
 
 
-        private Guid GivenCourseWithoutBookings()
+        private Guid GivenNonExistentCourseId()
         {
-            return BobbyRemueraHolidayCampFor3DaysCourseId;
+            return Guid.NewGuid();
         }
 
-        private Guid GivenCourseWithBookings()
+        private Guid GivenCourseWithoutBookings(SetupData setup)
         {
-            return AaronOrakeiMiniBlueFor2DaysCourseId;
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+
+            return setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+        }
+
+        private Guid GivenCourseWithBookings(SetupData setup)
+        {
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterFredOnTwoCourseSessionsInAaronOrakeiHolidayCamp9To15For3Days(setup);
+
+            return setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
         }
 
 
-        private Response WhenTryDelete(Guid id)
+        private ApiResponse WhenTryDeleteCourse(Guid id, SetupData setup)
         {
-            return Delete<SessionData>("Sessions", id);
+            return Delete<CourseData>(RelativePath, id, setup);
         }
 
 
-        private void ThenCourseIsDeleted(Response response)
+        private void ThenCourseIsDeleted(ApiResponse response, SetupData setup)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponseCourse = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysCourseId);
-            AssertNotFound(getResponseCourse);
-            var getResponseSession1 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[0]);
-            AssertNotFound(getResponseSession1);
-            var getResponseSession2 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[1]);
-            AssertNotFound(getResponseSession2);
-            var getResponseSession3 = AuthenticatedGet<SessionData>("Sessions", BobbyRemueraHolidayCampFor3DaysSessionIds[2]);
-            AssertNotFound(getResponseSession3);
-
-            // Other sessions are still there.
-            var getResponseSomeSession = AuthenticatedGet<SessionData>("Sessions", AaronOrakeiMiniRed16To17.Id);
-            AssertStatusCode(getResponseSomeSession.StatusCode, HttpStatusCode.OK);
-            var getResponseSomeCourse = AuthenticatedGet<SessionData>("Sessions", AaronRemuera9To10For4WeeksCourseId);
-            AssertStatusCode(getResponseSomeCourse.StatusCode, HttpStatusCode.OK);
+            var getResponse = AuthenticatedGet<SessionData>(RelativePath, setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            AssertNotFound(getResponse);
         }
     }
 }

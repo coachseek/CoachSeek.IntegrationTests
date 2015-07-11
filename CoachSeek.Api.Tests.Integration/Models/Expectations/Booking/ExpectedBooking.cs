@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Booking
 {
@@ -14,6 +15,21 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Booking
         {
             Session = new ApiSessionKey { id = sessionId };
             Customer = new ApiCustomerKey { id = customerId };
+        }
+
+
+        public void Assert(BookingData actualBooking)
+        {
+            NUnit.Framework.Assert.That(actualBooking.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(actualBooking.session.id, Is.EqualTo(Session.id));
+            NUnit.Framework.Assert.That(actualBooking.customer.id, Is.EqualTo(Customer.id));
+        }
+
+        public void Assert(CustomerBookingData actualBooking, Guid sessionId)
+        {
+            NUnit.Framework.Assert.That(actualBooking.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(sessionId, Is.EqualTo(Session.id));
+            NUnit.Framework.Assert.That(actualBooking.customer.id, Is.EqualTo(Customer.id));
         }
     }
 }

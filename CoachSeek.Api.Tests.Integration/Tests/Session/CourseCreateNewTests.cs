@@ -22,8 +22,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenNewCourseClashesWithStandaloneSession_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseClashesWithStandaloneSession();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronOrakeiMiniRed14To15.Id.ToString()));
         }
@@ -31,8 +33,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenNewCourseClashesWithAnotherCourse_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseClashesWithAnotherCourse();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(BobbyRemueraHolidayCampFor3DaysSessionIds[0].ToString()));
         }
@@ -42,56 +46,70 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenNewCourseWithTooManySessions_WhenTryCreateCourse_ThenReturnTooManySessionInCourseErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithTooManySessions();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
         }
 
         [Test]
         public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenTryCreateCourse_ThenReturnWithNoPriceErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithNeitherSessionNorCoursePrice();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             AssertSingleError(response, "At least a session or course price must be specified.", "session.pricing");
         }
 
         [Test]
         public void GivenNewCourseWithCoursePriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithCoursePriceOnly()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithCoursePriceOnly();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             ThenCreatesCourseWithCoursePriceOnly(response);
         }
 
         [Test]
         public void GivenNewCourseWithSessionPriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceOnly()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithSessionPriceOnly();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             ThenCreatesCourseWithSessionPriceOnly(response);
         }
 
         [Test]
         public void GivenNewCourseWithBothSessionPriceAndCoursePrice_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceAndCoursePrice()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithBothSessionPriceAndCoursePrice();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             ThenCreatesCourseWithSessionPriceAndCoursePrice(response);
         }
 
         [Test]
         public void GivenNewCourseWithZeroSessionPrice_WhenTryCreateCourse_ThenCreatesCourseWithZeroSessionPrice()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWithZeroSessionPrice();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             ThenCreatesCourseWithZeroSessionPrice(response);
         }
 
         [Test]
         public void GivenNewCourseWith24HourStartTime_WhenTryCreateCourse_ThenCreatesCourseWith24HrStartTime()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNewCourseWith24HourStartTime();
-            var response = WhenTryCreateCourse(command);
+            var response = WhenTryCreateCourse(command, setup);
             ThenCreatesCourseWith24HrStartTime(response);
         }
 

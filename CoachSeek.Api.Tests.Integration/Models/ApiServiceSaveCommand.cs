@@ -1,4 +1,5 @@
 ﻿using System;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 
 namespace CoachSeek.Api.Tests.Integration.Models
 {
@@ -13,5 +14,21 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public ApiPresentation presentation { get; set; }
         public ApiServiceRepetition repetition { get; set; }
         public ApiPricing pricing { get; set; }
+
+
+        public ApiServiceSaveCommand()
+        { }
+
+        public ApiServiceSaveCommand(ExpectedService service)
+        {
+            id = service.Id;
+            name = service.Name;
+            description = service.Description;
+            timing = service.Timing;
+            booking = service.Booking;
+            presentation = service.Presentation;
+            repetition = service.Repetition;
+            pricing = service.Pricing;
+        }
     }
 }

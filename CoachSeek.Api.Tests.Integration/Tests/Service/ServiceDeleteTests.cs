@@ -9,18 +9,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
     public class ServiceDeleteTests : ServiceTests
     {
         [Test]
-        public void GivenNonExistentServiceId_WhenTryDelete_ThenReturnNotFound()
+        public void GivenNonExistentServiceId_WhenTryDeleteService_ThenReturnNotFound()
         {
+            var setup = RegisterBusiness();
+
             var id = GivenNonExistentServiceId();
-            var response = WhenTryDelete(id);
+            var response = WhenTryDeleteService(id, setup);
             AssertNotFound(response);
         }
 
         [Test]
-        public void GivenValidServiceId_WhenTryDeleteAnonymously_ThenReturnUnauthorised()
+        public void GivenValidServiceId_WhenTryDeleteServiceAnonymously_ThenReturnUnauthorised()
         {
-            var id = GivenValidServiceId();
-            var response = WhenTryDeleteAnonymously(id);
+            var setup = RegisterBusiness();
+            RegisterServiceMiniRed(setup);
+
+            var id = GivenValidServiceId(setup);
+            var response = WhenTryDeleteServiceAnonymously(id);
             AssertUnauthorised(response);
         }
 
@@ -30,20 +35,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidServiceId()
+        private Guid GivenValidServiceId(SetupData setup)
         {
-            return MiniRedId;
+            return setup.MiniRed.Id;
         }
 
 
-        private Response WhenTryDelete(Guid id)
+        private ApiResponse WhenTryDeleteService(Guid id, SetupData setup)
         {
-            return Delete<ServiceData>("Services", id);
+            return Delete<ServiceData>(RelativePath, id, setup);
         }
 
-        private ApiResponse WhenTryDeleteAnonymously(Guid id)
+        private ApiResponse WhenTryDeleteServiceAnonymously(Guid id)
         {
-            return DeleteAnonymously<ServiceData>("Services", id);
+            return DeleteAnonymously<ServiceData>(RelativePath, id);
         }
     }
 }

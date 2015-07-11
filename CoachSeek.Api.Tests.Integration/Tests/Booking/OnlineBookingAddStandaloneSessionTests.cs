@@ -68,7 +68,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public void GivenSessionIsNotOnlineBookable_WhenTryOnlineBookStandaloneSession_ThenReturnSessionNotOnlineBookableError()
         {
             var setup = RegisterBusiness();
-            RegisterStandaloneAaronOrakei16To17(setup);
+            RegisterStandaloneAaronOrakeiMiniRed16To17(setup);
             RegisterCustomerWilma(setup);
 
             var command = GivenSessionIsNotOnlineBookable(setup);
@@ -103,7 +103,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private ApiBookingSaveCommand GivenMoreThanOneSession(SetupData setup)
         {
-            return new ApiBookingSaveCommand(new [] { setup.AaronOrakeiMiniRed14To15.Id, Guid.NewGuid() }, setup.Fred.Id);
+            return new ApiBookingSaveCommand(new[] { setup.AaronOrakeiMiniRed14To15.Id, Guid.NewGuid() }, setup.Fred.Id);
         }
 
         private ApiBookingSaveCommand GivenNonExistentSession(SetupData setup)

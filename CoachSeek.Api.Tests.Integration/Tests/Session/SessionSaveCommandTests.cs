@@ -5,26 +5,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     [TestFixture]
     public class SessionSaveCommandTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-        }
-
-
         [Test]
-        public void GivenNoSessionSaveCommand_WhenPost_ThenReturnNoDataErrorResponse()
+        public void GivenNoSessionSaveCommand_WhenPostSession_ThenReturnNoDataError()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNoSessionSaveCommand();
-            var response = WhenPostSession(command);
+            var response = WhenPostSession(command, setup);
             AssertSingleError(response, "Please post us some data!");
         }
 
         [Test]
-        public void GivenEmptySessionSaveCommand_WhenPost_ThenReturnMultipleErrors()
+        public void GivenEmptySessionSaveCommand_WhenPostSession_ThenReturnMultipleErrors()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenEmptySessionSaveCommand();
-            var response = WhenPostSession(command);
+            var response = WhenPostSession(command, setup);
             AssertMultipleErrors(response, new[,] { { "The service field is required.", "session.service" },
                                                     { "The location field is required.", "session.location" },
                                                     { "The coach field is required.", "session.coach" },
@@ -34,6 +31,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
                                                     { "The repetition field is required.", "session.repetition" },
                                                     { "The presentation field is required.", "session.presentation" } });
         }
+
 
         private string GivenNoSessionSaveCommand()
         {

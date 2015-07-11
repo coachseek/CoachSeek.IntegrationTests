@@ -22,56 +22,70 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenNonExistentCourseId_WhenTryUpdateCourse_ThenReturnNotFoundResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNonExistentCourseId();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             AssertNotFound(response);
         }
 
         [Test]
         public void GivenNonExistentLocationId_WhenTryUpdateCourse_ThenReturnInvalidLocationErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNonExistentLocationId();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidLocationErrorResponse(response);
         }
 
         [Test]
         public void GivenNonExistentCoachId_WhenTryUpdateCourse_ThenReturnInvalidCoachErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNonExistentCoachId();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidCoachErrorResponse(response);
         }
 
         [Test]
         public void GivenNonExistentServiceId_WhenTryUpdateCourse_ThenReturnInvalidServiceErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenNonExistentServiceId();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidServiceErrorResponse(response);
         }
 
         [Test]
         public void GivenWantTurnCourseIntoSession_WhenTryUpdateCourse_ThenReturnsCannotUpdateRepetitionOfCourseError()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToTurnCourseIntoSession();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsCannotUpdateRepetitionOfCourseError(response);
         }
 
         [Test]
         public void GivenWantToChangeRepetitionOfCourse_WhenTryUpdateCourse_ThenReturnsCannotUpdateRepetitionOfCourseError()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToChangeRepetitionOfCourse();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsCannotUpdateRepetitionOfCourseError(response);
         }
 
         [Test]
         public void GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate_WhenTryUpdateCourse_ThenUpdatesCourseButLeavesSessionStartDatesTheSame()
         {
-            var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate();
-            var response = WhenTryUpdateCourse(command);
+            var setup = RegisterBusiness();
+
+            var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(setup);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenUpdatesCourseButLeavesSessionStartDatesTheSame(response);
         }
 
@@ -79,32 +93,40 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenWantToUpdateCourseAndChangeCourseStartDate_WhenTryUpdateCourse_ThenUpdatesCourseAndMovesSessionStartDates()
         {
-            var command = GivenWantToUpdateCourseAndChangeCourseStartDate();
-            var response = WhenTryUpdateCourse(command);
+            var setup = RegisterBusiness();
+
+            var command = GivenWantToUpdateCourseAndChangeCourseStartDate(setup);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenUpdatesCourseAndMovesSessionStartDates(response);
         }
 
         [Test]
         public void GivenWantToUpdateSessionInCourse_WhenTryUpdateCourse_ThenReturnsSessionUpdatedResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateSessionInCourse();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsSessionUpdatedResponse(response);
         }
 
         [Test]
         public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself_WhenTryUpdateCourse_ThenReturnsSessionTimeUpdatedResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsSessionTimeUpdatedResponse(response);
         }
 
         [Test]
         public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse_WhenTryUpdateCourse_ThenReturnsSessionClashingErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
             Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For4WeeksSessionIds[3].ToString()));
         }
@@ -112,24 +134,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         [Test]
         public void GivenWantToUpdateSessionInCourseWithSessionCountGreaterThanOne_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(5);
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsInvalidRepetitionErrorResponse(response);
         }
 
         [Test]
         public void GivenWantToUpdateSessionInCourseWithSessionCountLessThanOne_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(-3);
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsInvalidRepetitionErrorResponse(response);
         }
 
         [Test]
         public void GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
         {
+            var setup = RegisterBusiness();
+
             var command = GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency();
-            var response = WhenTryUpdateCourse(command);
+            var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsInvalidRepetitionErrorResponse(response);
         }
 
@@ -189,11 +217,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return courseCommand;
         }
 
-        private ApiSessionSaveCommand GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate()
+        private ApiSessionSaveCommand GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(SetupData setup)
         {
             // Move one of the sessions to a different time and date to make the test more relevant.
-            ChangeTimingForLastSessionInCourse();
-
+            ChangeTimingForLastSessionInCourse(setup);
 
             var courseCommand = CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
             courseCommand.id = BobbyRemueraHolidayCampFor3DaysCourseId;
@@ -210,9 +237,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return courseCommand;
         }
 
-        private ApiSessionSaveCommand GivenWantToUpdateCourseAndChangeCourseStartDate()
+        private ApiSessionSaveCommand GivenWantToUpdateCourseAndChangeCourseStartDate(SetupData setup)
         {
-            var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate();
+            var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(setup);
             command.timing.startDate = GetDateFormatNumberOfDaysOut(4);
 
             return command;
@@ -332,7 +359,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPresentation(thirdSession.presentation, "orange");
         }
 
-        private void ChangeTimingForLastSessionInCourse()
+        private void ChangeTimingForLastSessionInCourse(SetupData setup)
         {
             var sessionCommand = CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
             sessionCommand.id = BobbyRemueraHolidayCampFor3DaysSessionIds[2];
@@ -340,7 +367,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             sessionCommand.timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(6), startTime = "11:00", duration = 180 };
             sessionCommand.presentation = new ApiPresentation { colour = "mid-blue" };
 
-            WhenTryUpdateSession(sessionCommand);
+            WhenTryUpdateSession(sessionCommand, setup);
         }
 
         private ApiSessionSaveCommand GivenWantToUpdateSessionInCourse()

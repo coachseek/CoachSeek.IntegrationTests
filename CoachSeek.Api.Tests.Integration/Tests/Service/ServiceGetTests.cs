@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -12,84 +13,95 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         public class AnonymousServiceGetTests : ServiceGetTests
         {
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetServiceByIdAnonymously_ThenReturnUnauthorised()
             {
-                GivenNoBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(MiniRedId);
-                ThenReturnNotAuthorised(response);
+                var setup = RegisterBusiness();
+                RegisterServiceMiniRed(setup);
+
+                var businessDomain = GivenNoBusinessDomain();
+                var response = WhenTryGetServiceByIdAnonymously(setup.MiniRed.Id, businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetServiceByIdAnonymously_ThenReturnUnauthorised()
             {
-                GivenInvalidBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(MiniRedId);
-                ThenReturnNotAuthorised(response);
+                var setup = RegisterBusiness();
+                RegisterServiceMiniRed(setup);
+
+                var businessDomain = GivenInvalidBusinessDomain();
+                var response = WhenTryGetServiceByIdAnonymously(setup.MiniRed.Id, businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetByIdAnonymously_ThenReturnService()
+            public void GivenValidBusinessDomain_WhenTryGetServiceByIdAnonymously_ThenReturnService()
             {
-                GivenValidBusinessDomain();
-                var response = WhenTryGetByIdAnonymously(MiniRedId);
-                ThenReturnService(response);
+                var setup = RegisterBusiness();
+                RegisterServiceMiniRed(setup);
+
+                var businessDomain = GivenValidBusinessDomain(setup);
+                var response = WhenTryGetServiceByIdAnonymously(setup.MiniRed.Id, businessDomain);
+                ThenReturnService(response, setup);
             }
 
             [Test]
-            public void GivenNoBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            public void GivenNoBusinessDomain_WhenTryGetAllServicesAnonymously_ThenReturnNotAuthorised()
             {
-                GivenNoBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnNotAuthorised(response);
+                var businessDomain = GivenNoBusinessDomain();
+                var response = WhenTryGetAllServicesAnonymously(businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenInvalidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnNotAuthorised()
+            public void GivenInvalidBusinessDomain_WhenTryGetAllServicesAnonymously_ThenReturnNotAuthorised()
             {
-                GivenInvalidBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnNotAuthorised(response);
+                var businessDomain = GivenInvalidBusinessDomain();
+                var response = WhenTryGetAllServicesAnonymously(businessDomain);
+                ThenReturnUnauthorised(response);
             }
 
             [Test]
-            public void GivenValidBusinessDomain_WhenTryGetAllAnonymously_ThenReturnAllServices()
+            public void GivenValidBusinessDomain_WhenTryGetAllServicesAnonymously_ThenReturnAllServices()
             {
-                GivenValidBusinessDomain();
-                var response = WhenTryGetAllAnonymously();
-                ThenReturnAllServices(response);
+                var setup = RegisterBusiness();
+                RegisterTestServices(setup);
+
+                var businessDomain = GivenValidBusinessDomain(setup);
+                var response = WhenTryGetAllServicesAnonymously(businessDomain);
+                ThenReturnAllServices(response, setup);
             }
 
 
-            private void GivenNoBusinessDomain()
+            private string GivenNoBusinessDomain()
             {
-                Business.Domain = null;
+                return null;
             }
 
-            private void GivenInvalidBusinessDomain()
+            private string GivenInvalidBusinessDomain()
             {
-                Business.Domain = "abc123";
+                return "abc123";
             }
 
-            private void GivenValidBusinessDomain()
+            private string GivenValidBusinessDomain(SetupData setup)
             {
-                // Valid domain is already set.
-            }
-
-
-            private Response WhenTryGetByIdAnonymously(Guid serviceId)
-            {
-                var url = BuildGetByIdUrl(serviceId);
-                return GetAnonymously<ServiceData>(url);
-            }
-
-            private Response WhenTryGetAllAnonymously()
-            {
-                var url = BuildGetAllUrl();
-                return GetAnonymously<List<ServiceData>>(url);
+                return setup.Business.Domain;
             }
 
 
-            private void ThenReturnNotAuthorised(Response response)
+            private ApiResponse WhenTryGetServiceByIdAnonymously(Guid serviceId, string businessDomain)
+            {
+                var url = string.Format("{0}/{1}", RelativePath, serviceId);
+                return new TestBusinessAnonymousApiClient().Get<ServiceData>(businessDomain, url);                
+            }
+
+            private ApiResponse WhenTryGetAllServicesAnonymously(string businessDomain)
+            {
+                return new TestBusinessAnonymousApiClient().Get<List<ServiceData>>(businessDomain, RelativePath);
+            }
+
+
+            private void ThenReturnUnauthorised(ApiResponse response)
             {
                 AssertUnauthorised(response);
             }
@@ -100,26 +112,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         public class AuthenticatedServiceGetTests : ServiceGetTests
         {
             [Test]
-            public void WhenTryGetAll_ThenReturnAllServices()
+            public void WhenTryGetAllServices_ThenReturnAllServices()
             {
-                var response = WhenTryGetAll();
-                ThenReturnAllServices(response);
+                var setup = RegisterBusiness();
+                RegisterTestServices(setup);
+
+                var response = WhenTryGetAllServices(setup);
+                ThenReturnAllServices(response, setup);
             }
 
             [Test]
-            public void GivenInvalidServiceId_WhenTryGetById_ThenReturnNotFound()
+            public void GivenInvalidServiceId_WhenTryGetServiceById_ThenReturnNotFound()
             {
+                var setup = RegisterBusiness();
+
                 var serviceId = GivenInvalidServiceId();
-                var response = WhenTryGetById(serviceId);
+                var response = WhenTryGetServiceById(serviceId, setup);
                 ThenReturnNotFound(response);
             }
 
             [Test]
-            public void GivenValidServiceId_WhenTryGetById_ThenReturnService()
+            public void GivenValidServiceId_WhenTryGetServiceById_ThenReturnService()
             {
-                var serviceId = GivenValidServiceId();
-                var response = WhenTryGetById(serviceId);
-                ThenReturnService(response);
+                var setup = RegisterBusiness();
+                RegisterServiceMiniRed(setup);
+
+                var serviceId = GivenValidServiceId(setup);
+                var response = WhenTryGetServiceById(serviceId, setup);
+                ThenReturnService(response, setup);
             }
         }
 
@@ -129,9 +149,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidServiceId()
+        private Guid GivenValidServiceId(SetupData setup)
         {
-            return MiniRedId;
+            return setup.MiniRed.Id;
         }
 
 
@@ -147,47 +167,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             return AuthenticatedGet<ServiceData>(url);
         }
 
-
-        private void ThenReturnAllServices(Response response)
+        private ApiResponse WhenTryGetAllServices(SetupData setup)
         {
-            Assert.That(response, Is.Not.Null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
-            Assert.That(response.Payload, Is.Not.Null);
-            var services = (List<ServiceData>)response.Payload;
-            Assert.That(services.Count, Is.EqualTo(2));
-            var serviceOne = services[0];
-            Assert.That(serviceOne.id, Is.EqualTo(MiniBlueId));
-            Assert.That(serviceOne.name, Is.EqualTo(MINI_BLUE_NAME));
-            var serviceTwo = services[1];
-            Assert.That(serviceTwo.id, Is.EqualTo(MiniRedId));
-            Assert.That(serviceTwo.name, Is.EqualTo(MINI_RED_NAME));
+            return new TestAuthenticatedApiClient().Get<List<ServiceData>>(setup.Business.UserName,
+                                                                           setup.Business.Password,
+                                                                           RelativePath);
         }
 
-        private void ThenReturnNotFound(Response response)
+        private ApiResponse WhenTryGetServiceById(Guid serviceId, SetupData setup)
         {
-            AssertNotFound(response);
+            var url = string.Format("{0}/{1}", RelativePath, serviceId);
+            return new TestAuthenticatedApiClient().Get<ServiceData>(setup.Business.UserName,
+                                                                     setup.Business.Password,
+                                                                     url);
         }
 
-        private void ThenReturnService(Response response)
+
+        private void ThenReturnAllServices(ApiResponse response, SetupData setup)
+        {
+            var services = AssertSuccessResponse<List<ServiceData>>(response);
+
+            setup.HolidayCamp.Assert(services[0]);
+            setup.MiniRed.Assert(services[1]);
+        }
+
+        private void ThenReturnService(ApiResponse response, SetupData setup)
         {
             var service = AssertSuccessResponse<ServiceData>(response);
-            AssertMiniRedService(service);
-        }
-
-        private void AssertMiniRedService(ServiceData service)
-        {
-            Assert.That(service.id, Is.EqualTo(MiniRedId));
-            Assert.That(service.name, Is.EqualTo(MINI_RED_NAME));
-            Assert.That(service.description, Is.EqualTo(MINI_RED_DESCRIPTION));
-            Assert.That(service.timing.duration, Is.EqualTo(45));
-            Assert.That(service.booking.studentCapacity, Is.EqualTo(8));
-            Assert.That(service.booking.isOnlineBookable, Is.EqualTo(false));
-            Assert.That(service.presentation.colour, Is.EqualTo("red"));
-            Assert.That(service.repetition.sessionCount, Is.EqualTo(10));
-            Assert.That(service.repetition.repeatFrequency, Is.EqualTo("w"));
-            Assert.That(service.pricing.sessionPrice, Is.EqualTo(12.5));
-            Assert.That(service.pricing.coursePrice, Is.EqualTo(100));
+            setup.MiniRed.Assert(service);
         }
     }
 }

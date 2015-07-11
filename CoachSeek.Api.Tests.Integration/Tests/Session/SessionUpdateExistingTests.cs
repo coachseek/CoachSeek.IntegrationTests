@@ -1,7 +1,6 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
-using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -9,190 +8,150 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     [TestFixture]
     public class SessionUpdateExistingTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-
-            MiniGreen = new ServiceMiniGreen();
-            ServiceRegistrar.RegisterService(MiniGreen, Business);
-        }
-
-
         [Test]
-        public void GivenNonExistentSessionId_WhenTryUpdateSession_ThenReturnNotFoundResponse()
+        public void GivenNonExistentSessionId_WhenTryUpdateSession_ThenReturnNotFound()
         {
-            var command = GivenNonExistentSessionId();
-            var response = WhenTryUpdateSession(command);
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenNonExistentSessionId(setup);
+            var response = WhenTryUpdateSession(command, setup);
             AssertNotFound(response);
         }
 
         [Test]
-        public void GivenUpdatedSessionClashesWithItself_WhenTryUpdateSession_ThenSessionWasUpdatedResponse()
+        public void GivenExistingSessionToBeUpdatedClashesWithItself_WhenTryUpdateSession_ThenSelfClashingSessionWillBeUpdated()
         {
-            var command = GivenUpdatedSessionClashesWithItself();
-            var response = WhenTryUpdateSession(command);
-            ThenSessionWasUpdatedResponse(response, GetDateFormatNumberOfWeeksOut(3), "14:30");
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenExistingSessionToBeUpdatedClashesWithItself(setup);
+            var response = WhenTryUpdateSession(command, setup);
+            ThenSelfClashingSessionWillBeUpdated(response, setup);
         }
 
         [Test]
-        public void GivenSessionWillNotClash_WhenTryUpdateSession_ThenSessionWasUpdatedResponse()
+        public void GivenExistingSessionWillNotClash_WhenTryUpdateSession_ThenSessionWillBeUpdated()
         {
-            var command = ChangeTimeForSessionCoachedByAaronTo("11:30");
-            var response = WhenTryUpdateSession(command);
-            ThenSessionWasUpdatedResponse(response, GetDateFormatNumberOfWeeksOut(3), "11:30");
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenExistingSessionWillNotClash(setup);
+            var response = WhenTryUpdateSession(command, setup);
+            ThenSessionWillBeUpdated(response, setup);
         }
 
         [Test]
-        public void GivenCompletelyChangedNonClashingSession_WhenTryUpdateSession_ThenReturnCompletelyChangedSessionWasUpdatedResponse()
+        public void GivenCompletelyChangedNonClashingSession_WhenTryUpdateSession_ThenSessionWillBeCompletelyUpdated()
         {
-            var command = GivenCompletelyChangedNonClashingSession();
-            var response = WhenTryUpdateSession(command);
-            ThenReturnCompletelyChangedSessionWasUpdatedResponse(response);
+            var setup = RegisterBusiness();
+            RegisterLocationRemuera(setup);
+            RegisterCoachBobby(setup);
+            RegisterServiceHolidayCamp(setup);
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenCompletelyChangedNonClashingSession(setup);
+            var response = WhenTryUpdateSession(command, setup);
+            ThenSessionWillBeCompletelyUpdated(response, setup);
         }
 
         [Test]
-        public void GivenSessionClashesWithAnotherSession_WhenTryUpdateSession_ThenReturnSessionClashErrorResponse()
+        public void GivenSessionClashesWithAnotherStandaloneSession_WhenTryUpdateSession_ThenReturnSessionClashError()
         {
-            var command = GivenSessionClashesWithAnotherSession();
-            var response = WhenTryUpdateSession(command);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.code, Is.EqualTo("clashing-session"));
-            Assert.That(error.data, Is.StringContaining(AaronOrakeiMiniRed14To15.Id.ToString()));
+            var setup = RegisterBusiness();
+            RegisterTestSessions(setup);
+
+            var command = GivenSessionClashesWithAnotherStandaloneSession(setup);
+            var response = WhenTryUpdateSession(command, setup);
+            ThenReturnSessionClashError(response, setup.AaronOrakeiMiniRed14To15.Id);
         }
 
         [Test]
         public void GivenSessionClashesWithAnotherSessionInCourse_WhenTryUpdateSession_ThenReturnSessionClashErrorResponse()
         {
-            var command = GivenSessionClashesWithAnotherSessionInCourse();
-            var response = WhenTryUpdateSession(command);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.code, Is.EqualTo("clashing-session"));
-            Assert.That(error.data, Is.StringContaining(AaronRemuera9To10For4WeeksSessionIds[2].ToString()));
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+
+            var command = GivenSessionClashesWithAnotherSessionInCourse(setup);
+            var response = WhenTryUpdateSession(command, setup);
+            ThenReturnSessionClashError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id);
         }
 
         [Test]
         public void GivenWantTurnSessionIntoCourse_WhenTryUpdateSession_ThenReturnsCannotChangeSessionToCourseError()
         {
-            var command = GivenWantTurnSessionIntoCourse();
-            var response = WhenTryUpdateSession(command);
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenWantTurnSessionIntoCourse(setup);
+            var response = WhenTryUpdateSession(command, setup);
             ThenReturnsCannotChangeSessionToCourseError(response);
         }
 
 
-        private ApiSessionSaveCommand GivenWantTurnSessionIntoCourse()
+        private ApiSessionSaveCommand GivenWantTurnSessionIntoCourse(SetupData setup)
         {
-            var sessionCommand = CreateSessionSaveCommandAaronOrakei16To17();
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = setup.AaronOrakeiMiniRed14To15.Id;
+            command.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "w" };
 
-            sessionCommand.id = AaronOrakeiMiniRed16To17.Id;
-            sessionCommand.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "w" };
-
-            return sessionCommand;
+            return command;
         }
 
-        private void ThenReturnsCannotChangeSessionToCourseError(ApiResponse response)
+        private ApiSessionSaveCommand GivenNonExistentSessionId(SetupData setup)
         {
-            AssertSingleError(response, "Cannot change a session to a course.");
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = Guid.NewGuid();
+
+            return command;
         }
 
-
-        private ApiSessionSaveCommand GivenNonExistentSessionId()
+        private ApiSessionSaveCommand GivenExistingSessionToBeUpdatedClashesWithItself(SetupData setup)
         {
-            var session = GivenExistingSession();
-            session.id = Guid.NewGuid();
-
-            return session;
-        }
-
-        private ApiSessionSaveCommand GivenUpdatedSessionClashesWithItself()
-        {
-            var command = CreateSessionSaveCommandAaronOrakei14To15();
-
-            command.id = AaronOrakeiMiniRed14To15.Id;
-            command.booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true };
-            command.repetition = new ApiRepetition { sessionCount = 1 };
-            command.presentation = new ApiPresentation { colour = "red" };
-            command.pricing = new ApiPricing { sessionPrice = 19.95m };
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = setup.AaronOrakeiMiniRed14To15.Id;
             command.timing.startTime = "14:30";
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenExistingSession()
+        private ApiSessionSaveCommand GivenExistingSessionWillNotClash(SetupData setup)
         {
-            return new ApiSessionSaveCommand
-            {
-                id = AaronOrakeiMiniRed14To15.Id,
-                location = new ApiLocationKey { id = Orakei.Id },
-                coach = new ApiCoachKey { id = Aaron.Id },
-                service = new ApiServiceKey { id = MiniRed.Id },
-                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "14:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 12, isOnlineBookable = false },
-                pricing = new ApiPricing { sessionPrice = 10, coursePrice = 80 },
-                repetition = new ApiRepetition { sessionCount = 10, repeatFrequency = "w" },
-                presentation = new ApiPresentation { colour = "red" }
-            };
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = setup.AaronOrakeiMiniRed14To15.Id;
+            command.timing.startTime = "11:30";
+
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenSessionClashesWithAnotherSession()
+        private ApiSessionSaveCommand GivenSessionClashesWithAnotherStandaloneSession(SetupData setup)
         {
-            var command = CreateSessionSaveCommandAaronOrakei16To17();
-
-            command.id = AaronOrakeiMiniRed16To17.Id;
-            command.service.id = MiniBlue.Id;
-            command.location.id = Remuera.Id;
-
-            command.booking = new ApiSessionBooking { studentCapacity = 5, isOnlineBookable = true };
-            command.repetition = new ApiRepetition { sessionCount = 1 };
-            command.presentation = new ApiPresentation { colour = "blue" };
-            command.pricing = new ApiPricing { sessionPrice = 15 };
-
-            // Should clash with AaronOrakei14To15Session
-            command.timing.startDate = GetFormattedDateThreeWeeksOut();
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = setup.AaronOrakeiMiniRed16To17.Id;
             command.timing.startTime = "14:30";
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenSessionClashesWithAnotherSessionInCourse()
+        private ApiSessionSaveCommand GivenSessionClashesWithAnotherSessionInCourse(SetupData setup)
         {
-            return new ApiSessionSaveCommand
-            {
-                id = AaronOrakeiMiniRed14To15.Id,
-                coach = new ApiCoachKey { id = Aaron.Id },
-                location = new ApiLocationKey { id = Remuera.Id },
-                service = new ApiServiceKey { id = MiniBlue.Id },
-                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(3), startTime = "9:45", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 1, isOnlineBookable = false },
-                repetition = new ApiRepetition { sessionCount = 1 },
-                pricing = new ApiPricing { sessionPrice = 60 },
-                presentation = new ApiPresentation { colour = "blue " }
-            };
-        }
-
-        private ApiSessionSaveCommand ChangeTimeForSessionCoachedByAaronTo(string startTime)
-        {
-            var command = CreateSessionSaveCommandAaronOrakei14To15();
-
-            command.id = AaronOrakeiMiniRed14To15.Id;
-            command.booking = new ApiSessionBooking { studentCapacity = 13, isOnlineBookable = true };
-            command.repetition = new ApiRepetition { sessionCount = 1 };
-            command.presentation = new ApiPresentation { colour = "red" };
-            command.pricing = new ApiPricing { sessionPrice = 19.95m };
-            command.timing.startTime = startTime;
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.id = setup.AaronOrakeiMiniRed14To15.Id;
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(15);
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenCompletelyChangedNonClashingSession()
+        private ApiSessionSaveCommand GivenCompletelyChangedNonClashingSession(SetupData setup)
         {
             return new ApiSessionSaveCommand
             {
-                id = AaronOrakeiMiniRed14To15.Id,
-                location = new ApiLocationKey { id = Remuera.Id },
-                coach = new ApiCoachKey { id = Bobby.Id },
-                service = new ApiServiceKey { id = MiniGreen.Id },
-                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfWeeksOut(2), startTime = "22:00", duration = 30 },
+                id = setup.AaronOrakeiMiniRed14To15.Id,
+                location = new ApiLocationKey { id = setup.Remuera.Id },
+                coach = new ApiCoachKey { id = setup.Bobby.Id },
+                service = new ApiServiceKey { id = setup.HolidayCamp.Id },
+                timing = new ApiSessionTiming { startDate = GetDateFormatNumberOfDaysOut(7), startTime = "22:00", duration = 30 },
                 booking = new ApiSessionBooking { studentCapacity = 7, isOnlineBookable = false },
                 repetition = new ApiRepetition { sessionCount = 1 },
                 pricing = new ApiPricing { sessionPrice = 15m },
@@ -200,20 +159,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             };
         }
 
-        private SessionData ThenSessionWasUpdatedResponse(ApiResponse response, string startDate, string startTime)
+        private SessionData ThenSelfClashingSessionWillBeUpdated(ApiResponse response, SetupData setup)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
             Assert.That(session.parentId, Is.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
+            Assert.That(session.id, Is.EqualTo(setup.AaronOrakeiMiniRed14To15.Id));
 
-            AssertSessionLocation(session.location, Orakei.Id, "Orakei Tennis Club");
-            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
+            AssertSessionLocation(session.location, setup.Orakei.Id, setup.Orakei.Name);
+            AssertSessionCoach(session.coach, setup.Aaron.Id, setup.Aaron.Name);
+            AssertSessionService(session.service, setup.MiniRed.Id, setup.MiniRed.Name);
 
-            AssertSessionTiming(session.timing, startDate, startTime, 60);
-            AssertSessionBooking(session.booking, 13, true);
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(21), "14:30", 60);
+            AssertSessionBooking(session.booking, 3, true);
             AssertSessionRepetition(session.repetition, 1, null);
             AssertSessionPricing(session.pricing, 19.95m, null);
             AssertSessionPresentation(session.presentation, "red");
@@ -221,21 +180,54 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return session;
         }
 
-        private void ThenReturnCompletelyChangedSessionWasUpdatedResponse(ApiResponse response)
+        private SessionData ThenSessionWillBeUpdated(ApiResponse response, SetupData setup)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
             Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
+            Assert.That(session.parentId, Is.Null);
+            Assert.That(session.id, Is.EqualTo(setup.AaronOrakeiMiniRed14To15.Id));
 
-            AssertSessionLocation(session.location, Remuera.Id, Remuera.Name);
-            AssertSessionCoach(session.coach, Bobby.Id, Bobby.Name);
-            AssertSessionService(session.service, MiniGreen.Id, MiniGreen.Name);
-            AssertSessionTiming(session.timing, GetFormattedDateTwoWeeksOut(), "22:00", 30);
+            AssertSessionLocation(session.location, setup.Orakei.Id, setup.Orakei.Name);
+            AssertSessionCoach(session.coach, setup.Aaron.Id, setup.Aaron.Name);
+            AssertSessionService(session.service, setup.MiniRed.Id, setup.MiniRed.Name);
+
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(21), "11:30", 60);
+            AssertSessionBooking(session.booking, 3, true);
+            AssertSessionRepetition(session.repetition, 1, null);
+            AssertSessionPricing(session.pricing, 19.95m, null);
+            AssertSessionPresentation(session.presentation, "red");
+
+            return session;
+        }
+
+        private void ThenSessionWillBeCompletelyUpdated(ApiResponse response, SetupData setup)
+        {
+            var session = AssertSuccessResponse<SessionData>(response);
+
+            Assert.That(session, Is.Not.Null);
+            Assert.That(session.id, Is.EqualTo(setup.AaronOrakeiMiniRed14To15.Id));
+
+            AssertSessionLocation(session.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(session.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(session.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(7), "22:00", 30);
             AssertSessionBooking(session.booking, 7, false);
             AssertSessionPricing(session.pricing, 15, null);
             AssertSessionRepetition(session.repetition, 1, null);
             AssertSessionPresentation(session.presentation, "green");
+        }
+
+        private void ThenReturnsCannotChangeSessionToCourseError(ApiResponse response)
+        {
+            AssertSingleError(response, "Cannot change a session to a course.");
+        }
+
+        private void ThenReturnSessionClashError(ApiResponse response, Guid sessionId)
+        {
+            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
+            Assert.That(error.code, Is.EqualTo("clashing-session"));
+            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", sessionId)));
         }
     }
 }

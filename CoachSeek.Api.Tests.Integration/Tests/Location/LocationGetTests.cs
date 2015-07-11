@@ -171,11 +171,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
-        private void ThenReturnNotFound(ApiResponse response)
-        {
-            AssertNotFound(response);
-        }
-
         private void ThenReturnAllLocations(ApiResponse response, SetupData setup)
         {
             var locations = AssertSuccessResponse<List<LocationData>>(response);

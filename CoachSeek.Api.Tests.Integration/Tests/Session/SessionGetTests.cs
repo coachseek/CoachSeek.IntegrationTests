@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -7,13 +9,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
     public class SessionGetTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-        }
-
-
         [TestFixture]
         public class AnonymousSessionGetTests : SessionGetTests
         {
@@ -40,27 +35,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public class AuthenticatedSessionGetTests : SessionGetTests
         {
             [Test]
-            public void GivenInvalidSessionId_WhenTryGetById_ThenReturnNotFound()
+            public void GivenInvalidSessionId_WhenTryGetSessionById_ThenReturnNotFound()
             {
+                var setup = RegisterBusiness();
+                RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
                 var id = GivenInvalidSessionId();
-                var response = WhenTryGetById(id);
+                var response = WhenTryGetSessionById(id, setup);
                 ThenReturnNotFound(response);
             }
 
             [Test]
-            public void GivenValidSessionWithoutBookings_WhenGetById_ThenReturnSessionWithoutBookings()
+            public void GivenValidSessionWithoutBookings_WhenTryGetSessionById_ThenReturnSessionWithoutBookings()
             {
-                var id = GivenValidSessionWithoutBookings();
-                var response = WhenTryGetById(id);
-                ThenReturnSessionWithoutBookings(response);
+                var setup = RegisterBusiness();
+
+                var id = GivenValidSessionWithoutBookings(setup);
+                var response = WhenTryGetSessionById(id, setup);
+                ThenReturnSessionWithoutBookings(response, setup);
             }
 
             [Test]
             public void GivenValidSessionWithBookings_WhenGetById_ThenReturnSessionWithBookings()
             {
-                var id = GivenValidSessionWithBookings();
-                var response = WhenTryGetById(id);
-                ThenReturnSessionWithBookings(response);
+                var setup = RegisterBusiness();
+
+                var id = GivenValidSessionWithBookings(setup);
+                var response = WhenTryGetSessionById(id, setup);
+                ThenReturnSessionWithBookings(response, setup);
             }
         }
 
@@ -70,88 +72,56 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return Guid.NewGuid();
         }
 
-        private Guid GivenValidSessionWithoutBookings()
+        private Guid GivenValidSessionWithoutBookings(SetupData setup)
         {
-            return AaronOrakeiMiniRed16To17.Id;
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            return setup.AaronOrakeiMiniRed14To15.Id;
         }
 
-        private Guid GivenValidSessionWithBookings()
+        private Guid GivenValidSessionWithBookings(SetupData setup)
         {
-            return AaronOrakeiMiniRed14To15.Id;
-        }
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
 
-
-        private Response WhenGetAll()
-        {
-            var url = BuildGetAllUrl();
-            return AuthenticatedGet<List<CustomerData>>(url);
-        }
-
-        private Response WhenTryGetById(Guid sessionId)
-        {
-            var url = BuildGetByIdUrl(sessionId);
-            return AuthenticatedGet<SessionData>(url);
+            return setup.AaronOrakeiMiniRed14To15.Id;
         }
 
 
-        private void ThenReturnNotFound(Response response)
+        private ApiResponse WhenTryGetAllSessions(SetupData setup)
         {
-            AssertNotFound(response);
+            return new TestAuthenticatedApiClient().Get<List<SessionData>>(setup.Business.UserName,
+                                                                           setup.Business.Password,
+                                                                           RelativePath);
         }
 
-        private void ThenReturnSessionWithoutBookings(Response response)
+        private ApiResponse WhenTryGetSessionById(Guid serviceId, SetupData setup)
+        {
+            var url = string.Format("{0}/{1}", RelativePath, serviceId);
+            return new TestAuthenticatedApiClient().Get<SessionData>(setup.Business.UserName,
+                                                                     setup.Business.Password,
+                                                                     url);
+        }
+
+
+        private void ThenReturnSessionWithoutBookings(ApiResponse response, SetupData setup)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed16To17.Id));
-            Assert.That(session.parentId, Is.Null);
-
-            AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
-
-            AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "16:00", 60);
-            AssertSessionBooking(session.booking, 13, false);
-            AssertSessionRepetition(session.repetition, 1, null);
-            AssertSessionPricing(session.pricing, 19.95m, null);
-            AssertSessionPresentation(session.presentation, "red");
+            setup.AaronOrakeiMiniRed14To15.Assert(session);
+            Assert.That(session.booking.bookingCount, Is.EqualTo(0));
+            Assert.That(session.booking.bookings.Count, Is.EqualTo(0));
         }
 
-        private void ThenReturnSessionWithBookings(Response response)
+        private void ThenReturnSessionWithBookings(ApiResponse response, SetupData setup)
         {
             var session = AssertSuccessResponse<SessionData>(response);
 
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session.id, Is.EqualTo(AaronOrakeiMiniRed14To15.Id));
-            Assert.That(session.parentId, Is.Null);
-
-            AssertSessionLocation(session.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniRed.Id, MiniRed.Name);
-
-            AssertSessionTiming(session.timing, GetDateFormatNumberOfWeeksOut(3), "14:00", 60);
-            AssertSessionBooking(session.booking, 3, true, 2);
-            AssertSessionRepetition(session.repetition, 1, null);
-            AssertSessionPricing(session.pricing, 19.95m, null);
-            AssertSessionPresentation(session.presentation, "red");
-
-            var bookings = session.booking.bookings;
-            var bookingOne = bookings[0];
-            Assert.That(bookingOne.id, Is.EqualTo(FredOnAaronOrakei14To15SessionId));
-            Assert.That(bookingOne.customer.id, Is.EqualTo(Fred.Id));
-            Assert.That(bookingOne.customer.firstName, Is.EqualTo(Fred.FirstName));
-            Assert.That(bookingOne.customer.lastName, Is.EqualTo(Fred.LastName));
-            Assert.That(bookingOne.customer.email, Is.EqualTo(Fred.Email));
-            Assert.That(bookingOne.customer.phone, Is.EqualTo(Fred.Phone.ToUpper()));
-
-            var bookingTwo = bookings[1];
-            Assert.That(bookingTwo.id, Is.EqualTo(BarneyOnAaronOrakei14To15SessionId));
-            Assert.That(bookingTwo.customer.id, Is.EqualTo(Barney.Id));
-            Assert.That(bookingTwo.customer.firstName, Is.EqualTo(Barney.FirstName));
-            Assert.That(bookingTwo.customer.lastName, Is.EqualTo(Barney.LastName));
-            Assert.That(bookingTwo.customer.email, Is.EqualTo(Barney.Email));
-            Assert.That(bookingTwo.customer.phone, Is.EqualTo(Barney.Phone));
+            setup.AaronOrakeiMiniRed14To15.Assert(session);
+            Assert.That(session.booking.bookingCount, Is.EqualTo(1));
+            Assert.That(session.booking.bookings.Count, Is.EqualTo(1));
+            setup.FredOnAaronOrakeiMiniRed14To15.Assert(session.booking.bookings[0], session.id);
+            setup.Fred.Assert(session.booking.bookings[0].customer);
         }
     }
 }

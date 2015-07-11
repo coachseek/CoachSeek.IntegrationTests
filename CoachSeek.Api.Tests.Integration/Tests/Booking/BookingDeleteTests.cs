@@ -30,16 +30,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             ThenSessionBookingIsDeleted(response, setup);
         }
 
-        //[Test]
-        //public void GivenExistingCourseBookingId_WhenTryDelete_ThenCourseBookingIsDeleted()
-        //{
-        //    var setup = RegisterBusiness();
-        //    RegisterFredOnAllCourseSessionsInAaronOrakeiHolidayCamp9To15For3Days();
+        [Test]
+        public void GivenExistingCourseBookingId_WhenTryDelete_ThenCourseBookingIsDeleted()
+        {
+            var setup = RegisterBusiness();
+            RegisterFredOnAllCourseSessionsInAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-        //    var id = GivenExistingCourseBookingId();
-        //    var response = WhenTryDelete(id, setup);
-        //    ThenCourseBookingIsDeleted(response);
-        //}
+            var id = GivenExistingCourseBookingId(setup);
+            var response = WhenTryDelete(id, setup);
+            ThenCourseBookingIsDeleted(response, setup);
+        }
 
 
         private Guid GivenNonExistentBookingId()
@@ -52,14 +52,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             return setup.FredOnAaronOrakeiMiniRed14To15.Id;
         }
 
-        //private Guid GivenExistingCourseBookingId()
-        //{
-        //    // Ensure course booking is there BEFORE the deletion
-        //    var getResponse = AuthenticatedGet<CourseBookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
-        //    AssertSuccessResponse<CourseBookingData>(getResponse);
-
-        //    return FredOnAaronOrakeiMiniBlueFor2DaysCourseId;
-        //}
+        private Guid GivenExistingCourseBookingId(SetupData setup)
+        {
+            return setup.FredOnAaronOrakeiHolidayCamp9To15For3Days.Id;
+        }
 
 
         private ApiResponse WhenTryDelete(Guid id, SetupData setup)
@@ -72,15 +68,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>("Bookings", setup.FredOnAaronOrakeiMiniRed14To15.Id, setup);
+            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id, setup);
             AssertNotFound(getResponse);
         }
 
-        private void ThenCourseBookingIsDeleted(Response response)
+        private void ThenCourseBookingIsDeleted(ApiResponse response, SetupData setup)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>("Bookings", FredOnAaronOrakeiMiniBlueFor2DaysCourseId);
+            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             AssertNotFound(getResponse);
         }
     }

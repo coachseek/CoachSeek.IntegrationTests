@@ -78,6 +78,7 @@
     <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed14To15.cs" />
     <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed16To17.cs" />
     <Compile Include="Models\Expectations\Booking\BookingFredOnStandaloneAaronOrakeiMiniRed14To15.cs" />
+    <Compile Include="Models\Expectations\Booking\ExpectedCourseBooking.cs" />
     <Compile Include="Models\Expectations\Booking\ExpectedBooking.cs" />
     <Compile Include="Models\Expectations\Course\CourseAaronOrakeiHolidayCamp9To15For3Days.cs" />
     <Compile Include="Models\Expectations\Course\CourseAaronRemuera9To10For4Weeks.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Tests\Coach\CoachDeleteTests.cs" />
     <Compile Include="Tests\Coach\CoachTests.cs" />
     <Compile Include="Tests\Customer\CustomerGetTests.cs" />
+    <Compile Include="Tests\Customer\CustomerTests.cs" />
     <Compile Include="Tests\Customer\OnlineBookingCustomerPostTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
     <Compile Include="Tests\Location\LocationDeleteTests.cs" />
