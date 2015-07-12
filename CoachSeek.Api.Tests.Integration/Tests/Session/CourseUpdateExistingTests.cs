@@ -1,7 +1,6 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
-using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -9,22 +8,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     [TestFixture]
     public class  CourseUpdateExistingTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-
-            MiniGreen = new ServiceMiniGreen();
-            ServiceRegistrar.RegisterService(MiniGreen, Business);
-        }
-
-
         [Test]
-        public void GivenNonExistentCourseId_WhenTryUpdateCourse_ThenReturnNotFoundResponse()
+        public void GivenNonExistentCourseId_WhenTryUpdateCourse_ThenReturnNotFound()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNonExistentCourseId();
+            var command = GivenNonExistentCourseId(setup);
             var response = WhenTryUpdateCourse(command, setup);
             AssertNotFound(response);
         }
@@ -33,8 +23,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenNonExistentLocationId_WhenTryUpdateCourse_ThenReturnInvalidLocationErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNonExistentLocationId();
+            var command = GivenNonExistentLocationId(setup);
             var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidLocationErrorResponse(response);
         }
@@ -43,8 +34,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenNonExistentCoachId_WhenTryUpdateCourse_ThenReturnInvalidCoachErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNonExistentCoachId();
+            var command = GivenNonExistentCoachId(setup);
             var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidCoachErrorResponse(response);
         }
@@ -53,8 +45,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenNonExistentServiceId_WhenTryUpdateCourse_ThenReturnInvalidServiceErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNonExistentServiceId();
+            var command = GivenNonExistentServiceId(setup);
             var response = WhenTryUpdateCourse(command, setup);
             ThenReturnInvalidServiceErrorResponse(response);
         }
@@ -63,8 +56,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantTurnCourseIntoSession_WhenTryUpdateCourse_ThenReturnsCannotUpdateRepetitionOfCourseError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenWantToTurnCourseIntoSession();
+            var command = GivenWantToTurnCourseIntoSession(setup);
             var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsCannotUpdateRepetitionOfCourseError(response);
         }
@@ -73,8 +67,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantToChangeRepetitionOfCourse_WhenTryUpdateCourse_ThenReturnsCannotUpdateRepetitionOfCourseError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenWantToChangeRepetitionOfCourse();
+            var command = GivenWantToChangeRepetitionOfCourse(setup);
             var response = WhenTryUpdateCourse(command, setup);
             ThenReturnsCannotUpdateRepetitionOfCourseError(response);
         }
@@ -83,10 +78,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate_WhenTryUpdateCourse_ThenUpdatesCourseButLeavesSessionStartDatesTheSame()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCoachBobby(setup);
+            RegisterLocationRemuera(setup);
 
             var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenUpdatesCourseButLeavesSessionStartDatesTheSame(response);
+            ThenUpdatesCourseButLeavesSessionStartDatesTheSame(response, setup);
         }
 
 
@@ -94,26 +92,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantToUpdateCourseAndChangeCourseStartDate_WhenTryUpdateCourse_ThenUpdatesCourseAndMovesSessionStartDates()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
             var command = GivenWantToUpdateCourseAndChangeCourseStartDate(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenUpdatesCourseAndMovesSessionStartDates(response);
+            ThenUpdatesCourseAndMovesSessionStartDates(response, setup);
         }
 
         [Test]
-        public void GivenWantToUpdateSessionInCourse_WhenTryUpdateCourse_ThenReturnsSessionUpdatedResponse()
+        public void GivenWantToUpdateCourseSession_WhenTryUpdateCourse_ThenUpdateCourseSession()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCoachBobby(setup);
+            RegisterLocationRemuera(setup);
 
-            var command = GivenWantToUpdateSessionInCourse();
+            var command = GivenWantToUpdateCourseSession(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnsSessionUpdatedResponse(response);
+            ThenUpdateCourseSession(response, setup);
         }
 
         [Test]
         public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself_WhenTryUpdateCourse_ThenReturnsSessionTimeUpdatedResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithItself();
             var response = WhenTryUpdateCourse(command, setup);
@@ -124,6 +127,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse_WhenTryUpdateCourse_ThenReturnsSessionClashingErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
             var command = GivenWantToUpdateTimeForSessionInCourseSoThatItClashesWithAnotherSessionInSameCourse();
             var response = WhenTryUpdateCourse(command, setup);
@@ -135,228 +139,258 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenWantToUpdateSessionInCourseWithSessionCountGreaterThanOne_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(5);
+            var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(5, setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnsInvalidRepetitionErrorResponse(response);
+            ThenReturnsInvalidRepetitionError(response);
         }
 
         [Test]
         public void GivenWantToUpdateSessionInCourseWithSessionCountLessThanOne_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(-3);
+            var command = GivenWantToUpdateSessionInCourseWithInvalidSessionCount(-3, setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnsInvalidRepetitionErrorResponse(response);
+            ThenReturnsInvalidRepetitionError(response);
         }
 
         [Test]
-        public void GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionErrorResponse()
+        public void GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency_WhenTryUpdateCourse_ThenReturnsInvalidRepetitionError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency();
+            var command = GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnsInvalidRepetitionErrorResponse(response);
+            ThenReturnsInvalidRepetitionError(response);
         }
 
 
-        private ApiSessionSaveCommand GivenNonExistentCourseId()
+        private ApiSessionSaveCommand GivenNonExistentCourseId(SetupData setup)
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
-            course.id = Guid.NewGuid();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = Guid.NewGuid();
 
-            return course;
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenNonExistentLocationId()
+        private ApiSessionSaveCommand GivenNonExistentLocationId(SetupData setup)
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
-            course.id = AaronRemuera9To10For4WeeksCourseId;
-            course.location.id = Guid.NewGuid();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+            command.location.id = Guid.NewGuid();
 
-            return course;
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenNonExistentCoachId()
+        private ApiSessionSaveCommand GivenNonExistentCoachId(SetupData setup)
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
-            course.id = AaronRemuera9To10For4WeeksCourseId;
-            course.coach.id = Guid.NewGuid();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+            command.coach.id = Guid.NewGuid();
 
-            return course;
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenNonExistentServiceId()
+        private ApiSessionSaveCommand GivenNonExistentServiceId(SetupData setup)
         {
-            var course = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
-            course.id = AaronRemuera9To10For4WeeksCourseId;
-            course.service.id = Guid.NewGuid();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+            command.service.id = Guid.NewGuid();
 
-            return course;
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenWantToTurnCourseIntoSession()
+        private ApiSessionSaveCommand GivenWantToTurnCourseIntoSession(SetupData setup)
         {
-            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+            command.repetition = new ApiRepetition { sessionCount = 1 };
 
-            courseCommand.id = AaronRemuera9To10For4WeeksCourseId;
-            courseCommand.repetition = new ApiRepetition { sessionCount = 1 };
-
-            return courseCommand;
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenWantToChangeRepetitionOfCourse()
+        private ApiSessionSaveCommand GivenWantToChangeRepetitionOfCourse(SetupData setup)
         {
-            var courseCommand = CreateSessionSaveCommandAaronRemuera9To10For4Weeks();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
+            command.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "d" };
 
-            courseCommand.id = AaronRemuera9To10For4WeeksCourseId;
-            courseCommand.repetition = new ApiRepetition { sessionCount = 3, repeatFrequency = "d" };
-
-            return courseCommand;
+            return command;
         }
 
         private ApiSessionSaveCommand GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(SetupData setup)
         {
-            // Move one of the sessions to a different time and date to make the test more relevant.
-            ChangeTimingForLastSessionInCourse(setup);
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
 
-            var courseCommand = CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
-            courseCommand.id = BobbyRemueraHolidayCampFor3DaysCourseId;
+            command.location = new ApiLocationKey { id = setup.Remuera.Id };
+            command.coach = new ApiCoachKey { id = setup.Bobby.Id };
+            command.booking = new ApiSessionBooking { studentCapacity = 20, isOnlineBookable = true };
+            command.pricing = new ApiPricing { sessionPrice = 80, coursePrice = 200 };
+            command.presentation = new ApiPresentation { colour = "orange" };
 
-            courseCommand.location = new ApiLocationKey { id = Orakei.Id };
-            courseCommand.coach = new ApiCoachKey { id = Aaron.Id };
-            courseCommand.booking = new ApiSessionBooking {studentCapacity = 30, isOnlineBookable = true};
-            courseCommand.pricing = new ApiPricing {sessionPrice = 150, coursePrice = 220};
-            courseCommand.presentation = new ApiPresentation {colour = "orange"};
+            command.timing.startTime = "9:30";
+            command.timing.duration = 300;
 
-            courseCommand.timing.startTime = "9:30";
-            courseCommand.timing.duration = 300;
-
-            return courseCommand;
+            return command;
         }
 
         private ApiSessionSaveCommand GivenWantToUpdateCourseAndChangeCourseStartDate(SetupData setup)
         {
-            var command = GivenWantToUpdateCourseButLeaveCourseStartingAtSameDate(setup);
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Id;
             command.timing.startDate = GetDateFormatNumberOfDaysOut(4);
 
             return command;
         }
 
-        private void ThenUpdatesCourseButLeavesSessionStartDatesTheSame(ApiResponse response)
+        private void ThenUpdatesCourseButLeavesSessionStartDatesTheSame(ApiResponse response, SetupData setup)
         {
             var course = AssertSuccessResponse<CourseData>(response);
 
-            Assert.That(course, Is.Not.Null);
             Assert.That(course.parentId, Is.Null);
-            Assert.That(course.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            AssertSessionLocation(course.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(course.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(course.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(2), "9:30", 300);
-            AssertSessionBooking(course.booking, 30, true);
+            Assert.That(course.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+
+            AssertSessionLocation(course.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(course.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(course.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "9:30", 300);
+            AssertSessionBooking(course.booking, 20, true);
             AssertSessionRepetition(course.repetition, 3, "d");
-            AssertSessionPricing(course.pricing, 150, 220);
+            AssertSessionPricing(course.pricing, 80, 200);
             AssertSessionPresentation(course.presentation, "orange");
             Assert.That(course.sessions.Count, Is.EqualTo(3));
 
             var firstSession = course.sessions[0];
             Assert.That(firstSession, Is.Not.Null);
-            Assert.That(firstSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(firstSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
-            AssertSessionLocation(firstSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(firstSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(firstSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(2), "9:30", 300);
-            AssertSessionBooking(firstSession.booking, 30, true);
+            Assert.That(firstSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(firstSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id));
+            AssertSessionLocation(firstSession.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(firstSession.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(firstSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "9:30", 300);
+            AssertSessionBooking(firstSession.booking, 20, true);
             AssertSessionRepetition(firstSession.repetition, 1, null);
-            AssertSessionPricing(firstSession.pricing, 150, null);
+            AssertSessionPricing(firstSession.pricing, 80, null);
             AssertSessionPresentation(firstSession.presentation, "orange");
 
             var secondSession = course.sessions[1];
             Assert.That(secondSession, Is.Not.Null);
-            Assert.That(secondSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(secondSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
-            AssertSessionLocation(secondSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(secondSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(secondSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(3), "9:30", 300);
-            AssertSessionBooking(secondSession.booking, 30, true);
+            Assert.That(secondSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(secondSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id));
+            AssertSessionLocation(secondSession.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(secondSession.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(secondSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionBooking(secondSession.booking, 20, true);
             AssertSessionRepetition(secondSession.repetition, 1, null);
-            AssertSessionPricing(secondSession.pricing, 150, null);
+            AssertSessionPricing(secondSession.pricing, 80, null);
             AssertSessionPresentation(secondSession.presentation, "orange");
 
             var thirdSession = course.sessions[2];
             Assert.That(thirdSession, Is.Not.Null);
-            Assert.That(thirdSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(thirdSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
-            AssertSessionLocation(thirdSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(thirdSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(thirdSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(6), "9:30", 300);
-            AssertSessionBooking(thirdSession.booking, 30, true);
+            Assert.That(thirdSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(thirdSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id));
+            AssertSessionLocation(thirdSession.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(thirdSession.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(thirdSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "9:30", 300);
+            AssertSessionBooking(thirdSession.booking, 20, true);
             AssertSessionRepetition(thirdSession.repetition, 1, null);
-            AssertSessionPricing(thirdSession.pricing, 150, null);
+            AssertSessionPricing(thirdSession.pricing, 80, null);
             AssertSessionPresentation(thirdSession.presentation, "orange");
         }
 
-        private void ThenUpdatesCourseAndMovesSessionStartDates(ApiResponse response)
+        private void ThenUpdatesCourseAndMovesSessionStartDates(ApiResponse response, SetupData setup)
         {
             var course = AssertSuccessResponse<CourseData>(response);
 
-            Assert.That(course, Is.Not.Null);
             Assert.That(course.parentId, Is.Null);
-            Assert.That(course.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            AssertSessionLocation(course.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(course.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(course.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(4), "9:30", 300);
-            AssertSessionBooking(course.booking, 30, true);
+            Assert.That(course.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(4), "9:00", 360);
+            Assert.That(course.sessions.Count, Is.EqualTo(3));
+
+            var firstSession = course.sessions[0];
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(4), "9:00", 360);
+
+            var secondSession = course.sessions[1];
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(5), "9:00", 360);
+
+            var thirdSession = course.sessions[2];
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(6), "9:00", 360);
+        }
+
+        private void ThenUpdateCourseSession(ApiResponse response, SetupData setup)
+        {
+            var session = AssertSuccessResponse<SessionData>(response);
+
+            Assert.That(session.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(session.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id));
+
+            AssertSessionLocation(session.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(session.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(session.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionBooking(session.booking, 20, true);
+            AssertSessionRepetition(session.repetition, 1, null);
+            AssertSessionPricing(session.pricing, 80, null);
+            AssertSessionPresentation(session.presentation, "orange");
+
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var course = (CourseData)getResponse.Payload;
+
+            AssertSessionLocation(course.location, setup.Orakei.Id, setup.Orakei.Name);
+            AssertSessionCoach(course.coach, setup.Aaron.Id, setup.Aaron.Name);
+            AssertSessionService(course.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionBooking(course.booking, 3, true);
             AssertSessionRepetition(course.repetition, 3, "d");
-            AssertSessionPricing(course.pricing, 150, 220);
-            AssertSessionPresentation(course.presentation, "orange");
+            AssertSessionPricing(course.pricing, 50, 120);
+            AssertSessionPresentation(course.presentation, "yellow");
             Assert.That(course.sessions.Count, Is.EqualTo(3));
 
             var firstSession = course.sessions[0];
             Assert.That(firstSession, Is.Not.Null);
-            Assert.That(firstSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(firstSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[0]));
-            AssertSessionLocation(firstSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(firstSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(firstSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(4), "9:30", 300);
-            AssertSessionBooking(firstSession.booking, 30, true);
+            Assert.That(firstSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(firstSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id));
+            AssertSessionLocation(firstSession.location, setup.Orakei.Id, setup.Orakei.Name);
+            AssertSessionCoach(firstSession.coach, setup.Aaron.Id, setup.Aaron.Name);
+            AssertSessionService(firstSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionBooking(firstSession.booking, 3, true);
             AssertSessionRepetition(firstSession.repetition, 1, null);
-            AssertSessionPricing(firstSession.pricing, 150, null);
-            AssertSessionPresentation(firstSession.presentation, "orange");
+            AssertSessionPricing(firstSession.pricing, 50, null);
+            AssertSessionPresentation(firstSession.presentation, "yellow");
 
             var secondSession = course.sessions[1];
             Assert.That(secondSession, Is.Not.Null);
-            Assert.That(secondSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(secondSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[1]));
-            AssertSessionLocation(secondSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(secondSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(secondSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(5), "9:30", 300);
-            AssertSessionBooking(secondSession.booking, 30, true);
+            Assert.That(secondSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(secondSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id));
+            AssertSessionLocation(secondSession.location, setup.Remuera.Id, setup.Remuera.Name);
+            AssertSessionCoach(secondSession.coach, setup.Bobby.Id, setup.Bobby.Name);
+            AssertSessionService(secondSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionBooking(secondSession.booking, 20, true);
             AssertSessionRepetition(secondSession.repetition, 1, null);
-            AssertSessionPricing(secondSession.pricing, 150, null);
+            AssertSessionPricing(secondSession.pricing, 80, null);
             AssertSessionPresentation(secondSession.presentation, "orange");
 
             var thirdSession = course.sessions[2];
             Assert.That(thirdSession, Is.Not.Null);
-            Assert.That(thirdSession.parentId, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysCourseId));
-            Assert.That(thirdSession.id, Is.EqualTo(BobbyRemueraHolidayCampFor3DaysSessionIds[2]));
-            AssertSessionLocation(thirdSession.location, Orakei.Id, Orakei.Name);
-            AssertSessionCoach(thirdSession.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(thirdSession.service, HolidayCamp.Id, HolidayCamp.Name);
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(8), "9:30", 300);
-            AssertSessionBooking(thirdSession.booking, 30, true);
+            Assert.That(thirdSession.parentId, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(thirdSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id));
+            AssertSessionLocation(thirdSession.location, setup.Orakei.Id, setup.Orakei.Name);
+            AssertSessionCoach(thirdSession.coach, setup.Aaron.Id, setup.Aaron.Name);
+            AssertSessionService(thirdSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "9:00", 360);
+            AssertSessionBooking(thirdSession.booking, 3, true);
             AssertSessionRepetition(thirdSession.repetition, 1, null);
-            AssertSessionPricing(thirdSession.pricing, 150, null);
-            AssertSessionPresentation(thirdSession.presentation, "orange");
+            AssertSessionPricing(thirdSession.pricing, 50, null);
+            AssertSessionPresentation(thirdSession.presentation, "yellow");
         }
 
         private void ChangeTimingForLastSessionInCourse(SetupData setup)
@@ -368,6 +402,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             sessionCommand.presentation = new ApiPresentation { colour = "mid-blue" };
 
             WhenTryUpdateSession(sessionCommand, setup);
+        }
+
+        private ApiSessionSaveCommand GivenWantToUpdateCourseSession(SetupData setup)
+        {
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1]);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id;
+
+            command.location = new ApiLocationKey { id = setup.Remuera.Id };
+            command.coach = new ApiCoachKey { id = setup.Bobby.Id };
+            command.booking = new ApiSessionBooking { studentCapacity = 20, isOnlineBookable = true };
+            command.pricing = new ApiPricing { sessionPrice = 80, coursePrice = 200 };
+            command.presentation = new ApiPresentation { colour = "orange" };
+
+            command.timing.startTime = "9:30";
+            command.timing.duration = 300;
+
+            return command;
         }
 
         private ApiSessionSaveCommand GivenWantToUpdateSessionInCourse()
@@ -406,17 +457,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return command;
         }
 
-        private ApiSessionSaveCommand GivenWantToUpdateSessionInCourseWithInvalidSessionCount(int sessionCount)
+        private ApiSessionSaveCommand GivenWantToUpdateSessionInCourseWithInvalidSessionCount(int sessionCount, SetupData setup)
         {
-            var command = GivenWantToUpdateSessionInCourse();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id;
             command.repetition = new ApiRepetition { sessionCount = sessionCount };
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency()
+        private ApiSessionSaveCommand GivenWantToUpdateSessionInCourseWithInvalidRepeatFrequency(SetupData setup)
         {
-            var command = GivenWantToUpdateSessionInCourse();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.id = setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id;
             command.repetition = new ApiRepetition { sessionCount = 1, repeatFrequency = "w" };
 
             return command;
@@ -481,7 +534,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPresentation(session.presentation, "green");
         }
 
-        private void ThenReturnsInvalidRepetitionErrorResponse(ApiResponse response)
+        private void ThenReturnsInvalidRepetitionError(ApiResponse response)
         {
             AssertSingleError(response, "Cannot change a session to a course.");
         }

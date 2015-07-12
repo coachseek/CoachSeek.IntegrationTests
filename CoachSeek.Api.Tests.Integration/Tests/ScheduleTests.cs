@@ -706,20 +706,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         //    };
         //}
 
-        protected ApiSessionSaveCommand CreateCourseSaveCommand(ExpectedCourse course)
-        {
-            return new ApiSessionSaveCommand
-            {
-                coach = course.Coach,
-                location = course.Location,
-                service = course.Service,
-                timing = course.Timing,
-                booking = course.Booking,
-                repetition = course.Repetition,
-                pricing = course.Pricing,
-                presentation = course.Presentation
-            };
-        }
+        //protected ApiSessionSaveCommand CreateCourseSaveCommand(ExpectedCourse course)
+        //{
+        //    return new ApiSessionSaveCommand
+        //    {
+        //        coach = course.Coach,
+        //        location = course.Location,
+        //        service = course.Service,
+        //        timing = course.Timing,
+        //        booking = course.Booking,
+        //        repetition = course.Repetition,
+        //        pricing = course.Pricing,
+        //        presentation = course.Presentation
+        //    };
+        //}
 
         private string CreateSessionSaveCommandJson(ExpectedStandaloneSession session)
         {
@@ -751,9 +751,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return JsonConvert.SerializeObject(CreateBookingSaveCommand(booking));
         }
 
-        protected ApiSessionSaveCommand CreateSessionSaveCommand(ExpectedStandaloneSession session)
+        protected ApiSessionSaveCommand CreateSessionSaveCommand(ExpectedSingleSession session)
         {
             return new ApiSessionSaveCommand(session);
+        }
+
+        protected ApiSessionSaveCommand CreateCourseSaveCommand(ExpectedCourse course)
+        {
+            return new ApiSessionSaveCommand(course);
         }
 
         protected ApiSessionSaveCommand CreateSessionSaveCommandAaronRemuera9To10()

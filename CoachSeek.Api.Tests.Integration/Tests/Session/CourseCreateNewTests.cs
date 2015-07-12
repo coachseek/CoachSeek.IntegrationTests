@@ -1,7 +1,5 @@
-﻿using System;
-using Coachseek.API.Client.Models;
+﻿using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
-using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -9,56 +7,62 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     [TestFixture]
     public class CourseCreateNewTests : ScheduleTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            FullySetupNewTestBusiness();
-
-            MiniGreen = new ServiceMiniGreen();
-            ServiceRegistrar.RegisterService(MiniGreen, Business);
-        }
-
-
         [Test]
-        public void GivenNewCourseClashesWithStandaloneSession_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
+        public void GivenNewCourseClashesWithStandaloneSession_WhenTryCreateCourse_ThenReturnSessionClashError()
         {
             var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseClashesWithStandaloneSession();
+            var command = GivenNewCourseClashesWithStandaloneSession(setup);
             var response = WhenTryCreateCourse(command, setup);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(AaronOrakeiMiniRed14To15.Id.ToString()));
+            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiMiniRed14To15.Id)));
         }
 
         [Test]
-        public void GivenNewCourseClashesWithAnotherCourse_WhenTryCreateCourse_ThenReturnSessionClashErrorResponse()
+        public void GivenNewCourseClashesWithAnotherCourse_WhenTryCreateCourse_ThenReturnSessionClashError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseClashesWithAnotherCourse();
+            var command = GivenNewCourseClashesWithAnotherCourse(setup);
             var response = WhenTryCreateCourse(command, setup);
             var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(BobbyRemueraHolidayCampFor3DaysSessionIds[0].ToString()));
+            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id)));
         }
 
         // TODO: Course clashes with course session.
 
         [Test]
-        public void GivenNewCourseWithTooManySessions_WhenTryCreateCourse_ThenReturnTooManySessionInCourseErrorResponse()
+        public void GivenNewCourseWithTooManyDailySessions_WhenTryCreateCourse_ThenReturnTooManySessionInCourseError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithTooManySessions();
+            var command = GivenNewCourseWithTooManyDailySessions(setup);
             var response = WhenTryCreateCourse(command, setup);
             AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
         }
 
         [Test]
-        public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenTryCreateCourse_ThenReturnWithNoPriceErrorResponse()
+        public void GivenNewCourseWithTooManyWeeklySessions_WhenTryCreateCourse_ThenReturnTooManySessionInCourseError()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithNeitherSessionNorCoursePrice();
+            var command = GivenNewCourseWithTooManyWeeklySessions(setup);
+            var response = WhenTryCreateCourse(command, setup);
+            AssertSingleError(response, "The maximum number of weekly sessions is 26.", "session.repetition.sessionCount");
+        }
+
+        [Test]
+        public void GivenNewCourseWithNeitherSessionNorCoursePrice_WhenTryCreateCourse_ThenReturnWithNoPriceError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+
+            var command = GivenNewCourseWithNeitherSessionNorCoursePrice(setup);
             var response = WhenTryCreateCourse(command, setup);
             AssertSingleError(response, "At least a session or course price must be specified.", "session.pricing");
         }
@@ -67,52 +71,65 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         public void GivenNewCourseWithCoursePriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithCoursePriceOnly()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithCoursePriceOnly();
+            var command = GivenNewCourseWithCoursePriceOnly(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWithCoursePriceOnly(response);
+            ThenCreatesCourseWithCoursePriceOnly(response, setup);
         }
 
         [Test]
         public void GivenNewCourseWithSessionPriceOnly_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceOnly()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithSessionPriceOnly();
+            var command = GivenNewCourseWithSessionPriceOnly(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWithSessionPriceOnly(response);
+            ThenCreatesCourseWithSessionAndCoursePrice(response, setup);
         }
 
         [Test]
         public void GivenNewCourseWithBothSessionPriceAndCoursePrice_WhenTryCreateCourse_ThenCreatesCourseWithSessionPriceAndCoursePrice()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithBothSessionPriceAndCoursePrice();
+            var command = GivenNewCourseWithBothSessionPriceAndCoursePrice(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWithSessionPriceAndCoursePrice(response);
+            ThenCreatesCourseWithSessionPriceAndCoursePrice(response, setup);
         }
 
         [Test]
         public void GivenNewCourseWithZeroSessionPrice_WhenTryCreateCourse_ThenCreatesCourseWithZeroSessionPrice()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWithZeroSessionPrice();
+            var command = GivenNewCourseWithZeroSessionPrice(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWithZeroSessionPrice(response);
+            ThenCreatesCourseWithZeroSessionPrice(response, setup);
         }
 
         [Test]
         public void GivenNewCourseWith24HourStartTime_WhenTryCreateCourse_ThenCreatesCourseWith24HrStartTime()
         {
             var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
-            var command = GivenNewCourseWith24HourStartTime();
+            var command = GivenNewCourseWith24HourStartTime(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWith24HrStartTime(response);
+            ThenCreatesCourseWith24HrStartTime(response, setup);
         }
 
+
+        private ApiSessionSaveCommand GivenNewCourseClashesWithStandaloneSession(SetupData setup)
+        {
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(20);
+
+            return command;
+        }
 
         private ApiSessionSaveCommand GivenNewCourseClashesWithStandaloneSession()
         {
@@ -130,24 +147,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseClashesWithAnotherCourse()
+        private ApiSessionSaveCommand GivenNewCourseClashesWithAnotherCourse(SetupData setup)
         {
-            return CreateSessionSaveCommandBobbyRemueraHolidayCampFor3Days();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(16);
+
+            return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWithTooManySessions()
+        private ApiSessionSaveCommand GivenNewCourseWithTooManyDailySessions(SetupData setup)
         {
-            return new ApiSessionSaveCommand
-            {
-                service = new ApiServiceKey { id = MiniGreen.Id },
-                location = new ApiLocationKey { id = Remuera.Id },
-                coach = new ApiCoachKey { id = Aaron.Id },
-                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "03:30", duration = 30 },
-                booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
-                pricing = new ApiPricing { sessionPrice = 20 },
-                repetition = new ApiRepetition { sessionCount = 100, repeatFrequency = "d" },
-                presentation = new ApiPresentation { colour = "green" }
-            };
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
+            command.repetition = new ApiRepetition(31, "d");
+
+            return command;
+        }
+
+        private ApiSessionSaveCommand GivenNewCourseWithTooManyWeeklySessions(SetupData setup)
+        {
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
+            command.repetition = new ApiRepetition(27, "w");
+
+            return command;
         }
 
         private ApiSessionSaveCommand GivenNewCourseCommand()
@@ -165,105 +188,109 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             };
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWithNeitherSessionNorCoursePrice()
+        private ApiSessionSaveCommand GivenNewCourseWithNeitherSessionNorCoursePrice(SetupData setup)
         {
-            var command = GivenNewCourseCommand();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
             command.pricing = new ApiPricing { sessionPrice = null, coursePrice = null };
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWithCoursePriceOnly()
+        private ApiSessionSaveCommand GivenNewCourseWithCoursePriceOnly(SetupData setup)
         {
-            var command = GivenNewCourseCommand();
-            command.pricing = new ApiPricing { sessionPrice = null, coursePrice = 50 };
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
+            command.pricing = new ApiPricing { sessionPrice = null, coursePrice = 120 };
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWithSessionPriceOnly()
+        private ApiSessionSaveCommand GivenNewCourseWithSessionPriceOnly(SetupData setup)
         {
-            var command = GivenNewCourseCommand();
-            command.pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = null };
-
-            return command;
-        }
-        private ApiSessionSaveCommand GivenNewCourseWithBothSessionPriceAndCoursePrice()
-        {
-            var command = GivenNewCourseCommand();
-            command.pricing = new ApiPricing { sessionPrice = 12.5m, coursePrice = 75 };
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
+            command.pricing = new ApiPricing { sessionPrice = 37.5m, coursePrice = null };
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice()
+        private ApiSessionSaveCommand GivenNewCourseWithBothSessionPriceAndCoursePrice(SetupData setup)
         {
-            var command = GivenNewCourseCommand();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
+            command.pricing = new ApiPricing { sessionPrice = 37.5m, coursePrice = 100 };
+
+            return command;
+        }
+
+        private ApiSessionSaveCommand GivenNewCourseWithZeroSessionPrice(SetupData setup)
+        {
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
             command.pricing = new ApiPricing { sessionPrice = 0 };
 
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseWith24HourStartTime()
+        private ApiSessionSaveCommand GivenNewCourseWith24HourStartTime(SetupData setup)
         {
-            var command = GivenNewCourseCommand();
+            var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
+            command.timing.startDate = GetDateFormatNumberOfDaysOut(7);
             command.timing.startTime = "21:30";
 
             return command;
         }
 
 
-        private SessionData ThenCreatesCourseWithCoursePriceOnly(ApiResponse response)
+        private void ThenCreatesCourseWithCoursePriceOnly(ApiResponse response, SetupData setup)
         {
-            var session = AssertSuccessResponse<SessionData>(response);
-            AssertSessionPricing(session.pricing, null, 50);
+            var courseResponse = AssertSuccessResponse<CourseData>(response);
+            AssertSessionPricing(courseResponse.pricing, null, 120);
 
-            return session;
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
+            var course = (CourseData)getResponse.Payload;
+            AssertSessionPricing(courseResponse.pricing, null, 120);
         }
 
-        private SessionData ThenCreatesCourseWithSessionPriceOnly(ApiResponse response)
+        private void ThenCreatesCourseWithSessionAndCoursePrice(ApiResponse response, SetupData setup)
         {
-            var session = AssertSuccessResponse<SessionData>(response);
-            AssertSessionPricing(session.pricing, 12.5m, null);
+            var courseResponse = AssertSuccessResponse<CourseData>(response);
+            AssertSessionPricing(courseResponse.pricing, 37.5m, 112.5m);
 
-            return session;
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
+            var course = (CourseData)getResponse.Payload;
+            AssertSessionPricing(course.pricing, 37.5m, 112.5m);
         }
 
-        private SessionData ThenCreatesCourseWithSessionPriceAndCoursePrice(ApiResponse response)
+        private void ThenCreatesCourseWithSessionPriceAndCoursePrice(ApiResponse response, SetupData setup)
         {
-            var session = AssertSuccessResponse<SessionData>(response);
-            AssertSessionPricing(session.pricing, 12.5m, 75);
+            var courseResponse = AssertSuccessResponse<CourseData>(response);
+            AssertSessionPricing(courseResponse.pricing, 37.5m, 100);
 
-            return session;
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
+            var course = (CourseData)getResponse.Payload;
+            AssertSessionPricing(course.pricing, 37.5m, 100);
         }
 
-        private SessionData ThenCreatesCourseWithZeroSessionPrice(ApiResponse response)
+        private void ThenCreatesCourseWithZeroSessionPrice(ApiResponse response, SetupData setup)
         {
-            var session = AssertSuccessResponse<SessionData>(response);
-            AssertSessionPricing(session.pricing, 0, null);
+            var courseResponse = AssertSuccessResponse<CourseData>(response);
+            AssertSessionPricing(courseResponse.pricing, 0, 0);
 
-            return session;
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
+            var course = (CourseData)getResponse.Payload;
+            AssertSessionPricing(course.pricing, 0, 0);
         }
 
-        private SessionData ThenCreatesCourseWith24HrStartTime(ApiResponse response)
+        private void ThenCreatesCourseWith24HrStartTime(ApiResponse response, SetupData setup)
         {
-            var session = AssertSuccessResponse<SessionData>(response);
+            var courseResponse = AssertSuccessResponse<CourseData>(response);
+            AssertSessionTiming(courseResponse.timing, GetDateFormatNumberOfDaysOut(7), "21:30", 360);
 
-            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(session.parentId, Is.Null);
-            Assert.That(session.id, Is.Not.EqualTo(Guid.Empty));
-
-            AssertSessionLocation(session.location, Remuera.Id, "Remuera Racquets Club");
-            AssertSessionCoach(session.coach, Aaron.Id, Aaron.Name);
-            AssertSessionService(session.service, MiniGreen.Id, MiniGreen.Name);
-
-            AssertSessionTiming(session.timing, GetFormattedDateOneWeekOut(), "21:30", 60);
-            AssertSessionBooking(session.booking, 10, false);
-            AssertSessionRepetition(session.repetition, 2, "d");
-            AssertSessionPricing(session.pricing, 12, null);
-            AssertSessionPresentation(session.presentation, "green");
-
-            return session;
+            var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
+            var course = (CourseData)getResponse.Payload;
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(7), "21:30", 360);
         }
     }
 }
