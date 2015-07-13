@@ -73,14 +73,5 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed14To15.Id, setup.Wilma.Id);
         }
-
-
-        private ApiResponse WhenTryBookSessionAnonymously(ApiBookingSaveCommand command, SetupData setup)
-        {
-            var json = JsonConvert.SerializeObject(command);
-            return new TestBusinessAnonymousApiClient().Post<BookingData>(json,
-                                                                          setup.Business.Domain,
-                                                                          RelativePath);
-        }
     }
 }

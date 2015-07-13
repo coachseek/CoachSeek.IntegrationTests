@@ -25,8 +25,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidCoachId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
-                                                                  GetFormattedDateThreeWeeksOut(),
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(),
+                                                                  GetDateFormatNumberOfDaysOut(21),
                                                                   setup.Aaron.Id, null, null);
         }
 
@@ -37,8 +37,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidLocationId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
-                                                                  GetFormattedDateThreeWeeksOut(),
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(),
+                                                                  GetDateFormatNumberOfDaysOut(21),
                                                                   null, setup.Orakei.Id, null);
         }
 
@@ -49,18 +49,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenValidServiceId(SetupData setup)
         {
-            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(), 
-                                                                  GetFormattedDateThreeWeeksOut(), 
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(GetFormattedDateToday(),
+                                                                  GetDateFormatNumberOfDaysOut(21),
                                                                   null, null, setup.MiniRed.Id);
         }
 
-
-        protected Response WhenTryOldSearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
-        {
-            var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
-
-            return AuthenticatedGet<List<SessionData>>(url);
-        }
 
 
         protected void ThenReturnInvalidSearchPeriodError(ApiResponse response)

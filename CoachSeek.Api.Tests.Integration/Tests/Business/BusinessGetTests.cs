@@ -49,15 +49,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenGetBusiness(SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<BusinessData>(setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      RelativePath);
+            return AuthenticatedGet<BusinessData>(RelativePath, setup);
         }
 
         private ApiResponse WhenGetBusinessForOnlineBooking(string businessDomain)
         {
-            return new TestBusinessAnonymousApiClient().Get<BusinessData>(businessDomain,
-                                                                          "OnlineBooking/Business");
+            return BusinessAnonymousGet<BusinessData>("OnlineBooking/Business", businessDomain);
         }
 
 

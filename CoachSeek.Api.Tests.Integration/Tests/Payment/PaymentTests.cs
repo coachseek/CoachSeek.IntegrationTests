@@ -17,7 +17,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
 
         private ApiResponse WhenTryPostAnonymously(string json)
         {
-            return new TestAnonymousApiClient().Post<string>(json, RelativePath);
+            return AnonymousPost<string>(json, RelativePath);
         }
 
         protected override string RelativePath

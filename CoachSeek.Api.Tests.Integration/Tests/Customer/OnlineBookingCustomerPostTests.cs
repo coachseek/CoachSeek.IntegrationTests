@@ -1,6 +1,5 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -22,14 +21,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 email = email,
                 phone = phone
             };
-        }
-
-        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, string firstName, string lastName, string email, string phone)
-        {
-            var command = CreateNewCustomerSaveCommand(firstName, lastName, email, phone);
-            command.id = id;
-
-            return command;
         }
 
 
@@ -206,15 +197,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         protected ApiResponse WhenTryAddOnlineBookCustomer(ApiCustomerSaveCommand command, SetupData setup)
         {
             var json = JsonConvert.SerializeObject(command);
-
             return WhenTryAddOnlineBookCustomer(json, setup);
         }
 
         protected ApiResponse WhenTryAddOnlineBookCustomer(string json, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<CustomerData>(json, 
-                                                                           setup.Business.Domain,
-                                                                           "OnlineBooking/Customers");
+            return BusinessAnonymousPost<CustomerData>(json, "OnlineBooking/Customers", setup);
         }
 
 
@@ -227,14 +215,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         {
             AssertMultipleErrors(response, new[,] { { "The firstName field is required.", "customer.firstName" },
                                                     { "The lastName field is required.", "customer.lastName" } });
-        }
-
-        private void ThenReturnInvalidEmailAddressErrorResponse(Response response)
-        {
-            var errors = AssertErrorResponse(response);
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "customer.email", "The email address is not valid.");
         }
 
         private void ThenReturnNewCustomerResponse(ApiResponse response)
@@ -257,14 +237,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.lastName, Is.EqualTo(setup.Fred.LastName));
             Assert.That(customer.email, Is.EqualTo(setup.Fred.Email));
             Assert.That(customer.phone, Is.EqualTo(setup.Fred.Phone));
-        }
-
-        private void ThenReturnInvalidCustomerIdErrorResponse(Response response)
-        {
-            var errors = AssertErrorResponse(response);
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "customer.id", "This customer does not exist.");
         }
 
         //private void ThenReturnUpdatedCustomerResponse(Response response)

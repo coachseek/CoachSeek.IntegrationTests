@@ -53,19 +53,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
 
         protected void WhenTrySetAttendance(string json, string relativePath, SetupData setup)
         {
-            var response = new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json,
-                                                                                           setup.Business.UserName,
-                                                                                           setup.Business.Password,
-                                                                                           relativePath);
+            var response = AuthenticatedPost<SingleSessionBookingData>(json, relativePath, setup);
         }
 
 
         private void ThenSetsHasAttendedTo(bool hasAttended, SetupData setup)
         {
             var url = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
-            var response = new TestAuthenticatedApiClient().Get<SingleSessionBookingData>(setup.Business.UserName,
-                                                                                          setup.Business.Password, 
-                                                                                          url);
+            var response = AuthenticatedGet<SingleSessionBookingData>(url, setup);
             var booking = (SingleSessionBookingData)response.Payload;
 
             Assert.That(booking.hasAttended, Is.EqualTo(hasAttended));

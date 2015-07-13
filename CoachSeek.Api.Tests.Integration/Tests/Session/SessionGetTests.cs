@@ -88,19 +88,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        private ApiResponse WhenTryGetAllSessions(SetupData setup)
+        private ApiResponse WhenTryGetSessionById(Guid sessionId, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<List<SessionData>>(setup.Business.UserName,
-                                                                           setup.Business.Password,
-                                                                           RelativePath);
-        }
-
-        private ApiResponse WhenTryGetSessionById(Guid serviceId, SetupData setup)
-        {
-            var url = string.Format("{0}/{1}", RelativePath, serviceId);
-            return new TestAuthenticatedApiClient().Get<SessionData>(setup.Business.UserName,
-                                                                     setup.Business.Password,
-                                                                     url);
+            return AuthenticatedGet<SessionData>(RelativePath, sessionId, setup);
         }
 
 

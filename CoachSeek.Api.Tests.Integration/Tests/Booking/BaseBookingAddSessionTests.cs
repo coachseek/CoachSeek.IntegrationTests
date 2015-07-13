@@ -30,19 +30,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        protected void ThenReturnNonExistentSessionError(Response response)
-        {
-            AssertSingleError(response, "This session does not exist.");
-        }
-
         protected void ThenReturnNonExistentSessionError(ApiResponse response)
         {
             AssertSingleError(response, "This session does not exist.");
-        }
-
-        protected void ThenReturnNonExistentCustomerError(Response response)
-        {
-            AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
         }
 
         protected void ThenReturnNonExistentCustomerError(ApiResponse response)
@@ -50,30 +40,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
         }
 
-        protected void ThenReturnDuplicateBookingError(Response response)
-        {
-            AssertSingleError(response, "This customer is already booked for this session.");
-        }
-
         protected void ThenReturnDuplicateBookingError(ApiResponse response)
         {
             AssertSingleError(response, "This customer is already booked for this session.");
-        }
-
-        protected void ThenCreateSessionBooking(Response response, ExpectedStandaloneSession session, ExpectedCustomer customer, int expectedBookingCount = 1)
-        {
-            var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
-
-            AssertSingleSessionBooking(booking, session, customer);
-            var bookingId = booking.id;
-
-            var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id);
-            var sessionData = AssertSuccessResponse<SessionData>(sessionResponse);
-
-            Assert.That(sessionData.booking.bookings.Count, Is.EqualTo(expectedBookingCount));
-            var bookingOne = sessionData.booking.bookings[expectedBookingCount - 1];
-
-            AssertCustomerBooking(bookingOne, bookingId, customer);
         }
 
         protected void ThenCreateSessionBooking(ApiResponse response, 

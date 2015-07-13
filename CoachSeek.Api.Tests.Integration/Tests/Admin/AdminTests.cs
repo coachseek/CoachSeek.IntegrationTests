@@ -15,13 +15,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         }
 
 
-        [SetUp]
-        public void Setup()
-        {
-            RegisterTestBusiness();
-        }
-
-
         [Test]
         public void GivenEmailAddressIsNotUnsubscribed_WhenTryGetIsEmailUnsubscribed_ThenReturnsNotFound()
         {
@@ -103,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         private ApiResponse GetIsEmailUnsubscribed(string emailAddress)
         {
             var url = string.Format("Email/IsUnsubscribed?email={0}", HttpUtility.UrlEncode(emailAddress));
-            return new TestAdminApiClient().Get<bool>(url);
+            return AdminGet<bool>(url);
         }
 
         private ApiResponse WhenTryUnsubscribeEmail(string emailAddress)
@@ -114,7 +107,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         private ApiResponse UnsubscribeEmail(string emailAddress)
         {
             var url = string.Format("Email/Unsubscribe?email={0}", HttpUtility.UrlEncode(emailAddress));
-            return new TestAdminApiClient().Get<string>(url);
+            return AdminGet<string>(url);
         }
 
 

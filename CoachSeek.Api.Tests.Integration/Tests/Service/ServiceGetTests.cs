@@ -155,31 +155,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
         }
 
 
-        private Response WhenTryGetAll()
-        {
-            var url = BuildGetAllUrl();
-            return AuthenticatedGet<List<ServiceData>>(url);
-        }
-
-        private Response WhenTryGetById(Guid serviceId)
-        {
-            var url = BuildGetByIdUrl(serviceId);
-            return AuthenticatedGet<ServiceData>(url);
-        }
-
         private ApiResponse WhenTryGetAllServices(SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<List<ServiceData>>(setup.Business.UserName,
-                                                                           setup.Business.Password,
-                                                                           RelativePath);
+            return AuthenticatedGet<List<ServiceData>>(RelativePath, setup);
         }
 
         private ApiResponse WhenTryGetServiceById(Guid serviceId, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", RelativePath, serviceId);
-            return new TestAuthenticatedApiClient().Get<ServiceData>(setup.Business.UserName,
-                                                                     setup.Business.Password,
-                                                                     url);
+            return AuthenticatedGet<ServiceData>(RelativePath, serviceId, setup);
         }
 
 

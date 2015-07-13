@@ -157,17 +157,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
         private ApiResponse WhenTryGetAllLocations(SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<List<LocationData>>(setup.Business.UserName,
-                                                                            setup.Business.Password, 
-                                                                            RelativePath);
+            return AuthenticatedGet<List<LocationData>>(RelativePath, setup);
         }
 
         private ApiResponse WhenTryGetLocationById(Guid locationId, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", RelativePath, locationId);
-            return new TestAuthenticatedApiClient().Get<LocationData>(setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      url);
+            return AuthenticatedGet<LocationData>(RelativePath, locationId, setup);
         }
 
 

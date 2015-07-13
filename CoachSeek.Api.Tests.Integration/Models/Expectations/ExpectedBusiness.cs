@@ -67,5 +67,25 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                 merchantAccountIdentifier = merchantAccountIdentifier
             };
         }
+
+        public ExpectedBusiness(ExpectedBusiness business)
+        {
+            Name = business.Name;
+            Admin = new ApiBusinessAdmin
+            {
+                firstName = business.Admin.firstName,
+                lastName = business.Admin.lastName,
+                email = UserName = business.Admin.email,
+                password = Password = business.Admin.password
+            };
+            Payment = new ApiBusinessPaymentOptions
+            {
+                currency = business.Payment.currency,
+                isOnlinePaymentEnabled = business.Payment.isOnlinePaymentEnabled,
+                forceOnlinePayment = business.Payment.forceOnlinePayment,
+                paymentProvider = business.Payment.paymentProvider,
+                merchantAccountIdentifier = business.Payment.merchantAccountIdentifier
+            };
+        }
     }
 }

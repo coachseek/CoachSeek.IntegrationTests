@@ -56,17 +56,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private ApiResponse WhenTryGetAllCustomers(SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<List<CustomerData>>(setup.Business.UserName,
-                                                                            setup.Business.Password,
-                                                                            RelativePath);
+            return AuthenticatedGet<List<CustomerData>>(RelativePath, setup); 
         }
 
         private ApiResponse WhenTryGetCustomerById(Guid customerId, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", RelativePath, customerId);
-            return new TestAuthenticatedApiClient().Get<CustomerData>(setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      url);
+            return AuthenticatedGet<CustomerData>(RelativePath, customerId, setup);
         }
 
 

@@ -16,8 +16,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseClashesWithStandaloneSession(setup);
             var response = WhenTryCreateCourse(command, setup);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiMiniRed14To15.Id)));
+            AssertSessionClashError(response, setup.AaronOrakeiMiniRed14To15.Id);
         }
 
         [Test]
@@ -28,8 +27,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseClashesWithAnotherCourse(setup);
             var response = WhenTryCreateCourse(command, setup);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id)));
+            AssertSessionClashError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id);
         }
 
         // TODO: Course clashes with course session.
@@ -131,22 +129,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return command;
         }
 
-        private ApiSessionSaveCommand GivenNewCourseClashesWithStandaloneSession()
-        {
-            var command = CreateSessionSaveCommandAaronOrakei14To15();
-
-            command.location = new ApiLocationKey { id = Remuera.Id };
-            command.service = new ApiServiceKey { id = MiniBlue.Id };
-
-            command.timing.startTime = "14:30";
-
-            command.booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false };
-            command.repetition = new ApiRepetition { sessionCount = 6, repeatFrequency = "w" };
-            command.pricing = new ApiPricing { sessionPrice = 15 };
-
-            return command;
-        }
-
         private ApiSessionSaveCommand GivenNewCourseClashesWithAnotherCourse(SetupData setup)
         {
             var command = CreateCourseSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days);
@@ -171,21 +153,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             command.repetition = new ApiRepetition(27, "w");
 
             return command;
-        }
-
-        private ApiSessionSaveCommand GivenNewCourseCommand()
-        {
-            return new ApiSessionSaveCommand
-            {
-                service = new ApiServiceKey { id = MiniGreen.Id },
-                location = new ApiLocationKey { id = Remuera.Id },
-                coach = new ApiCoachKey { id = Aaron.Id },
-                timing = new ApiSessionTiming { startDate = GetFormattedDateOneWeekOut(), startTime = "2:00", duration = 60 },
-                booking = new ApiSessionBooking { studentCapacity = 10, isOnlineBookable = false },
-                pricing = new ApiPricing { sessionPrice = 12 },
-                repetition = new ApiRepetition { sessionCount = 2, repeatFrequency = "d" },
-                presentation = new ApiPresentation { colour = "green" }
-            };
         }
 
         private ApiSessionSaveCommand GivenNewCourseWithNeitherSessionNorCoursePrice(SetupData setup)

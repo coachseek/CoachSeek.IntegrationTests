@@ -57,17 +57,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private ApiResponse WhenTryGetAllCoaches(SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Get<List<CoachData>>(setup.Business.UserName,
-                                                                         setup.Business.Password,
-                                                                         RelativePath);
+            return AuthenticatedGet<List<CoachData>>(RelativePath, setup);
         }
 
         private ApiResponse WhenTryGetCoachById(Guid coachId, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", RelativePath, coachId);
-            return new TestAuthenticatedApiClient().Get<CoachData>(setup.Business.UserName,
-                                                                   setup.Business.Password,
-                                                                   url);
+            return AuthenticatedGet<CoachData>(RelativePath, coachId, setup); 
         }
 
 

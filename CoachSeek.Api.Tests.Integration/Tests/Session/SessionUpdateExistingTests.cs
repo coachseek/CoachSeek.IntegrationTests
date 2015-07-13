@@ -63,7 +63,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenSessionClashesWithAnotherStandaloneSession(setup);
             var response = WhenTryUpdateSession(command, setup);
-            ThenReturnSessionClashError(response, setup.AaronOrakeiMiniRed14To15.Id);
+            AssertSessionClashError(response, setup.AaronOrakeiMiniRed14To15.Id);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenSessionClashesWithAnotherSessionInCourse(setup);
             var response = WhenTryUpdateSession(command, setup);
-            ThenReturnSessionClashError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id);
+            AssertSessionClashError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id);
         }
 
         [Test]
@@ -221,13 +221,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private void ThenReturnsCannotChangeSessionToCourseError(ApiResponse response)
         {
             AssertSingleError(response, "Cannot change a session to a course.");
-        }
-
-        private void ThenReturnSessionClashError(ApiResponse response, Guid sessionId)
-        {
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.code, Is.EqualTo("clashing-session"));
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", sessionId)));
         }
     }
 }

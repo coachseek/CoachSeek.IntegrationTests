@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Net;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using ApplicationError = CoachSeek.Api.Tests.Integration.Models.ApplicationError;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
 {
@@ -62,8 +60,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         [Test]
         public void GivenDuplicateBusinessAdmin_WhenTryRegisterBusiness_ThenReturnDuplicateAdminErrorResponse()
         {
-            GivenDuplicateBusinessAdmin();
-            var response = WhenTryRegisterBusiness();
+            var setup = GivenDuplicateBusinessAdmin();
+            var response = WhenTryRegisterBusiness(setup);
             ThenReturnDuplicateAdminErrorResponse(response);
         }
 
@@ -150,9 +148,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             return new ExpectedBusiness(Random.RandomString, "XX", Random.RandomEmail);
         }
 
-        private void GivenDuplicateBusinessAdmin()
+        private SetupData GivenDuplicateBusinessAdmin()
         {
-            RegisterFirstTime();
+            return RegisterBusiness();
         }
 
         private ExpectedBusiness GivenUniqueBusinessAdmin()
@@ -165,16 +163,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             return new ExpectedBusiness(Random.RandomString, "", Random.RandomEmail);
         }
 
-
-        private void RegisterFirstTime()
+        private ApiResponse WhenTryRegisterBusiness(SetupData setup)
         {
-            Business = new RandomBusiness();
-            BusinessRegistrar.RegisterBusiness(Business);
-        }
-
-        private ApiResponse WhenTryRegisterBusiness()
-        {
-            return BusinessRegistrar.RegisterBusiness(Business);
+            return BusinessRegistrar.RegisterBusiness(setup.Business);
         }
 
         private ApiResponse WhenTryRegisterBusiness(ExpectedBusiness business)
@@ -184,7 +175,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenTryRegisterBusiness(string json)
         {
-            return new TestAnonymousApiClient().Post<RegistrationData>(json, RelativePath);
+            return AnonymousPost<RegistrationData>(json, RelativePath);
         }
 
         private ApiResponse WhenTryRegisterBusinessUsingHttp(ExpectedBusiness business)
@@ -202,15 +193,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         {
             AssertMultipleErrors(response, new[,] { { "The business field is required.", "registration.business" },
                                                     { "The admin field is required.", "registration.admin" } });
-        }
-
-        private void ThenReturnMissingPropertiesError(Response response)
-        {
-            AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
-                                                    { "The firstName field is required.", "registration.admin.firstName" },
-                                                    { "The lastName field is required.", "registration.admin.lastName" },
-                                                    { "The email field is required.", "registration.admin.email" },
-                                                    { "The password field is required.", "registration.admin.password" } });
         }
 
         private void ThenReturnMissingPropertiesError(ApiResponse response)
@@ -232,20 +214,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             AssertApplicationError(errors[0], "registration.business.currency", "The field currency must be a string with a maximum length of 3.");
             AssertMultipleEmailErrors(errors[1], errors[2]);
             AssertApplicationError(errors[3], "registration.admin.password", "The field password must be a string with a maximum length of 20.");
-        }
-
-        private void AssertMultipleEmailErrors(ApplicationError error1, ApplicationError error2)
-        {
-            if (error1.message.Contains("maximum length"))
-            {
-                AssertApplicationError(error1, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
-                AssertApplicationError(error2, "registration.admin.email", "The email field is not a valid e-mail address.");
-            }
-            else
-            {
-                AssertApplicationError(error1, "registration.admin.email", "The email field is not a valid e-mail address.");
-                AssertApplicationError(error2, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
-            }
         }
 
         private void AssertMultipleEmailErrors(ApiApplicationError error1, ApiApplicationError error2)
@@ -343,10 +311,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void AssertBusinessGet(ExpectedBusiness expectedBusiness)
         {
-            Business = expectedBusiness;
-            var response = new TestAuthenticatedApiClient().Get<BusinessData>(Business.UserName, 
-                                                                              Business.Password,
-                                                                              "Business");
+            var response = AuthenticatedGet<BusinessData>("Business",
+                                                          expectedBusiness.UserName,
+                                                          expectedBusiness.Password);
             var business = (BusinessData)response.Payload;
             AssertBusinessData(business, expectedBusiness);
         }

@@ -2,150 +2,86 @@
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
-using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using System.IO;
 using System.Net;
-using System.Text;
-using ApplicationError = CoachSeek.Api.Tests.Integration.Models.ApplicationError;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
 {
     public abstract class WebIntegrationTest
     {
-        protected CoachSteve Steve { get; set; }
-        protected CoachAaron Aaron { get; set; }
-        protected CoachBobby Bobby { get; set; }
-
-
-        private string _email;
-
-        public static string BaseUrl
-        {
-#if DEBUG
-            get { return "https://localhost:44300"; }
-#else
-            get { return "https://api.coachseek.com"; }
-#endif
-        }
-        
-
-        public ExpectedBusiness Business { get; set; }
-
-
         protected abstract string RelativePath { get; }
 
-        protected Uri Url
+
+        protected SetupData RegisterBusiness()
         {
-            get { return new Uri(string.Format("{0}/{1}", BaseUrl, RelativePath)); }
+            var business = new RandomBusiness();
+            var response = BusinessRegistrar.RegisterBusiness(business);
+            return new SetupData((RegistrationData)response.Payload, business.Password);
         }
 
-        protected Uri OnlineBookingUrl
+
+        protected ApiResponse PostBooking(string json, SetupData setup)
         {
-            get { return new Uri(string.Format("{0}/OnlineBooking/{1}", BaseUrl, RelativePath)); }
+            return new TestAuthenticatedApiClient().Post<BookingData>(json,
+                                                                      setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      "Bookings");
         }
 
-        protected Uri AdminUrl
+        protected ApiResponse AdminGet<TResponse>(string relativePath)
         {
-            get { return new Uri(string.Format("{0}/Admin/{1}", BaseUrl, RelativePath)); }
+            return new TestAdminApiClient().Get<TResponse>(relativePath);
         }
 
-        protected string Email
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, SetupData setup)
         {
-            get { return _email; }
-            set { _email = value ?? Random.RandomEmail; }
+            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
+                                                                   setup.Business.Password,
+                                                                   relativePath);
         }
 
-        protected string Username
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, string username, string password)
         {
-            get { return Email; }
+            return new TestAuthenticatedApiClient().Get<TResponse>(username,
+                                                                   password,
+                                                                   relativePath);
         }
 
-        protected string Password { get; set; }
-
-
-        //public Response PostAnonymously<TResponse>(string json)
-        //{
-        //    var http = CreateAnonymousWebRequest(Url);
-        //    return Post<TResponse>(json, http);
-        //}
-
-        public Response PostAnonymouslyToBusiness<TResponse>(string json)
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, SetupData setup)
         {
-            var http = CreateAnonymousWebRequest(Url);
-            return Post<TResponse>(json, http);
+            var url = string.Format("{0}/{1}", relativePath, id);
+            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
+                                                                   setup.Business.Password,
+                                                                   url);
         }
 
-        protected Response PostAnonymously<TResponse>(string json, string relativePath)
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
         {
-            var url = string.Format("{0}/{1}", BaseUrl, relativePath);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBusinessDomainHeader(http, Business.Domain);
-
-            return Post<TResponse>(json, http);
+            return new TestBusinessAnonymousApiClient().Get<TResponse>(businessDomain, relativePath);
         }
 
-        protected Response Post<TResponse>(string json)
-        {
-            var http = CreateAuthenticatedWebRequest();
 
-            return Post<TResponse>(json, http);
+        protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, SetupData setup)
+        {
+            return new TestAuthenticatedApiClient().Post<TResponse>(json,
+                                                                    setup.Business.UserName,
+                                                                    setup.Business.Password,
+                                                                    relativePath);
         }
 
-        protected Response PostForOnlineBooking<TResponse>(string json)
+        protected ApiResponse AnonymousPost<TResponse>(string json, string relativePath)
         {
-            var http = CreateOnlineBookingWebRequest();
-
-            return Post<TResponse>(json, http);
+            return new TestAnonymousApiClient().Post<TResponse>(json, RelativePath);
         }
 
-        private HttpWebRequest CreateAuthenticatedWebRequest()
+        protected ApiResponse BusinessAnonymousPost<TResponse>(string json, string relativePath, SetupData setup)
         {
-            var http = (HttpWebRequest)WebRequest.Create(Url);
-            SetBasicAuthHeader(http, Business.UserName, Business.Password);
-            return http;
+            return new TestBusinessAnonymousApiClient().Post<TResponse>(json,
+                                                                        setup.Business.Domain,
+                                                                        relativePath);
         }
 
-        private HttpWebRequest CreateAnonymousWebRequest(Uri url)
-        {
-            var http = (HttpWebRequest)WebRequest.Create(url);
-            SetBusinessDomainHeader(http, Business.Domain);
-            return http;
-        }
-
-        private HttpWebRequest CreateOnlineBookingWebRequest()
-        {
-            return CreateAnonymousWebRequest(OnlineBookingUrl);
-        }
-
-        protected Response Post<TResponse>(string json, string relativePath)
-        {
-            var url = string.Format("{0}/{1}", BaseUrl, relativePath);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Business.UserName, Business.Password);
-
-            return Post<TResponse>(json, http);
-        }
-
-        protected Response Post<TResponse>(string json, string relativePath, SetupData setup)
-        {
-            var url = string.Format("{0}/{1}", BaseUrl, relativePath);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, setup.Business.UserName, setup.Business.Password);
-
-            return Post<TResponse>(json, http);
-        }
-
-        protected Response Delete<TResponse>(string relativePath, Guid id)
-        {
-            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Business.UserName, Business.Password);
-
-            return Delete<TResponse>(http);
-        }
 
         protected ApiResponse Delete<TResponse>(string relativePath, Guid id, SetupData setup)
         {
@@ -160,188 +96,43 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return new TestAnonymousApiClient().Delete<TResponse>(relativePath, id);
         }
 
-
-        protected Response GetAnonymously<TResponse>(string url)
+        protected ApiResponse PostSession(string json, SetupData setup)
         {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBusinessDomainHeader(http, Business.Domain);
-
-            return Get<TResponse>(http);
+            return new TestAuthenticatedApiClient().Post<SessionData>(json,
+                                                                      setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      "Sessions");
         }
 
-        protected Response AuthenticatedGet<TResponse>(string relativePath, Guid id)
+        protected ApiResponse PostCourse(string json, SetupData setup)
         {
-            var url = string.Format("{0}/{1}/{2}", BaseUrl, relativePath, id);
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-
-            return AuthenticatedGet<TResponse>(url);
+            return new TestAuthenticatedApiClient().Post<CourseData>(json,
+                                                                     setup.Business.UserName,
+                                                                     setup.Business.Password,
+                                                                     "Sessions");
         }
 
-        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, SetupData setup)
+        protected ApiResponse WhenPostSession(string json, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", relativePath, id);
-            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
-                                                                   setup.Business.Password,
-                                                                   url);
+            return new TestAuthenticatedApiClient().Post<SessionData>(json,
+                                                                      setup.Business.UserName,
+                                                                      setup.Business.Password,
+                                                                      RelativePath);
         }
 
-        protected Response AuthenticatedGet<TResponse>(string url)
+        protected ApiResponse WhenPostCourse(string json, SetupData setup)
         {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, Business.UserName, Business.Password);
-
-            return Get<TResponse>(http);
+            return new TestAuthenticatedApiClient().Post<CourseData>(json,
+                                                                     setup.Business.UserName,
+                                                                     setup.Business.Password,
+                                                                     RelativePath);
         }
 
-        protected Response AuthenticatedGet<TResponse>(string url, SetupData setup)
-        {
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            SetBasicAuthHeader(http, setup.Business.UserName, setup.Business.Password);
-
-            return Get<TResponse>(http);
-        }
-
-        private Response Get<TResponse>(HttpWebRequest request)
-        {
-            PrepareGetRequest(request);
-
-            // NOTE: DO NOT REMOVE THIS CHECK!!
-            // We do not want to send heaps of testing data to our production database!!
-            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
-
-            return HandleResponse<TResponse>(request);
-        }
-
-        protected Response Post<TResponse>(string json, HttpWebRequest request)
-        {
-            PreparePostRequest(request);
-
-            SendData(json, request);
-
-            return HandleResponse<TResponse>(request);
-        }
-
-        private Response Delete<TResponse>(HttpWebRequest request)
-        {
-            PrepareDeleteRequest(request);
-
-            // NOTE: DO NOT REMOVE THIS CHECK!!
-            // We do not want to delete data to our production database!!
-            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
-
-            return HandleResponse<TResponse>(request);
-        }
-
-
-        private static Response HandleResponse<TResponse>(HttpWebRequest request)
-        {
-            try
-            {
-                request.Timeout = 200000;
-                var response = request.GetResponse();
-                var status = ((HttpWebResponse) response).StatusCode;
-                var stream = response.GetResponseStream();
-                var sr = new StreamReader(stream);
-                var content = sr.ReadToEnd();
-                var obj = JsonConvert.DeserializeObject<TResponse>(content);
-
-                return new Response(status, obj);
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.Timeout)
-                    return new Response(HttpStatusCode.RequestTimeout);
-
-                var status = ((HttpWebResponse) ex.Response).StatusCode;
-                using (var stream = ex.Response.GetResponseStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        var errors = reader.ReadToEnd();
-                        return new Response(status, DeserialiseErrors(errors));
-                    }
-                }
-            }
-        }
-
-        private static object DeserialiseErrors(string errors)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<ApplicationError[]>(errors);
-            }
-            catch (JsonSerializationException)
-            {
-                return JsonConvert.DeserializeObject<ApplicationError>(errors);
-            }            
-        }
-
-        private static void SendData(string json, HttpWebRequest request)
-        {
-            var encoding = new ASCIIEncoding();
-            var bytes = encoding.GetBytes(json);
-
-            // NOTE: DO NOT REMOVE THIS CHECK!!
-            // We do not want to send heaps of testing data to our production database!!
-            Assert.That(request.Headers["Testing"], Is.EqualTo("true"));
-
-            var newStream = request.GetRequestStream();
-            newStream.Write(bytes, 0, bytes.Length);
-            newStream.Close();
-        }
-
-        private static void SetBasicAuthHeader(WebRequest request, string username, string password)
-        {
-            var authInfo = string.Format("{0}:{1}", username, password);
-            authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
-            request.Headers["Authorization"] = "Basic " + authInfo;
-        }
-
-        private static void SetBusinessDomainHeader(WebRequest request, string domain)
-        {
-            if (domain != null)
-                request.Headers["Business-Domain"] = domain;
-        }
-
-        private static void SetTestingHeader(WebRequest request)
-        {
-            request.Headers["Testing"] = "true";
-        }
-
-        private static void PreparePostRequest(HttpWebRequest request)
-        {
-            request.Accept = "application/json";
-            request.ContentType = "application/json";
-            request.Method = "POST";
-
-            SetTestingHeader(request);
-        }
-
-        private static void PrepareGetRequest(HttpWebRequest request)
-        {
-            request.Accept = "application/json";
-            request.Method = "GET";
-
-            SetTestingHeader(request);
-        }
-
-        private static void PrepareDeleteRequest(HttpWebRequest request)
-        {
-            request.Accept = "application/json";
-            request.Method = "DELETE";
-
-            SetTestingHeader(request);
-        }
 
 
         protected void AssertStatusCode(HttpStatusCode actualStatusCode, HttpStatusCode expectedStatusCode)
         {
             Assert.That(actualStatusCode, Is.EqualTo(expectedStatusCode));
-        }
-
-        protected void AssertNotFound(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
         }
 
         protected void AssertNotFound(ApiResponse response)
@@ -354,23 +145,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertNotFound(response);
         }
 
-        protected void AssertUnauthorised(Response response)
-        {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
-        }
-
         protected void AssertUnauthorised(ApiResponse response)
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.Unauthorized);
-        }
-
-        protected T AssertSuccessResponse<T>(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
-
-            Assert.That(response.Payload, Is.InstanceOf<T>());
-            return (T)response.Payload;
         }
 
         protected T AssertSuccessResponse<T>(ApiResponse response)
@@ -382,15 +159,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return (T)response.Payload;
         }
 
-        protected ApplicationError[] AssertErrorResponse(Response response)
-        {
-            Assert.That(response, Is.Not.Null);
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApplicationError[]>());
-            return (ApplicationError[])response.Payload;
-        }
-
         protected ApiApplicationError[] AssertErrorResponse(ApiResponse response)
         {
             Assert.That(response, Is.Not.Null);
@@ -398,16 +166,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
             return (ApiApplicationError[])response.Payload;
-        }
-
-        protected ApplicationError AssertSingleError(Response response, string message, string field = null)
-        {
-            var errors = AssertErrorResponse(response);
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], field, message);
-
-            return errors[0];
         }
 
         protected ApiApplicationError AssertSingleError(ApiResponse response, string message, string field = null)
@@ -418,19 +176,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             AssertApplicationError(errors[0], field, message);
 
             return errors[0];
-        }
-
-        protected void AssertMultipleErrors(Response response, string[,] expectedErrors)
-        {
-            var errors = AssertErrorResponse(response);
-            Assert.That(errors.GetLength(0), Is.EqualTo(expectedErrors.GetLength(0)));
-
-            var i = 0;
-            foreach (var error in errors)
-            {
-                AssertApplicationError(error, expectedErrors[i, 1], expectedErrors[i, 0]);
-                i++;
-            }
         }
 
         protected void AssertMultipleErrors(ApiResponse response, string[,] expectedErrors)
@@ -446,56 +191,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
         }
 
-        protected void AssertApplicationError(ApplicationError error, string field, string message)
-        {
-            Assert.That(error.field, Is.EqualTo(field));
-            Assert.That(error.message, Is.EqualTo(message));
-        }
-
         protected void AssertApplicationError(ApiApplicationError error, string field, string message)
         {
             Assert.That(error.field, Is.EqualTo(field));
             Assert.That(error.message, Is.EqualTo(message));
-        }
-
-        protected void RegisterTestBusiness()
-        {
-            Business = new RandomBusiness();
-            BusinessRegistrar.RegisterBusiness(Business);
-        }
-
-        protected SetupData RegisterBusiness()
-        {
-            var business = new RandomBusiness();
-            var response = BusinessRegistrar.RegisterBusiness(business);
-            return new SetupData((RegistrationData)response.Payload, business.Password);
-        }
-
-        protected string CreateTestBusinessRegistrationCommand()
-        {
-            var registration = new ApiBusinessRegistrationCommand
-            {
-                business = new ApiBusiness { name = Random.RandomString },
-                admin = new ApiBusinessAdmin
-                {
-                    firstName = "Bob",
-                    lastName = "Smith",
-                    email = Email = Random.RandomEmail,
-                    password = Password = "password1"
-                }
-            };
-
-            return JsonConvert.SerializeObject(registration);
-        }
-
-        protected string BuildGetAllUrl()
-        {
-            return string.Format("{0}/{1}", BaseUrl, RelativePath);
-        }
-
-        protected string BuildGetByIdUrl(Guid id)
-        {
-            return string.Format("{0}/{1}/{2}", BaseUrl, RelativePath, id);
         }
     }
 }

@@ -16,8 +16,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewSessionClashesWithExistingStandaloneSession(setup);
             var response = WhenTryCreateSession(command, setup);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiMiniRed16To17.Id)));
+            AssertSessionClashError(response, setup.AaronOrakeiMiniRed16To17.Id);
         }
 
         [Test]
@@ -29,8 +28,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewSessionClashesWithExistingCourse(setup);
             var response = WhenTryCreateSession(command, setup);
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id)));
+            AssertSessionClashError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id);
         }
 
         [Test]
