@@ -1,5 +1,4 @@
 ﻿using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -38,7 +37,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private string GivenNonExistentBusiness()
         {
-            return "abc123";
+            return Random.RandomString;
         }
 
         private void GivenValidBusiness()

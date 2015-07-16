@@ -1,7 +1,7 @@
 ﻿using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
@@ -320,7 +320,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenTryUpdateBusiness(ApiBusinessSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryUpdateBusiness(json, setup);
         }
 
@@ -334,7 +334,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenTryUpdateBusinessAnonymously(ApiBusinessSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryUpdateBusinessAnonymously(json, setup);
         }
 

@@ -1,7 +1,6 @@
-﻿using CoachSeek.Api.Tests.Integration.Clients;
+﻿using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Tests.Booking;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
@@ -45,7 +44,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
 
         private void WhenTrySetAttendance(ApiBookingSetAttendanceCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             var relativePath = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
 
             WhenTrySetAttendance(json, relativePath, setup);

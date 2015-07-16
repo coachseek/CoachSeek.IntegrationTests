@@ -1,9 +1,9 @@
 ﻿using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
-using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration
 {
@@ -19,7 +19,7 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static string CreateNewServiceSaveCommand(ExpectedService expectedService)
         {
-            var service = new ApiServiceSaveCommand
+            var command = new ApiServiceSaveCommand
             {
                 name = expectedService.Name,
                 description = expectedService.Description,
@@ -28,13 +28,13 @@ namespace CoachSeek.Api.Tests.Integration
             };
 
             if (expectedService.Timing != null)
-                service.timing = expectedService.Timing;
+                command.timing = expectedService.Timing;
             if (expectedService.Pricing != null)
-                service.pricing = expectedService.Pricing;
+                command.pricing = expectedService.Pricing;
             if (expectedService.Booking != null)
-                service.booking = expectedService.Booking;
+                command.booking = expectedService.Booking;
 
-            return JsonConvert.SerializeObject(service);
+            return JsonSerialiser.Serialise(command);
         }
 
         private static ApiResponse PostService(ExpectedBusiness business, string json)

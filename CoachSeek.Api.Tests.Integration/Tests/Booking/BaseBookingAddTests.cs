@@ -1,6 +1,6 @@
 ﻿using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
@@ -9,13 +9,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         // Session
         protected ApiResponse WhenTryBookSession(ApiBookingSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryBookSession(json, setup);
         }
 
         protected ApiResponse WhenTryBookSessionAnonymously(ApiBookingSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return BusinessAnonymousPost<BookingData>(json, RelativePath, setup);
         }
 

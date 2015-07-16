@@ -1,9 +1,9 @@
 ﻿using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
-using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration
 {
@@ -19,7 +19,7 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static string CreateNewCoachSaveCommand(ExpectedCoach expectedCoach)
         {
-            var coach = new ApiCoachSaveCommand
+            var command = new ApiCoachSaveCommand
             {
                 firstName = expectedCoach.FirstName,
                 lastName = expectedCoach.LastName,
@@ -28,7 +28,7 @@ namespace CoachSeek.Api.Tests.Integration
                 workingHours = expectedCoach.WorkingHours
             };
 
-            return JsonConvert.SerializeObject(coach);
+            return JsonSerialiser.Serialise(command);
         }
 
         private static ApiResponse PostCoach(ExpectedBusiness business, string json)

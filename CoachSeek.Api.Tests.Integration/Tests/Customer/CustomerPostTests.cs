@@ -1,8 +1,8 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Customer
@@ -97,7 +97,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
             private string GivenValidNewCustomer()
             {
-                return JsonConvert.SerializeObject(CreateNewCustomerSaveCommand());
+                return JsonSerialiser.Serialise(CreateNewCustomerSaveCommand());
             }
         }
 
@@ -151,7 +151,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
             private string GivenNonExistentCustomerId()
             {
-                var coach = new ApiCustomerSaveCommand
+                var command = new ApiCustomerSaveCommand
                 {
                     id = Guid.Empty,
                     firstName = Random.RandomString,
@@ -160,7 +160,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                     phone = Random.RandomString,
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
             private ApiCustomerSaveCommand GivenWantToUpdateExistingCustomer(SetupData setup)
@@ -250,7 +250,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private ApiResponse WhenTryPost(ApiCustomerSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryPost(json, setup);
         }
 

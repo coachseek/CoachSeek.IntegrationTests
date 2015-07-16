@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Service
@@ -65,7 +65,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                     presentation = new ApiPresentation { colour = "orange" }
                 };
 
-                return JsonConvert.SerializeObject(command);
+                return JsonSerialiser.Serialise(command);
             }
         }
 
@@ -279,7 +279,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
             private string GivenWantToUpdateExistingService(SetupData setup)
             {
-                var service = new ApiServiceSaveCommand
+                var command = new ApiServiceSaveCommand
                 {
                     id = setup.MiniRed.Id,
                     name = "Mini Yellow",
@@ -291,7 +291,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                     pricing = new ApiPricing {sessionPrice = 10, coursePrice = 80}
                 };
 
-                return JsonConvert.SerializeObject(service);
+                return JsonSerialiser.Serialise(command);
             }
 
             private void ThenReturnUpdatedService(ApiResponse response, SetupData setup)
@@ -882,7 +882,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private ApiResponse WhenTryPost(ApiServiceSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryPost(json, setup);
         }
 

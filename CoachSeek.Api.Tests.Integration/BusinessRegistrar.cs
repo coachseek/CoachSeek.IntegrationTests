@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
-using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration
 {
@@ -25,13 +25,13 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static string CreateNewBusinessSaveCommand(ExpectedBusiness expectedBusiness)
         {
-            var registration = new ApiBusinessRegistrationCommand
+            var command = new ApiBusinessRegistrationCommand
             {
                 business = new ApiBusiness { name = expectedBusiness.Name, currency = expectedBusiness.Payment.currency },
                 admin = expectedBusiness.Admin
             };
 
-            return JsonConvert.SerializeObject(registration);
+            return JsonSerialiser.Serialise(command);
         }
     }
 }

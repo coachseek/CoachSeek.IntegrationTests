@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Web;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Admin

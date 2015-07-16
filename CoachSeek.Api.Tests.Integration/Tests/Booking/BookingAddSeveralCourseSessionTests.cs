@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -148,7 +148,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private ApiResponse WhenTryBookSeveralCourseSessions(ApiBookingSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryBookCourse(json, setup);
         }
 

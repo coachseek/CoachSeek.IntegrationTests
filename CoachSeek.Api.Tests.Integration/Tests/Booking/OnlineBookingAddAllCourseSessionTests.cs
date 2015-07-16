@@ -8,22 +8,22 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
     [TestFixture]
-    public class BookingAddAllCourseSessionTests : BaseBookingAddSessionTests
+    public class OnlineBookingAddAllCourseSessionTests : BaseBookingAddSessionTests
     {
         [Test]
-        public void GivenDuplicateSessions_WhenTryBookAllCourseSessions_ThenReturnDuplicateSessionError()
+        public void GivenDuplicateSessions_WhenTryOnlineBookAllCourseSessions_ThenReturnDuplicateSessionError()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
             RegisterCustomerFred(setup);
 
             var command = GivenDuplicateSessions(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenReturnDuplicateSessionError(response);
         }
 
         [Test]
-        public void GivenASessionIsStandalone_WhenTryBookAllCourseSessions_ThenReturnSessionNotInCourseError()
+        public void GivenASessionIsStandalone_WhenTryOnlineBookAllCourseSessions_ThenReturnSessionNotInCourseError()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
@@ -31,12 +31,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             RegisterCustomerFred(setup);
 
             var command = GivenASessionIsStandalone(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenReturnSessionNotInCourseError(response);
         }
 
         [Test]
-        public void GivenASessionBelongsToADifferentCourse_WhenTryBookAllCourseSessions_ThenReturnSessionNotInCourseError()
+        public void GivenASessionBelongsToADifferentCourse_WhenTryOnlineBookAllCourseSessions_ThenReturnSessionNotInCourseError()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
@@ -44,44 +44,55 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             RegisterCustomerFred(setup);
 
             var command = GivenASessionBelongsToADifferentCourse(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenReturnSessionNotInCourseError(response);
         }
 
         [Test]
-        public void GivenACourseSessionIsFull_WhenTryBookAllCourseSessions_ThenReturnCourseSessionFullError()
+        public void GivenACourseSessionIsFull_WhenTryOnlineBookAllCourseSessions_ThenReturnCourseSessionFullError()
         {
             var setup = RegisterBusiness();
             RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
             RegisterCustomerBambam(setup);
 
             var command = GivenACourseSessionIsFull(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenReturnCourseSessionFullError(response);
         }
 
+        [Test]
+        public void GivenTheCourseIsNotOnlineBookable_WhenTryOnlineBookAllCourseSessions_ThenReturnCourseSessionIsNotOnlineBookableError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(setup, false);
+            RegisterCustomerFred(setup);
+
+            var command = GivenTheCourseIsNotOnlineBookable(setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
+            ThenReturnCourseSessionIsNotOnlineBookableError(response);
+        }
 
         [Test]
-        public void GivenValidAllCourseSessions_WhenTryBookAllCourseSessions_ThenCreateAllCourseSessionBookings()
+        public void GivenValidAllCourseSessions_WhenTryOnlineBookAllCourseSessions_ThenCreateAllCourseSessionBookings()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
             RegisterCustomerFred(setup);
 
             var command = GivenValidAllCourseSessions(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenCreateAllCourseSessionBookings(response, setup);
         }
 
         [Test]
-        public void GivenValidAllCourseSessionsOutOfOrder_WhenTryBookAllCourseSessions_ThenCreateAllCourseSessionBookings()
+        public void GivenValidAllCourseSessionsOutOfOrder_WhenTryOnlineBookAllCourseSessions_ThenCreateAllCourseSessionBookings()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
             RegisterCustomerFred(setup);
 
             var command = GivenValidAllCourseSessionsOutOfOrder(setup);
-            var response = WhenTryBookAllCourseSessions(command, setup);
+            var response = WhenTryOnlineBookAllCourseSessions(command, setup);
             ThenCreateAllCourseSessionBookings(response, setup);
         }
 
@@ -131,6 +142,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             setup.BamBam.Id);
         }
 
+        private ApiBookingSaveCommand GivenTheCourseIsNotOnlineBookable(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[0].Id,
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[1].Id,
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[2].Id
+            },
+            setup.Fred.Id);
+        }
+
         private ApiBookingSaveCommand GivenValidAllCourseSessions(SetupData setup)
         {
             return new ApiBookingSaveCommand(new[]
@@ -154,10 +176,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        private ApiResponse WhenTryBookAllCourseSessions(ApiBookingSaveCommand command, SetupData setup)
+        private ApiResponse WhenTryOnlineBookAllCourseSessions(ApiBookingSaveCommand command, SetupData setup)
         {
             var json = JsonSerialiser.Serialise(command);
-            return WhenTryBookCourse(json, setup);
+            return WhenTryOnlineBookCourse(json, setup);
         }
 
 
@@ -174,6 +196,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private void ThenReturnCourseSessionFullError(ApiResponse response)
         {
             AssertSingleError(response, "One or more of the sessions is already fully booked.");
+        }
+
+        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response)
+        {
+            AssertSingleError(response, "The course is not online bookable.");
         }
 
         private void ThenCreateAllCourseSessionBookings(ApiResponse response, SetupData setup)

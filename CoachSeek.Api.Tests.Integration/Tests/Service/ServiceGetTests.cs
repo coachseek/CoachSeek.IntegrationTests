@@ -73,16 +73,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             }
 
 
-            private string GivenNoBusinessDomain()
-            {
-                return null;
-            }
-
-            private string GivenInvalidBusinessDomain()
-            {
-                return "abc123";
-            }
-
             private string GivenValidBusinessDomain(SetupData setup)
             {
                 return setup.Business.Domain;

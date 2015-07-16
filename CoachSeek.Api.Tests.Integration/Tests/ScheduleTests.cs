@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Booking;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
@@ -10,7 +10,6 @@ using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Location;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
@@ -158,7 +157,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             setup.AaronOrakeiHolidayCamp9To15For3Days = aaronOrakeiHolidayCamp9To15For3Days;
         }
 
-        protected void RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(SetupData setup)
+        protected void RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(SetupData setup, bool isOnlineBookable = true)
         {
             if (setup.BobbyRemueraMiniRed9To10For3Weeks != null)
                 return;
@@ -170,7 +169,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var bobbyRemueraMiniRed9To10For3Weeks = new CourseBobbyRemueraMiniRed9To10For3Weeks(setup.Bobby.Id,
                                                                                                 setup.Remuera.Id,
                                                                                                 setup.MiniRed.Id,
-                                                                                                GetDateFormatNumberOfDaysOut(10));
+                                                                                                GetDateFormatNumberOfDaysOut(10),
+                                                                                                isOnlineBookable);
             RegisterTestCourse(bobbyRemueraMiniRed9To10For3Weeks, setup);
             setup.BobbyRemueraMiniRed9To10For3Weeks = bobbyRemueraMiniRed9To10For3Weeks;
         }
@@ -421,33 +421,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse WhenTryCreateSession(ApiSessionSaveCommand command, SetupData setup)
         {
-            return WhenPostSession(JsonConvert.SerializeObject(command), setup);
+            return WhenPostSession(JsonSerialiser.Serialise(command), setup);
         }
 
         protected ApiResponse WhenTryUpdateSession(ApiSessionSaveCommand command, SetupData setup)
         {
-            return WhenPostSession(JsonConvert.SerializeObject(command), setup);
+            return WhenPostSession(JsonSerialiser.Serialise(command), setup);
         }
 
         protected ApiResponse WhenTryCreateCourse(ApiSessionSaveCommand command, SetupData setup)
         {
-            return WhenPostCourse(JsonConvert.SerializeObject(command), setup);
+            return WhenPostCourse(JsonSerialiser.Serialise(command), setup);
         }
 
         protected ApiResponse WhenTryUpdateCourse(ApiSessionSaveCommand command, SetupData setup)
         {
-            return WhenPostCourse(JsonConvert.SerializeObject(command), setup);
+            return WhenPostCourse(JsonSerialiser.Serialise(command), setup);
         }
 
 
         private string CreateSessionSaveCommandJson(ExpectedStandaloneSession session)
         {
-            return JsonConvert.SerializeObject(CreateSessionSaveCommand(session));
+            return JsonSerialiser.Serialise(CreateSessionSaveCommand(session));
         }
 
         private string CreateCourseSaveCommandJson(ExpectedCourse course)
         {
-            return JsonConvert.SerializeObject(CreateCourseSaveCommand(course));
+            return JsonSerialiser.Serialise(CreateCourseSaveCommand(course));
         }
 
         protected ApiBookingSaveCommand CreateBookingSaveCommand(ExpectedBooking booking)
@@ -462,12 +462,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         private string CreateBookingSaveCommandJson(ExpectedBooking booking)
         {
-            return JsonConvert.SerializeObject(CreateBookingSaveCommand(booking));
+            return JsonSerialiser.Serialise(CreateBookingSaveCommand(booking));
         }
 
         private string CreateBookingSaveCommandJson(ExpectedCourseBooking booking)
         {
-            return JsonConvert.SerializeObject(CreateBookingSaveCommand(booking));
+            return JsonSerialiser.Serialise(CreateBookingSaveCommand(booking));
         }
 
         protected ApiSessionSaveCommand CreateSessionSaveCommand(ExpectedSingleSession session)
@@ -559,5 +559,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             return daysFromToday.ToString("yyyy-MM-dd");
         }
+
+
+        protected string GivenNoBusinessDomain()
+        {
+            return null;
+        }
+
+        protected string GivenInvalidBusinessDomain()
+        {
+            return Random.RandomString;
+        }
+
     }
 }

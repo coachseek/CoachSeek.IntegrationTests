@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
@@ -93,7 +93,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
             private string GivenMissingWorkingHoursProperties()
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     firstName = Random.RandomString,
                     lastName = Random.RandomString,
@@ -108,12 +108,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     }
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenInvalidWorkingHoursProperties()
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     firstName = Random.RandomString,
                     lastName = Random.RandomString,
@@ -131,12 +131,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     }
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenNewCoachWithAnAlreadyExistingCoachName(SetupData setup)
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     firstName = setup.Aaron.FirstName,
                     lastName = setup.Aaron.LastName,
@@ -145,12 +145,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     workingHours = SetupStandardWorkingHours()
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenValidNewCoach()
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     firstName = "Carl",
                     lastName = "Carson",
@@ -159,9 +159,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     workingHours = SetupStandardWorkingHours()
                 };
 
-                coach.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
+                command.workingHours.sunday = new ApiDailyWorkingHours(false, "10:30", "15:45");
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
         }
 
@@ -192,7 +192,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
             private string GivenNonExistentCoachId()
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     id = Guid.Empty,
                     firstName = Random.RandomString,
@@ -202,12 +202,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     workingHours = SetupStandardWorkingHours()
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenWantToUpdateExistingCoach(SetupData setup)
             {
-                var coach = new ApiCoachSaveCommand
+                var command = new ApiCoachSaveCommand
                 {
                     id = setup.Aaron.Id,
                     firstName = "Adam",
@@ -217,7 +217,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
                     workingHours = SetupWeekendWorkingHours()
                 };
 
-                return JsonConvert.SerializeObject(coach);
+                return JsonSerialiser.Serialise(command);
             }
 
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
@@ -61,7 +61,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
                     name = "Mt Eden Soccer Club"
                 };
 
-                return JsonConvert.SerializeObject(command);
+                return JsonSerialiser.Serialise(command);
             }
         }
 
@@ -94,22 +94,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
             private string GivenNewLocationWithAnAlreadyExistingLocationName(string duplicateLocationName)
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     name = duplicateLocationName
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenNewUniqueLocation()
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     name = "Mt Eden Squash Club"
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
         }
 
@@ -164,46 +164,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             
             private string GivenNonExistentLocationId()
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     id = Guid.NewGuid(),
                     name = Random.RandomString
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName(SetupData setup)
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     id = setup.Remuera.Id,
                     name = setup.Orakei.Name
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenExistingLocationAndChangeToUniqueLocationName(SetupData setup, string newLocationName)
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     id = setup.Orakei.Id,
                     name = newLocationName
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenExistingLocationAndKeepLocationNameSame(SetupData setup)
             {
-                var location = new ApiLocationSaveCommand
+                var command = new ApiLocationSaveCommand
                 {
                     id = setup.Orakei.Id,
                     name = setup.Orakei.Name
                 };
 
-                return JsonConvert.SerializeObject(location);
+                return JsonSerialiser.Serialise(command);
             }
         }
 

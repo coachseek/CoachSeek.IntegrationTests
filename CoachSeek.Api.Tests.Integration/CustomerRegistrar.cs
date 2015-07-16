@@ -1,9 +1,9 @@
 ﻿using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
-using Newtonsoft.Json;
 
 namespace CoachSeek.Api.Tests.Integration
 {
@@ -19,7 +19,7 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static string CreateNewCustomerSaveCommand(ExpectedCustomer expectedCustomer)
         {
-            var customer = new ApiCustomerSaveCommand
+            var command = new ApiCustomerSaveCommand
             {
                 firstName = expectedCustomer.FirstName,
                 lastName = expectedCustomer.LastName,
@@ -27,7 +27,7 @@ namespace CoachSeek.Api.Tests.Integration
                 phone = expectedCustomer.Phone
             };
 
-            return JsonConvert.SerializeObject(customer);
+            return JsonSerialiser.Serialise(command);
         }
 
         private static ApiResponse PostCustomer(ExpectedBusiness business, string json)

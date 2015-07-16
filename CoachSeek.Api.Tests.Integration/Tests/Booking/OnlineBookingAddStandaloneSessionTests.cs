@@ -1,7 +1,7 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -124,7 +124,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private ApiResponse WhenTryOnlineBookStandaloneSession(ApiBookingSaveCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             return WhenTryOnlineBookSession(json, setup);
         }
 
@@ -136,7 +136,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private void ThenReturnSessionNotOnlineBookableError(ApiResponse response)
         {
-            AssertSingleError(response, "This session is not online bookable.", "booking.session");
+            AssertSingleError(response, "A session is not online bookable.", "booking.sessions");
         }
 
         private void ThenReturnSessionFullError(ApiResponse response)

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
@@ -130,7 +130,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 admin = new ApiBusinessAdmin()
             };
 
-            return JsonConvert.SerializeObject(registration);
+            return JsonSerialiser.Serialise(registration);
         }
 
         private ExpectedBusiness GivenMultipleErrorsOnProperties()

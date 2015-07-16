@@ -1,9 +1,9 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Tests.Booking;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Payment
@@ -69,7 +69,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
 
         private object WhenTrySetPaymentStatus(ApiBookingSetPaymentStatusCommand command, SetupData setup)
         {
-            var json = JsonConvert.SerializeObject(command);
+            var json = JsonSerialiser.Serialise(command);
             var relativePath = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
 
             return WhenTrySetPaymentStatus(json, relativePath, setup);

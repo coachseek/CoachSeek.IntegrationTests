@@ -8,96 +8,194 @@ using NUnit.Framework;
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
     [TestFixture]
-    public class BookingAddSingleCourseSessionTests : BaseBookingAddSessionTests
+    public class OnlineBookingAddSeveralCourseSessionTests : BaseBookingAddSessionTests
     {
         [Test]
-        public void GivenNonExistentCustomer_WhenTryBookSingleCourseSession_ThenReturnNonExistentCustomerError()
-        {
-            var setup = RegisterBusiness();
-            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
-
-            var command = GivenNonExistentCustomer(setup);
-            var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenReturnNonExistentCustomerError(response);
-        }
-
-        [Test]
-        public void GivenTheCourseSessionIsFull_WhenTryBookSingleCourseSession_ThenReturnCourseSessionFullError()
-        {
-            var setup = RegisterBusiness();
-            RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
-            RegisterCustomerBambam(setup);
-
-            var command = GivenTheCourseSessionIsFull(setup);
-            var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenReturnCourseSessionFullError(response);
-        }
-
-        // TODO: Customer already booked
-
-        [Test]
-        public void GivenValidSingleCourseSession_WhenTryBookSingleCourseSession_ThenCreateSingleCourseSessionBooking()
+        public void GivenDuplicateSessions_WhenTryOnlineBookSeveralCourseSessions_ThenReturnDuplicateSessionError()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
             RegisterCustomerFred(setup);
 
-            var command = GivenValidSingleCourseSession(setup);
-            var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenCreateSingleCourseSessionBooking(response, setup);
+            var command = GivenDuplicateSessions(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenReturnDuplicateSessionError(response);
         }
 
-
-        //[Test]
-        //public void GivenASessionIsFull_WhenTryBookCourse_ThenReturnCourseFullError()
-        //{
-        //    var command = GivenASessionIsFull();
-        //    var response = WhenTryBookCourse(command);
-        //    ThenReturnCourseFullError(response);
-        //}
-
-        //[Test]
-        //public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenCreateCourseBooking()
-        //{
-        //    var command = GivenACustomerWhoIsNotBookedOntoACourse();
-        //    var response = WhenTryBookCourse(command);
-        //    ThenCreateCourseBooking(response);
-        //}
-
-
-        protected ApiBookingSaveCommand GivenNonExistentCustomer(SetupData setup)
+        [Test]
+        public void GivenSecondSessionIsStandalone_WhenTryOnlineBookSeveralCourseSessions_ThenReturnSessionNotInCourseError()
         {
-            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, Guid.NewGuid());
+            var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+            RegisterCustomerFred(setup);
+
+            var command = GivenSecondSessionIsStandalone(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenReturnSessionNotInCourseError(response);
         }
 
-        private ApiBookingSaveCommand GivenTheCourseSessionIsFull(SetupData setup)
+        [Test]
+        public void GivenSecondSessionBelongsToADifferentCourse_WhenTryOnlineBookSeveralCourseSessions_ThenReturnSessionNotInCourseError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(setup);
+            RegisterCustomerFred(setup);
+
+            var command = GivenSecondSessionBelongsToADifferentCourse(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenReturnSessionNotInCourseError(response);
+        }
+
+        [Test]
+        public void GivenACourseSessionIsFull_WhenTryOnlineBookSeveralCourseSessions_ThenReturnCourseSessionFullError()
+        {
+            var setup = RegisterBusiness();
+            RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerBambam(setup);
+
+            var command = GivenACourseSessionIsFull(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenReturnCourseSessionFullError(response);
+        }
+
+        [Test]
+        public void GivenTheCourseIsNotOnlineBookable_WhenTryOnlineBookSingleCourseSession_ThenReturnCourseSessionIsNotOnlineBookableError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(setup, false);
+            RegisterCustomerFred(setup);
+
+            var command = GivenTheCourseIsNotOnlineBookable(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenReturnCourseSessionIsNotOnlineBookableError(response);
+        }
+
+        [Test]
+        public void GivenValidSeveralCourseSessions_WhenTryOnlineBookSeveralCourseSessions_ThenCreateSeveralCourseSessionBookings()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            var command = GivenValidSeveralCourseSessions(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenCreateSeveralCourseSessionBookings(response, setup);
+        }
+
+        [Test]
+        public void GivenValidSeveralCourseSessionsOutOfOrder_WhenTryOnlineBookSeveralCourseSessions_ThenCreateSeveralCourseSessionBookings()
+        {
+            var setup = RegisterBusiness();
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            var command = GivenValidSeveralCourseSessionsOutOfOrder(setup);
+            var response = WhenTryOnlineBookSeveralCourseSessions(command, setup);
+            ThenCreateSeveralCourseSessionBookings(response, setup);
+        }
+
+
+        protected ApiBookingSaveCommand GivenDuplicateSessions(SetupData setup)
         {
             return new ApiBookingSaveCommand(new[]
             {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id,
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id
+            }, 
+            setup.Fred.Id);
+        }
+
+        protected ApiBookingSaveCommand GivenSecondSessionIsStandalone(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id,
+                setup.AaronOrakeiMiniRed14To15.Id
+            },
+            setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenSecondSessionBelongsToADifferentCourse(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id,
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[0].Id
+            },
+            setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenACourseSessionIsFull(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id,
                 setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id
             },
             setup.BamBam.Id);
         }
 
-        private ApiBookingSaveCommand GivenValidSingleCourseSession(SetupData setup)
+        private ApiBookingSaveCommand GivenTheCourseIsNotOnlineBookable(SetupData setup)
         {
-            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[0].Id,
+                setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[2].Id
+            },
+            setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenValidSeveralCourseSessions(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id,
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id
+            },
+            setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenValidSeveralCourseSessionsOutOfOrder(SetupData setup)
+        {
+            return new ApiBookingSaveCommand(new[]
+            {
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id,
+                setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id
+            },
+            setup.Fred.Id);
         }
 
 
-        private ApiResponse WhenTryBookSingleCourseSession(ApiBookingSaveCommand command, SetupData setup)
+        private ApiResponse WhenTryOnlineBookSeveralCourseSessions(ApiBookingSaveCommand command, SetupData setup)
         {
             var json = JsonSerialiser.Serialise(command);
-            return WhenTryBookCourse(json, setup);
+            return WhenTryOnlineBookCourse(json, setup);
         }
 
+
+        protected void ThenReturnDuplicateSessionError(ApiResponse response)
+        {
+            AssertSingleError(response, "Some sessions are duplicates.", "booking.sessions");
+        }
+
+        private void ThenReturnSessionNotInCourseError(ApiResponse response)
+        {
+            AssertSingleError(response, "One or more of the sessions is not in the course.", "booking.sessions");
+        }
 
         private void ThenReturnCourseSessionFullError(ApiResponse response)
         {
             AssertSingleError(response, "One or more of the sessions is already fully booked.");
         }
 
-        private void ThenCreateSingleCourseSessionBooking(ApiResponse response, SetupData setup)
+        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response)
+        {
+            AssertSingleError(response, "The course is not online bookable.");
+        }
+
+        private void ThenCreateSeveralCourseSessionBookings(ApiResponse response, SetupData setup)
         {
             var courseBooking = AssertSuccessResponse<CourseBookingData>(response);
 
@@ -109,22 +207,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(courseBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
             // Check bookings on sessions
-            Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(1));
+            Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(2));
 
-            var sessionBooking = courseBooking.sessionBookings[0];
-            Assert.That(sessionBooking.id, Is.InstanceOf<Guid>());
-            Assert.That(sessionBooking.parentId, Is.EqualTo(courseBooking.id));
-            Assert.That(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions.Select(x => x.Id).Contains(sessionBooking.session.id), Is.True);
-            Assert.That(sessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Orakei Tennis Club with Aaron Smith on {0} at 09:00",
-                                                                       GetDateFormatNumberOfDaysOut(15))));
-            Assert.That(sessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
-            Assert.That(sessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName,  setup.Fred.LastName)));
+            var firstSessionBooking = courseBooking.sessionBookings[0];
+            Assert.That(firstSessionBooking.id, Is.InstanceOf<Guid>());
+            Assert.That(firstSessionBooking.parentId, Is.EqualTo(courseBooking.id));
+            Assert.That(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions.Select(x => x.Id).Contains(firstSessionBooking.session.id), Is.True);
+            Assert.That(firstSessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Orakei Tennis Club with Aaron Smith on {0} at 09:00",
+                                                                       GetDateFormatNumberOfDaysOut(14))));
+            Assert.That(firstSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(firstSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
+
+            var secondSessionBooking = courseBooking.sessionBookings[1];
+            Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
+            Assert.That(secondSessionBooking.parentId, Is.EqualTo(courseBooking.id));
+            Assert.That(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions.Select(x => x.Id).Contains(secondSessionBooking.session.id), Is.True);
+            Assert.That(secondSessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Orakei Tennis Club with Aaron Smith on {0} at 09:00",
+                                                                       GetDateFormatNumberOfDaysOut(16))));
+            Assert.That(secondSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(secondSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
             // Check the bookings on the course
-            GetAndAssertCourse(courseBooking.id, sessionBooking.id, setup);
+            GetAndAssertCourse(courseBooking.id, firstSessionBooking.id, secondSessionBooking.id, setup);
         }
 
-        private void GetAndAssertCourse(Guid courseBookingId, Guid sessionBookingId, SetupData setup)
+        private void GetAndAssertCourse(Guid courseBookingId, Guid firstSessionBookingId, Guid secondSessionBookingId, SetupData setup)
         {
             var courseResponse = AuthenticatedGet<CourseData>("Sessions", setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             var course = AssertSuccessResponse<CourseData>(courseResponse);
@@ -140,19 +247,39 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(customer.email, Is.EqualTo(setup.Fred.Email));
             Assert.That(customer.phone, Is.EqualTo(setup.Fred.Phone));
 
-            Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(0));
-            Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(1));
-            Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(0));
+            Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(1));
+            Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(0));
+            Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(1));
 
-            var sessionBooking = course.sessions[1].booking.bookings[0];
-            Assert.That(sessionBooking.id, Is.EqualTo(sessionBookingId));
-            Assert.That(sessionBooking.parentId, Is.EqualTo(courseBookingId));
-            Assert.That(sessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
-            Assert.That(sessionBooking.customer.firstName, Is.EqualTo(setup.Fred.FirstName));
-            Assert.That(sessionBooking.customer.lastName, Is.EqualTo(setup.Fred.LastName));
-            Assert.That(sessionBooking.customer.email, Is.EqualTo(setup.Fred.Email));
-            Assert.That(sessionBooking.customer.phone, Is.EqualTo(setup.Fred.Phone));
+            var firstSessionBooking = course.sessions[0].booking.bookings[0];
+            Assert.That(firstSessionBooking.id, Is.EqualTo(firstSessionBookingId));
+            Assert.That(firstSessionBooking.parentId, Is.EqualTo(courseBookingId));
+            Assert.That(firstSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(firstSessionBooking.customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(firstSessionBooking.customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(firstSessionBooking.customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(firstSessionBooking.customer.phone, Is.EqualTo(setup.Fred.Phone));
+
+            var secondSessionBooking = course.sessions[2].booking.bookings[0];
+            Assert.That(secondSessionBooking.id, Is.EqualTo(secondSessionBookingId));
+            Assert.That(secondSessionBooking.parentId, Is.EqualTo(courseBookingId));
+            Assert.That(secondSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(secondSessionBooking.customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(secondSessionBooking.customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(secondSessionBooking.customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(secondSessionBooking.customer.phone, Is.EqualTo(setup.Fred.Phone));
         }
+
+
+        //[Test]
+        //public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenCreateCourseBooking()
+        //{
+        //    var command = GivenACustomerWhoIsNotBookedOntoACourse();
+        //    var response = WhenTryBookCourse(command);
+        //    ThenCreateCourseBooking(response);
+        //}
+
+
 
 
 

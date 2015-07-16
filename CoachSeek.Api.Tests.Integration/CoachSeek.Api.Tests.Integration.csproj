@@ -48,10 +48,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -171,18 +167,18 @@
     <Compile Include="Clients\TestAuthenticatedApiClient.cs" />
     <Compile Include="Tests\Admin\AdminTests.cs" />
     <Compile Include="Tests\Attendance\AttendanceTests.cs" />
-    <Compile Include="Tests\Booking\BaseBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
+    <Compile Include="Tests\Booking\OnlineBookingAddAllCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddAllCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\OnlineBookingAddSeveralCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddSeveralCourseSessionTests.cs" />
+    <Compile Include="Tests\Booking\OnlineBookingAddSingleCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddSingleCourseSessionTests.cs" />
-    <Compile Include="Tests\Booking\BookingAddCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddStandaloneSessionTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddTests.cs" />
     <Compile Include="Tests\Booking\BookingSaveCommandTests.cs" />
     <Compile Include="Tests\Booking\BookingDeleteTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingTests.cs" />
-    <Compile Include="Tests\Booking\OnlineBookingAddCourseTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddStandaloneSessionTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingSaveCommandTests.cs" />
     <Compile Include="Tests\Business\BusinessRegistrationTests.cs" />
