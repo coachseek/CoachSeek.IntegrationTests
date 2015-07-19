@@ -14,7 +14,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             return new ApiBookingSaveCommand(Guid.NewGuid(), Guid.NewGuid());
         }
 
-        protected ApiBookingSaveCommand GivenThisCustomerIsAlreadyBookedOntoThisSession(SetupData setup)
+        protected ApiBookingSaveCommand GivenThisCustomerIsAlreadyBookedOntoThisStandaloneSession(SetupData setup)
         {
             return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed14To15.Id, setup.Fred.Id);
         }
@@ -40,9 +40,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
         }
 
-        protected void ThenReturnDuplicateBookingError(ApiResponse response)
+        protected void ThenReturnDuplicateStandaloneSessionBookingError(ApiResponse response)
         {
             AssertSingleError(response, "This customer is already booked for this session.");
+        }
+
+        protected void ThenReturnDuplicateCourseSessionBookingError(ApiResponse response)
+        {
+            AssertSingleError(response, "This customer is already booked onto a session in this course.");
         }
 
         protected void ThenCreateSessionBooking(ApiResponse response, 

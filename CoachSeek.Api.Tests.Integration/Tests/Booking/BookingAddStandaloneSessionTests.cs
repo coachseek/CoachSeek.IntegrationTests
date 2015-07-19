@@ -54,14 +54,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
         [Test]
-        public void GivenThisCustomerIsAlreadyBookedOntoThisSession_WhenTryBookStandaloneSession_ThenReturnDuplicateBookingError()
+        public void GivenThisCustomerIsAlreadyBookedOntoThisSession_WhenTryBookStandaloneSession_ThenReturnDuplicateStandaloneSessionBookingError()
         {
             var setup = RegisterBusiness();
             RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
 
-            var command = GivenThisCustomerIsAlreadyBookedOntoThisSession(setup);
+            var command = GivenThisCustomerIsAlreadyBookedOntoThisStandaloneSession(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnDuplicateBookingError(response);
+            ThenReturnDuplicateStandaloneSessionBookingError(response);
         }
 
         [Test]

@@ -31,6 +31,8 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15 BarneyOnAaronOrakeiMiniRed14To15 { get; set; }
         public BookingWilmaOnStandaloneAaronOrakeiMiniRed16To17 WilmaOnAaronOrakeiMiniRed16To17 { get; set; }
         public ExpectedCourseBooking FredOnAaronOrakeiHolidayCamp9To15For3Days { get; set; }
+        public ExpectedBooking FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
+        public ExpectedBooking FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
         public ExpectedBooking FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
         public ExpectedBooking WilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
         public ExpectedBooking BarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }

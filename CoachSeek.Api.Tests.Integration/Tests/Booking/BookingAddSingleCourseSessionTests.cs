@@ -14,7 +14,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public void GivenNonExistentCustomer_WhenTryBookSingleCourseSession_ThenReturnNonExistentCustomerError()
         {
             var setup = RegisterBusiness();
-            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
 
             var command = GivenNonExistentCustomer(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
@@ -25,53 +24,68 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         public void GivenTheCourseSessionIsFull_WhenTryBookSingleCourseSession_ThenReturnCourseSessionFullError()
         {
             var setup = RegisterBusiness();
-            RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
-            RegisterCustomerBambam(setup);
 
             var command = GivenTheCourseSessionIsFull(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
             ThenReturnCourseSessionFullError(response);
         }
 
-        // TODO: Customer already booked
+        [Test]
+        public void GivenThisCustomerIsAlreadyBookedOntoThisSession_WhenTryBookSingleCourseSession_ThenReturnDuplicateCourseSessionBookingError()
+        {
+            var setup = RegisterBusiness();
+
+            var command = GivenThisCustomerIsAlreadyBookedOntoThisCourseSession(setup);
+            var response = WhenTryBookSingleCourseSession(command, setup);
+            ThenReturnDuplicateCourseSessionBookingError(response);
+        }
 
         [Test]
         public void GivenValidSingleCourseSession_WhenTryBookSingleCourseSession_ThenCreateSingleCourseSessionBooking()
         {
             var setup = RegisterBusiness();
-            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
-            RegisterCustomerFred(setup);
 
             var command = GivenValidSingleCourseSession(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
             ThenCreateSingleCourseSessionBooking(response, setup);
         }
 
+        [Test]
+        public void GivenCustomerIsBookedOnAnotherCourseSessionButNotThisOne_WhenTryBookSingleCourseSession_ThenCreateAnotherSingleCourseSessionBooking()
+        {
+            var setup = RegisterBusiness();
 
-        //[Test]
-        //public void GivenASessionIsFull_WhenTryBookCourse_ThenReturnCourseFullError()
-        //{
-        //    var command = GivenASessionIsFull();
-        //    var response = WhenTryBookCourse(command);
-        //    ThenReturnCourseFullError(response);
-        //}
+            var command = GivenCustomerIsBookedOnAnotherCourseSessionButNotThisOne(setup);
+            var response = WhenTryBookSingleCourseSession(command, setup);
+            ThenCreateAnotherSingleCourseSessionBooking(response, setup);
+        }
 
-        //[Test]
-        //public void GivenACustomerWhoIsNotBookedOntoACourse_WhenTryBookCourse_ThenCreateCourseBooking()
-        //{
-        //    var command = GivenACustomerWhoIsNotBookedOntoACourse();
-        //    var response = WhenTryBookCourse(command);
-        //    ThenCreateCourseBooking(response);
-        //}
+        [Test]
+        public void GivenDeleteBookingAndAddItAgain_WhenTryBookSingleCourseSession_ThenCreateSingleCourseSessionBooking()
+        {
+            var setup = RegisterBusiness();
 
+            var command = GivenDeleteBookingAndAddItAgain(setup);
+            var response = WhenTryBookSingleCourseSession(command, setup);
+            ThenCreateSingleCourseSessionBooking(response, setup);
+        }
+
+        // TODO: Delete a session booking and re-add it and should be ok.
+        // TODO: When have deleted all session bookings in a course booking then also remove the empty course booking.
+        // TODO: ?
 
         protected ApiBookingSaveCommand GivenNonExistentCustomer(SetupData setup)
         {
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+
             return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, Guid.NewGuid());
         }
 
         private ApiBookingSaveCommand GivenTheCourseSessionIsFull(SetupData setup)
         {
+            RegisterFullyBookedLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerBambam(setup);
+            
             return new ApiBookingSaveCommand(new[]
             {
                 setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id
@@ -79,8 +93,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             setup.BamBam.Id);
         }
 
+        protected ApiBookingSaveCommand GivenThisCustomerIsAlreadyBookedOntoThisCourseSession(SetupData setup)
+        {
+            RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+
+            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id, setup.Fred.Id);
+        }
+
         private ApiBookingSaveCommand GivenValidSingleCourseSession(SetupData setup)
         {
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenCustomerIsBookedOnAnotherCourseSessionButNotThisOne(SetupData setup)
+        {
+            RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+         
+            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenDeleteBookingAndAddItAgain(SetupData setup)
+        {
+            RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
+            Delete<BookingData>("Bookings", setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+
             return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
         }
 
@@ -124,6 +163,33 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             GetAndAssertCourse(courseBooking.id, sessionBooking.id, setup);
         }
 
+        private void ThenCreateAnotherSingleCourseSessionBooking(ApiResponse response, SetupData setup)
+        {
+            var courseBooking = AssertSuccessResponse<CourseBookingData>(response);
+
+            Assert.That(courseBooking.id, Is.InstanceOf<Guid>());
+            Assert.That(courseBooking.course.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
+            Assert.That(courseBooking.course.name, Is.EqualTo(string.Format("Holiday Camp at Orakei Tennis Club with Aaron Smith starting on {0} at 09:00 for 3 days",
+                                                                            GetDateFormatNumberOfDaysOut(14))));
+            Assert.That(courseBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(courseBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
+
+            // Check bookings on sessions
+            Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(1));
+
+            var sessionBooking = courseBooking.sessionBookings[0];
+            Assert.That(sessionBooking.id, Is.InstanceOf<Guid>());
+            Assert.That(sessionBooking.parentId, Is.EqualTo(courseBooking.id));
+            Assert.That(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions.Select(x => x.Id).Contains(sessionBooking.session.id), Is.True);
+            Assert.That(sessionBooking.session.name, Is.EqualTo(string.Format("Holiday Camp at Orakei Tennis Club with Aaron Smith on {0} at 09:00",
+                                                                       GetDateFormatNumberOfDaysOut(15))));
+            Assert.That(sessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(sessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
+
+            // Check the bookings on the course
+            GetAndAssertCourseWithTwoBookings(courseBooking.id, sessionBooking.id, setup);
+        }
+
         private void GetAndAssertCourse(Guid courseBookingId, Guid sessionBookingId, SetupData setup)
         {
             var courseResponse = AuthenticatedGet<CourseData>("Sessions", setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
@@ -152,6 +218,55 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(sessionBooking.customer.lastName, Is.EqualTo(setup.Fred.LastName));
             Assert.That(sessionBooking.customer.email, Is.EqualTo(setup.Fred.Email));
             Assert.That(sessionBooking.customer.phone, Is.EqualTo(setup.Fred.Phone));
+        }
+
+        private void GetAndAssertCourseWithTwoBookings(Guid courseBookingId, Guid sessionBookingId, SetupData setup)
+        {
+            var courseResponse = AuthenticatedGet<CourseData>("Sessions", setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var course = AssertSuccessResponse<CourseData>(courseResponse);
+
+            Assert.That(course.booking.bookings.Count, Is.EqualTo(2));
+            var courseBookingOne = course.booking.bookings[0];
+            Assert.That(courseBookingOne.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(courseBookingOne.parentId, Is.Null);
+            var customer = courseBookingOne.customer;
+            Assert.That(customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(customer.phone, Is.EqualTo(setup.Fred.Phone));
+
+            var courseBookingTwo = course.booking.bookings[1];
+            Assert.That(courseBookingTwo.id, Is.EqualTo(courseBookingId));
+            Assert.That(courseBookingTwo.parentId, Is.Null);
+            customer = courseBookingTwo.customer;
+            Assert.That(customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(customer.phone, Is.EqualTo(setup.Fred.Phone));
+
+            Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(1));
+            Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(1));
+            Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(0));
+
+            var sessionBookingOne = course.sessions[0].booking.bookings[0];
+            Assert.That(sessionBookingOne.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(sessionBookingOne.parentId, Is.EqualTo(courseBookingOne.id));
+            Assert.That(sessionBookingOne.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(sessionBookingOne.customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(sessionBookingOne.customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(sessionBookingOne.customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(sessionBookingOne.customer.phone, Is.EqualTo(setup.Fred.Phone));
+
+            var sessionBookingTwo = course.sessions[1].booking.bookings[0];
+            Assert.That(sessionBookingTwo.id, Is.EqualTo(sessionBookingId));
+            Assert.That(sessionBookingTwo.parentId, Is.EqualTo(courseBookingTwo.id));
+            Assert.That(sessionBookingTwo.customer.id, Is.EqualTo(setup.Fred.Id));
+            Assert.That(sessionBookingTwo.customer.firstName, Is.EqualTo(setup.Fred.FirstName));
+            Assert.That(sessionBookingTwo.customer.lastName, Is.EqualTo(setup.Fred.LastName));
+            Assert.That(sessionBookingTwo.customer.email, Is.EqualTo(setup.Fred.Email));
+            Assert.That(sessionBookingTwo.customer.phone, Is.EqualTo(setup.Fred.Phone));
         }
 
 

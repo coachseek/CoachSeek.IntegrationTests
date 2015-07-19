@@ -317,6 +317,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
         }
 
+        protected void RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            var fredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id,
+                                                                                                    setup.Fred.Id);
+            RegisterTestBooking(fredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = fredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        }
+
+        protected void RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        {
+            if (setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
+                return;
+
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCustomerFred(setup);
+
+            var fredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id,
+                                                                                                     setup.Fred.Id);
+            RegisterTestBooking(fredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = fredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+        }
+
         protected void RegisterFredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
         {
             if (setup.FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
