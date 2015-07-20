@@ -29,6 +29,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                                       "Bookings");
         }
 
+        protected ApiResponse PostCourseBooking(string json, SetupData setup)
+        {
+            return new TestAuthenticatedApiClient().Post<CourseBookingData>(json,
+                                                                            setup.Business.UserName,
+                                                                            setup.Business.Password,
+                                                                            "Bookings");
+        }
+
         protected ApiResponse AdminGet<TResponse>(string relativePath)
         {
             return new TestAdminApiClient().Get<TResponse>(relativePath);
@@ -85,9 +93,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse Delete<TResponse>(string relativePath, Guid id, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Delete<TResponse>(setup.Business.UserName, 
+            return new TestAuthenticatedApiClient().Delete<TResponse>(setup.Business.UserName,
                                                                       setup.Business.Password,
-                                                                      relativePath, 
+                                                                      relativePath,
                                                                       id);
         }
 

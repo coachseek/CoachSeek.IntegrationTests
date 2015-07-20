@@ -291,10 +291,27 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id
             };
 
-            var fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedCourseBooking(courseSessionIds,
-                                                                                                         setup.Fred.Id);
-            RegisterTestBooking(fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
-            setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+            var fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedCourseBooking(courseSessionIds,
+                                                                                                        setup.Fred.Id);
+            RegisterTestBooking(fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days, setup);
+            setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
+
+            var sessionBookingOne = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id, setup.Fred.Id)
+            {
+                Id = fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.SessionBookingIds[0]
+            };
+            var sessionBookingTwo = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id)
+            {
+                Id = fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.SessionBookingIds[1]
+            };
+            var sessionBookingThree = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id, setup.Fred.Id)
+            {
+                Id = fredOnAllCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.SessionBookingIds[2]
+            };
+
+            setup.FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = sessionBookingOne;
+            setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = sessionBookingTwo;
+            setup.FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = sessionBookingThree;
         }
 
         protected void RegisterFredOnTwoCourseSessionsInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
@@ -412,9 +429,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected void RegisterTestBooking(ExpectedCourseBooking booking, SetupData setup)
         {
             var json = CreateBookingSaveCommandJson(booking);
-            var response = PostBooking(json, setup);
+            var response = PostCourseBooking(json, setup);
             if (response.Payload != null)
-                booking.Id = ((BookingData)response.Payload).id;
+            {
+                var courseBooking = (CourseBookingData) response.Payload;
+                booking.Id = courseBooking.id;
+                foreach(var sessionBooking in courseBooking.sessionBookings)
+                    booking.SessionBookingIds.Add(sessionBooking.id);
+            }
         }
 
         protected void RegisterTestSession(ExpectedStandaloneSession session, SetupData setup)

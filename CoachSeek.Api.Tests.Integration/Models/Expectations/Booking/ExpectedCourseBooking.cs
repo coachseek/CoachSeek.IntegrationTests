@@ -10,11 +10,13 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Booking
         public IList<Guid> SessionIds { get; private set; }
         public ApiCustomerKey Customer { get; private set; }
 
+        public IList<Guid> SessionBookingIds { get; set; }
 
         public ExpectedCourseBooking(IEnumerable<Guid> sessionIds, Guid customerId)
         {
             SessionIds = new List<Guid>(sessionIds);
             Customer = new ApiCustomerKey { id = customerId };
+            SessionBookingIds = new List<Guid>();
         }
     }
 }
