@@ -13,6 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
     {
         private const string STATUS_PENDING_INVOICE = "pending-invoice";
         private const string STATUS_PENDING_PAYMENT = "pending-payment";
+        private const string STATUS_OVERDUE_PAYMENT = "overdue-payment";
         private const string STATUS_PAID = "paid";
 
 
@@ -47,6 +48,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
             var command = GivenWantToSetTo(STATUS_PENDING_PAYMENT);
             WhenTrySetPaymentStatus(command, setup);
             ThenSetsPaymentStatusTo(STATUS_PENDING_PAYMENT, setup);
+        }
+
+        [Test]
+        public void GivenWantToSetToOverduePayment_WhenTrySetPaymentStatus_ThenSetsPaymentStatusToOverduePayment()
+        {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenWantToSetTo(STATUS_OVERDUE_PAYMENT);
+            WhenTrySetPaymentStatus(command, setup);
+            ThenSetsPaymentStatusTo(STATUS_OVERDUE_PAYMENT, setup);
         }
 
         [Test]

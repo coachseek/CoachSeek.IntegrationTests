@@ -27,8 +27,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             //    var response = WhenTryGetById(id);
             //    ThenReturnNotFound(response);
             //}
-
-        
         }
 
         [TestFixture]

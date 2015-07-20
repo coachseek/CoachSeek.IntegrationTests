@@ -133,8 +133,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             AssertNotFound(getResponse);
 
-            getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
-            AssertNotFound(getResponse);
+            GetAndAssertCourseAndSessionBookingWereDeleted(setup);
         }
 
         private void GetAndAssertCourseHasLostSessionBooking(SetupData setup)
@@ -156,6 +155,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(1));
             Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(0));
             Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(1));
+        }
+
+        private void GetAndAssertCourseAndSessionBookingWereDeleted(SetupData setup)
+        {
+            var courseResponse = AuthenticatedGet<CourseData>("Sessions", setup.AaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var course = AssertSuccessResponse<CourseData>(courseResponse);
+
+            Assert.That(course.booking.bookings.Count, Is.EqualTo(0));
+            Assert.That(course.sessions[0].booking.bookings.Count, Is.EqualTo(0));
+            Assert.That(course.sessions[1].booking.bookings.Count, Is.EqualTo(0));
+            Assert.That(course.sessions[2].booking.bookings.Count, Is.EqualTo(0));
         }
     }
 }

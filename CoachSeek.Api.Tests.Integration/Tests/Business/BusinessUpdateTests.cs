@@ -132,14 +132,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 ThenUpdateTheBusinessWithoutPaymentProvider(response, command, setup);
             }
 
-            [Test, Ignore("Uncomment when have isOnlinePaymentEnabled and forceOnlinePayment")]
+            [Test]
             public void GivenValidBusinessSaveCommandWithOnlinePaymentOn_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithPaymentOptionsSet()
             {
-                //var setup = RegisterBusiness();
+                var setup = RegisterBusiness();
 
-                //var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn();
-                //var response = WhenTryUpdateBusiness(command, setup);
-                //ThenUpdateTheBusinessWithPaymentOptionsSet(response, command);
+                var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn();
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenUpdateTheBusinessWithPaymentOptionsSet(response, command, setup);
             }
 
 
@@ -261,31 +261,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(getBusiness.payment.paymentProvider, Is.Null);
             }
 
-            //private void ThenUpdateTheBusinessWithPaymentOptionsSet(ApiResponse response, ApiBusinessSaveCommand command)
-            //{
-            //    var responseBusiness = AssertSuccessResponse<BusinessData>(response);
+            private void ThenUpdateTheBusinessWithPaymentOptionsSet(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
+            {
+                var responseBusiness = AssertSuccessResponse<BusinessData>(response);
 
-            //    Assert.That(responseBusiness.id, Is.EqualTo(Business.Id));
-            //    Assert.That(responseBusiness.name, Is.EqualTo(command.name));
-            //    Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
-            //    Assert.That(responseBusiness.domain, Is.EqualTo(Business.Domain));
-            //    Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
-            //    Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
-            //    Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
-            //    Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(responseBusiness.name, Is.EqualTo(command.name));
+                Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
+                Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
 
-            //    var getResponse = AuthenticatedGet<BusinessData>(Url.AbsoluteUri);
-            //    var getBusiness = (BusinessData)getResponse.Payload;
+                var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
+                var getBusiness = (BusinessData)getResponse.Payload;
 
-            //    Assert.That(getBusiness.id, Is.EqualTo(Business.Id));
-            //    Assert.That(getBusiness.name, Is.EqualTo(command.name));
-            //    Assert.That(getBusiness.domain, Is.EqualTo(Business.Domain));
-            //    Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
-            //    Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
-            //    Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
-            //    Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
-            //    Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
-            //}
+                Assert.That(getBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(getBusiness.name, Is.EqualTo(command.name));
+                Assert.That(getBusiness.domain, Is.EqualTo(setup.Business.Domain));
+                Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+            }
         }
 
 
