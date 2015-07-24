@@ -75,6 +75,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         // TODO: When have deleted all session bookings in a course booking then also remove the empty course booking.
         // TODO: ?
 
+
+
+        [Test]
+        public void GivenBookSecondSessionOnOneStudentCapacityCourse_WhenTryBookSingleCourseSession_ThenCreateAnotherSingleCourseSessionBooking()
+        {
+            var setup = RegisterBusiness();
+
+            var command = GivenBookSecondSessionOnOneStudentCapacityCourse(setup);
+            var response = WhenTryBookSingleCourseSession(command, setup);
+            ThenCreateAnotherSingleCourseSessionBooking(response, setup);
+        }
+
+
         protected ApiBookingSaveCommand GivenNonExistentCustomer(SetupData setup)
         {
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
@@ -120,6 +133,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
             Delete<BookingData>("Bookings", setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+
+            return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
+        }
+
+        private ApiBookingSaveCommand GivenBookSecondSessionOnOneStudentCapacityCourse(SetupData setup)
+        {
+            RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup, 1);
 
             return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
         }

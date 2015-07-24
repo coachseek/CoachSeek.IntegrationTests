@@ -140,7 +140,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(setup);
         }
 
-        protected void RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        protected void RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(SetupData setup, int studentCapacity = 3)
         {
             if (setup.AaronOrakeiHolidayCamp9To15For3Days != null)
                 return;
@@ -152,7 +152,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var aaronOrakeiHolidayCamp9To15For3Days = new CourseAaronOrakeiHolidayCamp9To15For3Days(setup.Aaron.Id,
                                                                                                     setup.Orakei.Id,
                                                                                                     setup.HolidayCamp.Id,
-                                                                                                    GetDateFormatNumberOfDaysOut(14));
+                                                                                                    GetDateFormatNumberOfDaysOut(14),
+                                                                                                    studentCapacity);
             RegisterTestCourse(aaronOrakeiHolidayCamp9To15For3Days, setup);
             setup.AaronOrakeiHolidayCamp9To15For3Days = aaronOrakeiHolidayCamp9To15For3Days;
         }
@@ -334,12 +335,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnAaronOrakeiHolidayCamp9To15For3Days;
         }
 
-        protected void RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        protected void RegisterFredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup, int studentCapacity = 3)
         {
             if (setup.FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
                 return;
 
-            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup, studentCapacity);
             RegisterCustomerFred(setup);
 
             var fredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id,
