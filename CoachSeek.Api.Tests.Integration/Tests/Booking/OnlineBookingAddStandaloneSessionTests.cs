@@ -77,7 +77,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
         [Test]
-        public void GivenSessionIsOnlineBookable_WhenTryOnlineBookStandaloneSession_ThenCreateSessionBooking()
+        public void GivenSessionIsOnlineBookable_WhenTryOnlineBookStandaloneSession_ThenCreateSessionOnlineBooking()
         {
             var setup = RegisterBusiness();
             RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
@@ -85,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSessionIsOnlineBookable(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenCreateSessionBooking(response, setup.AaronOrakeiMiniRed14To15, setup.Fred, setup);
+            ThenCreateSessionOnlineBooking(response, setup.AaronOrakeiMiniRed14To15, setup.Fred, setup);
         }
 
         [Test]

@@ -3,6 +3,7 @@ using System.Linq;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -206,6 +207,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(courseBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(courseBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
+            Assert.That(courseBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_PAYMENT));
+
             // Check bookings on sessions
             Assert.That(courseBooking.sessionBookings.Count, Is.EqualTo(2));
 
@@ -218,6 +221,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(firstSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(firstSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
+            Assert.That(firstSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_PAYMENT));
+
             var secondSessionBooking = courseBooking.sessionBookings[1];
             Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(secondSessionBooking.parentId, Is.EqualTo(courseBooking.id));
@@ -226,6 +231,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                                                                        GetDateFormatNumberOfDaysOut(16))));
             Assert.That(secondSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(secondSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
+
+            Assert.That(secondSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_PAYMENT));
 
             // Check the bookings on the course
             GetAndAssertCourse(courseBooking.id, firstSessionBooking.id, secondSessionBooking.id, setup);
