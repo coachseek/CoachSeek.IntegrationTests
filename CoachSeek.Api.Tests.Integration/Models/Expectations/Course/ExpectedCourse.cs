@@ -21,7 +21,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
 
         public IList<ExpectedCourseSession> Sessions { get; private set; }
 
-        public string Description { get { return string.Format("Mini Red at Orakei Tennis Club with Aaron Smith on {0} at {1}", Timing.startDate, Timing.startTime); } }
+        public abstract string Description { get; }
 
 
         protected ExpectedCourse()

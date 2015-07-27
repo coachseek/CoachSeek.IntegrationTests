@@ -49,11 +49,30 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                                    relativePath);
         }
 
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, string username, string password)
+        {
+            var url = string.Format("{0}/{1}", relativePath, id);
+            return new TestAuthenticatedApiClient().Get<TResponse>(username,
+                                                                   password,
+                                                                   url);
+        }
+
         protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, string username, string password)
         {
             return new TestAuthenticatedApiClient().Get<TResponse>(username,
                                                                    password,
                                                                    relativePath);
+        }
+
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, Guid id, string businessDomain)
+        {
+            var url = string.Format("{0}/{1}", relativePath, id);
+            return BusinessAnonymousGet<TResponse>(url, businessDomain);
+        }
+
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
+        {
+            return new TestBusinessAnonymousApiClient().Get<TResponse>(businessDomain, relativePath);
         }
 
         protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, SetupData setup)
@@ -62,11 +81,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
                                                                    setup.Business.Password,
                                                                    url);
-        }
-
-        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
-        {
-            return new TestBusinessAnonymousApiClient().Get<TResponse>(businessDomain, relativePath);
         }
 
 

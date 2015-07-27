@@ -77,7 +77,6 @@
     <Compile Include="Models\Expectations\Booking\ExpectedCourseBooking.cs" />
     <Compile Include="Models\Expectations\Booking\ExpectedBooking.cs" />
     <Compile Include="Models\Expectations\Course\CourseAaronOrakeiHolidayCamp9To15For3Days.cs" />
-    <Compile Include="Models\Expectations\Course\CourseAaronRemuera9To10For4Weeks.cs" />
     <Compile Include="Models\Expectations\Course\CourseBobbyRemueraMiniBlue9To10For3Weeks.cs" />
     <Compile Include="Models\Expectations\Customer\CustomerBamBam.cs" />
     <Compile Include="Models\Expectations\Service\ServiceHolidayCamp.cs" />
@@ -168,6 +167,7 @@
     <Compile Include="Tests\Admin\AdminTests.cs" />
     <Compile Include="Tests\Attendance\AttendanceTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
+    <Compile Include="Tests\Booking\BookingGetTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddAllCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingAddAllCourseSessionTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddSeveralCourseSessionTests.cs" />

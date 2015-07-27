@@ -329,8 +329,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                 setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id
             };
 
-            var fredOnAaronOrakeiHolidayCamp9To15For3Days = new ExpectedCourseBooking(courseSessionIds,
-                                                                                                         setup.Fred.Id);
+            var fredOnAaronOrakeiHolidayCamp9To15For3Days = new ExpectedCourseBooking(courseSessionIds, setup.Fred.Id);
             RegisterTestBooking(fredOnAaronOrakeiHolidayCamp9To15For3Days, setup);
             setup.FredOnAaronOrakeiHolidayCamp9To15For3Days = fredOnAaronOrakeiHolidayCamp9To15For3Days;
         }
