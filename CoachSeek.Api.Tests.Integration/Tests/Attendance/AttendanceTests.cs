@@ -30,6 +30,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
             ThenSetsHasAttendedTo(false, setup);
         }
 
+        [Test]
+        public void GivenWantToClearSetAttendance_WhenTrySetAttendance_ThenSetsHasAttendedToNull()
+        {
+            var setup = RegisterBusiness();
+            RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenWantToClearSetAttendance();
+            WhenTrySetAttendance(command, setup);
+            ThenSetsHasAttendedTo(null, setup);
+        }
+
 
         private ApiBookingSetAttendanceCommand GivenWantToSetToHasAttended()
         {
@@ -39,6 +50,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
         private ApiBookingSetAttendanceCommand GivenWantToSetToHasNotAttended()
         {
             return new ApiBookingSetAttendanceCommand { hasAttended = false };
+        }
+
+        private ApiBookingSetAttendanceCommand GivenWantToClearSetAttendance()
+        {
+            return new ApiBookingSetAttendanceCommand { hasAttended = null };
         }
 
 
@@ -56,7 +72,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
         }
 
 
-        private void ThenSetsHasAttendedTo(bool hasAttended, SetupData setup)
+        private void ThenSetsHasAttendedTo(bool? hasAttended, SetupData setup)
         {
             var url = string.Format("{0}/{1}", RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id);
             var response = AuthenticatedGet<SingleSessionBookingData>(url, setup);

@@ -3,6 +3,6 @@
     public class ApiBookingSetAttendanceCommand
     {
         public string commandName { get { return "BookingSetAttendance"; } }
-        public bool hasAttended { get; set; }
+        public bool? hasAttended { get; set; }
     }
 }
