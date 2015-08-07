@@ -96,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private ApiResponse WhenTryDelete(Guid id, SetupData setup)
         {
-            return Delete<BookingData>("Bookings", id, setup);
+            return Delete(RelativePath, id.ToString(), setup);
         }
 
 

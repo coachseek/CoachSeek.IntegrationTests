@@ -43,12 +43,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
         private ApiResponse WhenTryDeleteLocation(Guid id, SetupData setup)
         {
-            return Delete<LocationData>(RelativePath, id, setup);
+            return Delete(RelativePath, id.ToString(), setup);
         }
 
         private ApiResponse WhenTryDeleteLocationAnonymously(Guid id)
         {
-            return DeleteAnonymously<LocationData>(RelativePath, id);
+            return DeleteAnonymously(RelativePath, id.ToString());
         }
     }
 }

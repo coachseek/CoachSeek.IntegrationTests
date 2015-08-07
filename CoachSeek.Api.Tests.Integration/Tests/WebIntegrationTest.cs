@@ -105,17 +105,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         }
 
 
-        protected ApiResponse Delete<TResponse>(string relativePath, Guid id, SetupData setup)
+        protected ApiResponse Delete(string relativePath, string id, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Delete<TResponse>(setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      relativePath,
-                                                                      id);
+            return new TestAuthenticatedApiClient().Delete(setup.Business.UserName,
+                                                           setup.Business.Password,
+                                                           relativePath,
+                                                           id);
         }
 
-        protected ApiResponse DeleteAnonymously<TResponse>(string relativePath, Guid id)
+        protected ApiResponse DeleteAnonymously(string relativePath, string id)
         {
-            return new TestAnonymousApiClient().Delete<TResponse>(relativePath, id);
+            return new TestAnonymousApiClient().Delete(relativePath, id);
         }
 
         protected ApiResponse PostSession(string json, SetupData setup)
@@ -179,6 +179,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
             Assert.That(response.Payload, Is.InstanceOf<T>());
             return (T)response.Payload;
+        }
+
+        protected void AssertSuccessResponse(ApiResponse response)
+        {
+            Assert.That(response, Is.Not.Null);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
         }
 
         protected ApiApplicationError[] AssertErrorResponse(ApiResponse response)

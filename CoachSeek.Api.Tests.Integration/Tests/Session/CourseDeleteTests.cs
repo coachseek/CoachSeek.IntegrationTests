@@ -63,7 +63,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiResponse WhenTryDeleteCourse(Guid id, SetupData setup)
         {
-            return Delete<CourseData>(RelativePath, id, setup);
+            return Delete(RelativePath, id.ToString(), setup);
         }
 
 

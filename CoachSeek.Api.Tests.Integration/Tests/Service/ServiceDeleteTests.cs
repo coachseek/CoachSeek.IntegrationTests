@@ -43,12 +43,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private ApiResponse WhenTryDeleteService(Guid id, SetupData setup)
         {
-            return Delete<ServiceData>(RelativePath, id, setup);
+            return Delete(RelativePath, id.ToString(), setup);
         }
 
         private ApiResponse WhenTryDeleteServiceAnonymously(Guid id)
         {
-            return DeleteAnonymously<ServiceData>(RelativePath, id);
+            return DeleteAnonymously(RelativePath, id.ToString());
         }
     }
 }

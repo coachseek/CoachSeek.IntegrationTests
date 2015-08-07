@@ -69,7 +69,9 @@
     <Compile Include="Models\ApiBookingSetPaymentStatusCommand.cs" />
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
+    <Compile Include="Models\ApiEmailTemplateSaveCommand.cs" />
     <Compile Include="Models\BusinessPaymentData.cs" />
+    <Compile Include="Models\EmailTemplateData.cs" />
     <Compile Include="Models\Expectations\Booking\BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15.cs" />
     <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed14To15.cs" />
     <Compile Include="Models\Expectations\Booking\BookingWilmaOnStandaloneAaronOrakeiMiniRed16To17.cs" />
@@ -193,6 +195,10 @@
     <Compile Include="Tests\Customer\CustomerTests.cs" />
     <Compile Include="Tests\Customer\OnlineBookingCustomerPostTests.cs" />
     <Compile Include="Tests\Customer\CustomerPostTests.cs" />
+    <Compile Include="Tests\EmailTemplate\EmailTemplateDeleteTests.cs" />
+    <Compile Include="Tests\EmailTemplate\EmailTemplateGetTests.cs" />
+    <Compile Include="Tests\EmailTemplate\EmailTemplatePostTests.cs" />
+    <Compile Include="Tests\EmailTemplate\EmailTemplateTests.cs" />
     <Compile Include="Tests\Location\LocationDeleteTests.cs" />
     <Compile Include="Tests\Location\LocationGetTests.cs" />
     <Compile Include="Tests\Location\LocationPostTests.cs" />

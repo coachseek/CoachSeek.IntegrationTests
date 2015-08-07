@@ -132,7 +132,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private ApiBookingSaveCommand GivenDeleteBookingAndAddItAgain(SetupData setup)
         {
             RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(setup);
-            Delete<BookingData>("Bookings", setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            Delete("Bookings", setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id.ToString(), setup);
 
             return new ApiBookingSaveCommand(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id, setup.Fred.Id);
         }

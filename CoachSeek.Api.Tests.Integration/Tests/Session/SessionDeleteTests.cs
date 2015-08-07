@@ -81,12 +81,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private ApiResponse WhenTryDeleteSession(Guid id, SetupData setup)
         {
-            return Delete<SessionData>(RelativePath, id, setup);
+            return Delete(RelativePath, id.ToString(), setup);
         }
 
         private ApiResponse WhenTryDeleteSessionAnonymously(Guid id)
         {
-            return DeleteAnonymously<SessionData>(RelativePath, id);
+            return DeleteAnonymously(RelativePath, id.ToString());
         }
 
 
