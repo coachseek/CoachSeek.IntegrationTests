@@ -84,41 +84,41 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         protected void AssertCustomerSessionBookingTemplatePlaceholders(IList<string> placeholders)
         {
-            Assert.That(placeholders[0], Is.EqualTo("BusinessName"));
-            Assert.That(placeholders[1], Is.EqualTo("CustomerFirstName"));
-            Assert.That(placeholders[2], Is.EqualTo("CustomerLastName"));
-            Assert.That(placeholders[3], Is.EqualTo("CustomerEmail"));
-            Assert.That(placeholders[4], Is.EqualTo("CustomerPhone"));
-            Assert.That(placeholders[5], Is.EqualTo("LocationName"));
-            Assert.That(placeholders[6], Is.EqualTo("CoachFirstName"));
-            Assert.That(placeholders[7], Is.EqualTo("CoachLastName"));
-            Assert.That(placeholders[8], Is.EqualTo("ServiceName"));
-            Assert.That(placeholders[9], Is.EqualTo("Date"));
-            Assert.That(placeholders[10], Is.EqualTo("StartTime"));
-            Assert.That(placeholders[11], Is.EqualTo("Duration"));
-            Assert.That(placeholders[12], Is.EqualTo("CurrencySymbol"));
-            Assert.That(placeholders[13], Is.EqualTo("SessionPrice"));
+            Assert.That(placeholders[0], Is.EqualTo("<<BusinessName>>"));
+            Assert.That(placeholders[1], Is.EqualTo("<<CustomerFirstName>>"));
+            Assert.That(placeholders[2], Is.EqualTo("<<CustomerLastName>>"));
+            Assert.That(placeholders[3], Is.EqualTo("<<CustomerEmail>>"));
+            Assert.That(placeholders[4], Is.EqualTo("<<CustomerPhone>>"));
+            Assert.That(placeholders[5], Is.EqualTo("<<LocationName>>"));
+            Assert.That(placeholders[6], Is.EqualTo("<<CoachFirstName>>"));
+            Assert.That(placeholders[7], Is.EqualTo("<<CoachLastName>>"));
+            Assert.That(placeholders[8], Is.EqualTo("<<ServiceName>>"));
+            Assert.That(placeholders[9], Is.EqualTo("<<Date>>"));
+            Assert.That(placeholders[10], Is.EqualTo("<<StartTime>>"));
+            Assert.That(placeholders[11], Is.EqualTo("<<Duration>>"));
+            Assert.That(placeholders[12], Is.EqualTo("<<CurrencySymbol>>"));
+            Assert.That(placeholders[13], Is.EqualTo("<<SessionPrice>>"));
         }
 
         protected void AssertCustomerCourseBookingTemplatePlaceholders(IList<string> placeholders)
         {
-            Assert.That(placeholders[0], Is.EqualTo("BusinessName"));
-            Assert.That(placeholders[1], Is.EqualTo("CustomerFirstName"));
-            Assert.That(placeholders[2], Is.EqualTo("CustomerLastName"));
-            Assert.That(placeholders[3], Is.EqualTo("CustomerEmail"));
-            Assert.That(placeholders[4], Is.EqualTo("CustomerPhone"));
-            Assert.That(placeholders[5], Is.EqualTo("LocationName"));
-            Assert.That(placeholders[6], Is.EqualTo("CoachFirstName"));
-            Assert.That(placeholders[7], Is.EqualTo("CoachLastName"));
-            Assert.That(placeholders[8], Is.EqualTo("ServiceName"));
-            Assert.That(placeholders[9], Is.EqualTo("StartDate"));
-            Assert.That(placeholders[10], Is.EqualTo("StartTime"));
-            Assert.That(placeholders[11], Is.EqualTo("Duration"));
-            Assert.That(placeholders[12], Is.EqualTo("SessionCount"));
-            Assert.That(placeholders[13], Is.EqualTo("RepeatFrequency"));
-            Assert.That(placeholders[14], Is.EqualTo("CurrencySymbol"));
-            Assert.That(placeholders[15], Is.EqualTo("BookedSessionsList"));
-            Assert.That(placeholders[16], Is.EqualTo("BookingPrice"));
+            Assert.That(placeholders[0], Is.EqualTo("<<BusinessName>>"));
+            Assert.That(placeholders[1], Is.EqualTo("<<CustomerFirstName>>"));
+            Assert.That(placeholders[2], Is.EqualTo("<<CustomerLastName>>"));
+            Assert.That(placeholders[3], Is.EqualTo("<<CustomerEmail>>"));
+            Assert.That(placeholders[4], Is.EqualTo("<<CustomerPhone>>"));
+            Assert.That(placeholders[5], Is.EqualTo("<<LocationName>>"));
+            Assert.That(placeholders[6], Is.EqualTo("<<CoachFirstName>>"));
+            Assert.That(placeholders[7], Is.EqualTo("<<CoachLastName>>"));
+            Assert.That(placeholders[8], Is.EqualTo("<<ServiceName>>"));
+            Assert.That(placeholders[9], Is.EqualTo("<<StartDate>>"));
+            Assert.That(placeholders[10], Is.EqualTo("<<StartTime>>"));
+            Assert.That(placeholders[11], Is.EqualTo("<<Duration>>"));
+            Assert.That(placeholders[12], Is.EqualTo("<<SessionCount>>"));
+            Assert.That(placeholders[13], Is.EqualTo("<<RepeatFrequency>>"));
+            Assert.That(placeholders[14], Is.EqualTo("<<BookedSessionsList>>"));
+            Assert.That(placeholders[15], Is.EqualTo("<<CurrencySymbol>>"));
+            Assert.That(placeholders[16], Is.EqualTo("<<BookingPrice>>"));
         }
 
         protected string GetDefaultCustomerSessionBookingTemplateBody()
