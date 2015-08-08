@@ -58,19 +58,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         private string GivenValidEmailTemplateType()
         {
-            return Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING;
+            return Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION;
         }
 
         private string GivenDefaultEmailTemplate()
         {
-            return Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING;
+            return Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION;
         }
 
         private string GivenCustomisedEmailTemplate(SetupData setup)
         {
             RegisterCustomSessionEmailTemplate(setup);
 
-            return Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING;
+            return Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION;
         }
 
 
@@ -88,7 +88,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             var template = AssertSuccessResponse<EmailTemplateData>(getResponse);
             AssertDefaultCustomerSessionBookingTemplate(template);
         }
@@ -97,7 +97,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             var template = AssertSuccessResponse<EmailTemplateData>(getResponse);
             AssertDefaultCustomerSessionBookingTemplate(template);
         }

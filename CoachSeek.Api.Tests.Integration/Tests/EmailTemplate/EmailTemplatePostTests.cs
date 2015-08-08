@@ -18,7 +18,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
             var setup = RegisterBusiness();
 
             var command = GivenNoEmailTemplateSaveCommand();
-            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             ThenReturnNoDataError(response);
         }
 
@@ -38,7 +38,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
             var setup = RegisterBusiness();
 
             var command = GivenNoSubjectSaveCommand();
-            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             ThenReturnSubjectRequiredError(response);
         }
 
@@ -48,7 +48,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
             var setup = RegisterBusiness();
 
             var command = GivenValidEmailTemplateSaveCommand();
-            var response = WhenTryPostAnonymously(command, Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var response = WhenTryPostAnonymously(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             AssertUnauthorised(response);
         }
 
@@ -58,7 +58,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
             var setup = RegisterBusiness();
 
             GivenDefaultCustomerSessionBookingEmailTemplate();
-            var response = WhenTryPost(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var response = WhenTryPost(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             ThenCreateCustomisedCustomerSessionBookingEmailTemplate(response, setup);
         }
 
@@ -68,7 +68,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
             var setup = RegisterBusiness();
 
             var command = GivenCustomisedCustomerSessionBookingEmailTemplate(setup);
-            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var response = WhenTryPost(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             ThenUpdateCustomisedCustomerSessionBookingEmailTemplate(response, setup);
         }
 
@@ -99,7 +99,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         private ApiEmailTemplateSaveCommand GivenCustomisedCustomerSessionBookingEmailTemplate(SetupData setup)
         {
-            WhenTryPost(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            WhenTryPost(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
 
             return new ApiEmailTemplateSaveCommand
             {
@@ -123,7 +123,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             var template = AssertSuccessResponse<EmailTemplateData>(getResponse);
 
             AssertCustomerSessionBookingTemplateSubject(template.type);
@@ -136,7 +136,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            var getResponse = GetEmailTemplate(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
             var template = AssertSuccessResponse<EmailTemplateData>(getResponse);
 
             AssertCustomerSessionBookingTemplateSubject(template.type);

@@ -20,7 +20,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
                 subject = "Online Booking confirmation with <<BusinessName>>",
                 body = GetCustomisedCustomerSessionBookingTemplateBody()
             };
-            WhenTryPost(command, Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING, setup);
+            WhenTryPost(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION, setup);
         }
 
         protected void RegisterCustomCourseEmailTemplate(SetupData setup)
@@ -30,7 +30,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
                 subject = "Online Booking confirmation with <<BusinessName>>",
                 body = GetCustomisedCustomerCourseBookingTemplateBody()
             };
-            WhenTryPost(command, Constants.EMAIL_TEMPLATE_CUSTOMER_COURSE_BOOKING, setup);
+            WhenTryPost(command, Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_COURSE, setup);
         }
 
 
@@ -58,12 +58,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         protected void AssertCustomerSessionBookingTemplateSubject(string templateType)
         {
-            Assert.That(templateType, Is.EqualTo("CustomerSessionBooking"));
+            Assert.That(templateType, Is.EqualTo(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION));
         }
 
         protected void AssertCustomerCourseBookingTemplateSubject(string templateType)
         {
-            Assert.That(templateType, Is.EqualTo("CustomerCourseBooking"));
+            Assert.That(templateType, Is.EqualTo(Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_COURSE));
         }
 
         protected void AssertDefaultCustomerSessionBookingTemplate(EmailTemplateData template)

@@ -109,14 +109,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         private string GivenValidDefaultEmailTemplateType()
         {
-            return Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING;
+            return Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION;
         }
 
         private string GivenValidCustomisedEmailTemplateType(SetupData setup)
         {
             RegisterCustomSessionEmailTemplate(setup);
 
-            return Constants.EMAIL_TEMPLATE_CUSTOMER_SESSION_BOOKING;
+            return Constants.EMAIL_TEMPLATE_ONLINE_BOOKING_CUSTOMER_SESSION;
         }
 
 
