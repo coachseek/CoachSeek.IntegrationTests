@@ -4,6 +4,7 @@ using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Location
@@ -124,7 +125,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
                 var command = GivenNonExistentLocationId();
                 var response = WhenTryPost(command, setup);
-                ThenReturnInvalidLocationIdError(response);
+                ThenReturnInvalidLocationIdError(response, command.id.Value);
             }
 
             [Test]
@@ -161,16 +162,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
                 ThenReturnExistingLocationSuccessResponse(response, setup);
             }
 
-            
-            private string GivenNonExistentLocationId()
+
+            private ApiLocationSaveCommand GivenNonExistentLocationId()
             {
-                var command = new ApiLocationSaveCommand
+                return new ApiLocationSaveCommand
                 {
                     id = Guid.NewGuid(),
                     name = Random.RandomString
                 };
-
-                return JsonSerialiser.Serialise(command);
             }
 
             private string GivenExistingLocationAndChangeToAnAlreadyExistingLocationName(SetupData setup)
@@ -208,6 +207,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         }
 
 
+        private ApiResponse WhenTryPost(ApiLocationSaveCommand command, SetupData setup)
+        {
+            var json = JsonSerialiser.Serialise(command);
+            return new TestAuthenticatedApiClient().Post<LocationData>(json,
+                                                                       setup.Business.UserName,
+                                                                       setup.Business.Password,
+                                                                       RelativePath);
+        }
+
         private ApiResponse WhenTryPost(string json, SetupData setup)
         {
             return new TestAuthenticatedApiClient().Post<LocationData>(json,
@@ -234,14 +242,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             AssertSingleError(response, "The name field is required.", "location.name");
         }
 
-        private void ThenReturnInvalidLocationIdError(ApiResponse response)
+        private void ThenReturnInvalidLocationIdError(ApiResponse response, Guid locationId)
         {
-            AssertSingleError(response, "This location does not exist.", "location.id");
+            AssertSingleError(response, ErrorCodes.LocationInvalid, "This location does not exist.", locationId.ToString());
         }
 
         private void ThenReturnDuplicateLocationError(ApiResponse response)
         {
-            AssertSingleError(response, "This location already exists.", "location.name");
+            AssertSingleError(response, ErrorCodes.LocationDuplicate, "Location 'Orakei Tennis Club' already exists.", "Orakei Tennis Club");
         }
 
         private void ThenCreateNewLocation(ApiResponse response)

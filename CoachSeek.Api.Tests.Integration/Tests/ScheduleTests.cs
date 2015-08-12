@@ -10,6 +10,7 @@ using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Location;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests
@@ -592,9 +593,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected void AssertSessionClashError(ApiResponse response, Guid sessionId)
         {
-            var error = AssertSingleError(response, "This session clashes with one or more sessions.");
-            Assert.That(error.code, Is.EqualTo("clashing-session"));
-            Assert.That(error.data, Is.StringContaining(string.Format("{{{0}}}", sessionId)));
+            AssertSingleErrorContainsFragment(response, ErrorCodes.SessionClashing, "This session clashes with one or more sessions.", string.Format("{{{0}}}", sessionId));
         }
 
         protected string GetFormattedDateToday()

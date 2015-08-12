@@ -4,6 +4,7 @@ using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
@@ -62,7 +63,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         {
             var setup = GivenDuplicateBusinessAdmin();
             var response = WhenTryRegisterBusiness(setup);
-            ThenReturnDuplicateAdminErrorResponse(response);
+            ThenReturnDuplicateAdminErrorResponse(response, setup.Business.Admin.email);
         }
 
         [Test]
@@ -232,17 +233,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
         {
-            AssertSingleError(response, "This currency is not supported.", "registration.business.currency");
+            AssertSingleError(response, ErrorCodes.CurrencyNotSupported, "Currency 'XX' is not supported.", "XX");
         }
 
-        private void ThenReturnDuplicateAdminErrorResponse(ApiResponse response)
+        private void ThenReturnDuplicateAdminErrorResponse(ApiResponse response, string expextedEmail)
         {
-            AssertStatusCode(response.StatusCode, HttpStatusCode.BadRequest);
-
-            Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
-            var errors = (ApiApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], "registration.admin.email", "The user with this email address already exists.");
+            AssertSingleError(response, ErrorCodes.UserDuplicate, string.Format("The user with email address '{0}' already exists.", expextedEmail), expextedEmail);
         }
 
         private void ThenReturnForbiddenError(ApiResponse response)

@@ -4,6 +4,7 @@ using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Coach
@@ -285,12 +286,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void ThenReturnInvalidCoachIdError(ApiResponse response)
         {
-            AssertSingleError(response, "This coach does not exist.", "coach.id");
+            AssertSingleError(response, ErrorCodes.CoachInvalid, "This coach does not exist.", Guid.Empty.ToString());
         }
 
         private void ThenReturnDuplicateCoachError(ApiResponse response)
         {
-            AssertSingleError(response, "This coach already exists.");
+            AssertSingleError(response, ErrorCodes.CoachDuplicate, "Coach 'Aaron Smith' already exists.", "Aaron Smith");
         }
 
         private void ThenReturnNewCoachResponse(ApiResponse response)

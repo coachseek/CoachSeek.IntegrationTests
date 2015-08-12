@@ -2,6 +2,7 @@
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Business
@@ -223,12 +224,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
             {
-                AssertSingleError(response, "This currency is not supported.", "business.payment.currency");
+                AssertSingleError(response, ErrorCodes.CurrencyNotSupported, "Currency 'QQQ' is not supported.", "QQQ");
             }
 
             private void ThenReturnsPaymentProviderNotSupportedError(ApiResponse response)
             {
-                AssertSingleError(response, "This payment provider is not supported.", "business.payment.paymentProvider");
+                AssertSingleError(response, ErrorCodes.PaymentProviderNotSupported, "Payment provider 'ABC' is not supported.", "ABC");
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierError(ApiResponse response)

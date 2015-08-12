@@ -3,6 +3,7 @@ using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Customer
@@ -112,7 +113,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
                 var command = GivenNonExistentCustomerId();
                 var response = WhenTryPost(command, setup);
-                ThenReturnInvalidCustomerIdError(response);
+                ThenReturnInvalidCustomerIdError(response, command.id.Value);
             }
 
             [Test]
@@ -145,22 +146,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
                 var command = GivenCustomerMatchesOnEmailAndName(setup);
                 var response = WhenTryPost(command, setup);
-                ThenReturnDuplicateCustomerError(response);
+                ThenReturnDuplicateCustomerError(response, setup.Fred.Email);
             }
 
 
-            private string GivenNonExistentCustomerId()
+            private ApiCustomerSaveCommand GivenNonExistentCustomerId()
             {
-                var command = new ApiCustomerSaveCommand
+                return new ApiCustomerSaveCommand
                 {
-                    id = Guid.Empty,
+                    id = Guid.NewGuid(),
                     firstName = Random.RandomString,
                     lastName = Random.RandomString,
                     email = Random.RandomEmail,
                     phone = Random.RandomString,
                 };
-
-                return JsonSerialiser.Serialise(command);
             }
 
             private ApiCustomerSaveCommand GivenWantToUpdateExistingCustomer(SetupData setup)
@@ -183,9 +182,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             }
 
 
-            private void ThenReturnInvalidCustomerIdError(ApiResponse response)
+            private void ThenReturnInvalidCustomerIdError(ApiResponse response, Guid customerId)
             {
-                AssertSingleError(response, "This customer does not exist.", "customer.id");
+                AssertSingleError(response, ErrorCodes.CustomerInvalid, "This customer does not exist.", customerId.ToString());
             }
 
             private void ThenReturnUpdatedCustomer(ApiResponse response, SetupData setup)
@@ -210,9 +209,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 Assert.That(customer.phone, Is.Null);
             }
 
-            private void ThenReturnDuplicateCustomerError(ApiResponse response)
+            private void ThenReturnDuplicateCustomerError(ApiResponse response, string email)
             {
-                AssertSingleError(response, "This customer already exists.");
+                AssertSingleError(response, 
+                                  ErrorCodes.CustomerDuplicate,
+                                  string.Format("Customer 'fred flintStone' with email '{0}' already exists.", email), 
+                                  string.Format("fred flintStone, {0}", email));
             }
         }
 

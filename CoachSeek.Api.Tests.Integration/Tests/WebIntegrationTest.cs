@@ -206,6 +206,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return errors[0];
         }
 
+        protected ApiApplicationError AssertSingleError(ApiResponse response, string code, string message, string data)
+        {
+            var errors = AssertErrorResponse(response);
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationError(errors[0], code, message, data);
+
+            return errors[0];
+        }
+
+        protected ApiApplicationError AssertSingleErrorContainsFragment(ApiResponse response, string code, string message, string dataFragment)
+        {
+            var errors = AssertErrorResponse(response);
+
+            Assert.That(errors.GetLength(0), Is.EqualTo(1));
+            AssertApplicationErrorDataContainsFragment(errors[0], code, message, dataFragment);
+
+            return errors[0];
+        }
+
         protected void AssertMultipleErrors(ApiResponse response, string[,] expectedErrors)
         {
             var errors = AssertErrorResponse(response);
@@ -223,6 +243,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             Assert.That(error.field, Is.EqualTo(field));
             Assert.That(error.message, Is.EqualTo(message));
+        }
+
+        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data)
+        {
+            Assert.That(error.code, Is.EqualTo(code));
+            Assert.That(error.message, Is.EqualTo(message));
+            Assert.That(error.data, Is.EqualTo(data));
+        }
+
+        protected void AssertApplicationErrorDataContainsFragment(ApiApplicationError error, string code, string message, string dataFragment)
+        {
+            Assert.That(error.code, Is.EqualTo(code));
+            Assert.That(error.message, Is.EqualTo(message));
+            Assert.That(error.data, Is.StringContaining(dataFragment));
         }
     }
 }

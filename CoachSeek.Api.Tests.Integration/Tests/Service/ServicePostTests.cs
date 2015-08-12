@@ -4,6 +4,7 @@ using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Service
@@ -81,7 +82,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenAnAlreadyExistingServiceName(setup);
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "This service already exists.", "service.name");
+                ThenReturnDuplicateServiceError(response);
             }
 
             [Test]
@@ -292,6 +293,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 };
 
                 return JsonSerialiser.Serialise(command);
+            }
+
+
+            private void ThenReturnDuplicateServiceError(ApiResponse response)
+            {
+                AssertSingleError(response, ErrorCodes.ServiceDuplicate, "Service 'Mini Red' already exists.", "Mini Red");
             }
 
             private void ThenReturnUpdatedService(ApiResponse response, SetupData setup)
@@ -674,7 +681,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenChangeToAnAlreadyExistingServiceName(setup);
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "This service already exists.", "service.name");
+                ThenReturnDuplicateServiceError(response);
             }
 
             [Test]
@@ -812,6 +819,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 return service;
             }
 
+
+            private void ThenReturnDuplicateServiceError(ApiResponse response)
+            {
+                AssertSingleError(response, ErrorCodes.ServiceDuplicate, "Service 'Holiday Camp' already exists.", "Holiday Camp");
+            }
 
             private void ThenDoNotChangeServiceName(ApiResponse response, SetupData setup)
             {
