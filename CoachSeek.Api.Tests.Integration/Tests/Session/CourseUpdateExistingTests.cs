@@ -1,6 +1,7 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -27,7 +28,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNonExistentLocationId(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnInvalidLocationErrorResponse(response);
+            ThenReturnInvalidLocationErrorResponse(response, command.location.id.Value);
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNonExistentCoachId(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnInvalidCoachErrorResponse(response);
+            ThenReturnInvalidCoachErrorResponse(response, command.coach.id.Value);
         }
 
         [Test]
@@ -49,7 +50,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNonExistentServiceId(setup);
             var response = WhenTryUpdateCourse(command, setup);
-            ThenReturnInvalidServiceErrorResponse(response);
+            ThenReturnInvalidServiceErrorResponse(response, command.service.id.Value);
         }
 
         [Test]
@@ -516,19 +517,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
-        private void ThenReturnInvalidLocationErrorResponse(ApiResponse response)
+        private void ThenReturnInvalidLocationErrorResponse(ApiResponse response, Guid locationId)
         {
-            AssertSingleError(response, "Invalid location.");
+            AssertSingleError(response, ErrorCodes.LocationInvalid, "This location does not exist.", locationId.ToString());
         }
 
-        private void ThenReturnInvalidCoachErrorResponse(ApiResponse response)
+        private void ThenReturnInvalidCoachErrorResponse(ApiResponse response, Guid coachId)
         {
-            AssertSingleError(response, "Invalid coach.");
+            AssertSingleError(response, ErrorCodes.CoachInvalid, "This coach does not exist.", coachId.ToString());
         }
 
-        private void ThenReturnInvalidServiceErrorResponse(ApiResponse response)
+        private void ThenReturnInvalidServiceErrorResponse(ApiResponse response, Guid serviceId)
         {
-            AssertSingleError(response, "Invalid service.");
+            AssertSingleError(response, ErrorCodes.ServiceInvalid, "This service does not exist.", serviceId.ToString());
         }
 
         private void ThenReturnsCannotUpdateRepetitionOfCourseError(ApiResponse response)

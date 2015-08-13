@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -58,23 +58,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         protected void ThenReturnInvalidSearchPeriodError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "The startDate is not a valid date.", "startDate" },
-                                                    { "The endDate is not a valid date.", "endDate" } });
+            AssertMultipleErrors(response, new[,] { { null, "The startDate is not a valid date.", null, "startDate" },
+                                                    { null, "The endDate is not a valid date.", null, "endDate" } });
         }
 
-        protected void ThenReturnInvalidCoachIdError(ApiResponse response)
+        protected void ThenReturnInvalidCoachIdError(ApiResponse response, Guid coachId)
         {
-            AssertMultipleErrors(response, new[,] { { "Not a valid coachId.", "coachId" } });
+            AssertSingleError(response, ErrorCodes.CoachInvalid, "This coach does not exist.", coachId.ToString());
         }
 
-        protected void ThenReturnInvalidLocationIdError(ApiResponse response)
+        protected void ThenReturnInvalidLocationIdError(ApiResponse response, Guid locationId)
         {
-            AssertMultipleErrors(response, new[,] { { "Not a valid locationId.", "locationId" } });
+            AssertSingleError(response, ErrorCodes.LocationInvalid, "This location does not exist.", locationId.ToString());
         }
 
-        protected void ThenReturnInvalidServiceIdError(ApiResponse response)
+        protected void ThenReturnInvalidServiceIdError(ApiResponse response, Guid serviceId)
         {
-            AssertMultipleErrors(response, new[,] { { "Not a valid serviceId.", "serviceId" } });
+            AssertSingleError(response, ErrorCodes.ServiceInvalid, "This service does not exist.", serviceId.ToString());
         }
 
         protected void ThenReturnNoSessionOrCourses(ApiResponse response)

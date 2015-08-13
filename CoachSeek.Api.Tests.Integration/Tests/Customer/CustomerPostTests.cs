@@ -272,8 +272,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "The firstName field is required.", "customer.firstName" },
-                                                    { "The lastName field is required.", "customer.lastName" } });
+            AssertMultipleErrors(response, new[,] { { null, "The firstName field is required.", null, "customer.firstName" },
+                                                    { null, "The lastName field is required.", null, "customer.lastName" } });
         }
 
         private void ThenReturnInvalidEmailAddressError(ApiResponse response)

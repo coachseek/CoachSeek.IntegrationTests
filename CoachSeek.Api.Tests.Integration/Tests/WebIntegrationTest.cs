@@ -234,7 +234,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var i = 0;
             foreach (var error in errors)
             {
-                AssertApplicationError(error, expectedErrors[i, 1], expectedErrors[i, 0]);
+                AssertApplicationError(error, expectedErrors[i, 0], expectedErrors[i, 1], expectedErrors[i, 2], expectedErrors[i, 3]);
                 i++;
             }
         }
@@ -245,11 +245,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(error.message, Is.EqualTo(message));
         }
 
-        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data)
+        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data, string field = null)
         {
             Assert.That(error.code, Is.EqualTo(code));
             Assert.That(error.message, Is.EqualTo(message));
             Assert.That(error.data, Is.EqualTo(data));
+            Assert.That(error.field, Is.EqualTo(field));
         }
 
         protected void AssertApplicationErrorDataContainsFragment(ApiApplicationError error, string code, string message, string dataFragment)

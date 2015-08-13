@@ -192,17 +192,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "The business field is required.", "registration.business" },
-                                                    { "The admin field is required.", "registration.admin" } });
+            AssertMultipleErrors(response, new[,] { { null, "The business field is required.", null, "registration.business" },
+                                                    { null, "The admin field is required.", null, "registration.admin" } });
         }
 
         private void ThenReturnMissingPropertiesError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "The name field is required.", "registration.business.name" },
-                                                    { "The firstName field is required.", "registration.admin.firstName" },
-                                                    { "The lastName field is required.", "registration.admin.lastName" },
-                                                    { "The email field is required.", "registration.admin.email" },
-                                                    { "The password field is required.", "registration.admin.password" } });
+            AssertMultipleErrors(response, new[,] { { null, "The name field is required.", null, "registration.business.name" },
+                                                    { null, "The firstName field is required.", null, "registration.admin.firstName" },
+                                                    { null, "The lastName field is required.", null, "registration.admin.lastName" },
+                                                    { null, "The email field is required.", null, "registration.admin.email" },
+                                                    { null, "The password field is required.", null, "registration.admin.password" } });
         }
 
         private void ThenReturnMultipleErrorResponse(ApiResponse response)

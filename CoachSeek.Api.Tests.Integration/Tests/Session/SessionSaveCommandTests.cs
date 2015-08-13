@@ -22,14 +22,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenEmptySessionSaveCommand();
             var response = WhenPostSession(command, setup);
-            AssertMultipleErrors(response, new[,] { { "The service field is required.", "session.service" },
-                                                    { "The location field is required.", "session.location" },
-                                                    { "The coach field is required.", "session.coach" },
-                                                    { "The timing field is required.", "session.timing" },
-                                                    { "The booking field is required.", "session.booking" },
-                                                    { "The pricing field is required.", "session.pricing" },
-                                                    { "The repetition field is required.", "session.repetition" },
-                                                    { "The presentation field is required.", "session.presentation" } });
+            AssertMultipleErrors(response, new[,] { { null, "The service field is required.", null, "session.service" },
+                                                    { null, "The location field is required.", null, "session.location" },
+                                                    { null, "The coach field is required.", null, "session.coach" },
+                                                    { null, "The timing field is required.", null, "session.timing" },
+                                                    { null, "The booking field is required.", null, "session.booking" },
+                                                    { null, "The pricing field is required.", null, "session.pricing" },
+                                                    { null, "The repetition field is required.", null, "session.repetition" },
+                                                    { null, "The presentation field is required.", null, "session.presentation" } });
         }
 
 

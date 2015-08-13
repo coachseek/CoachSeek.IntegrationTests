@@ -23,8 +23,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenEmptyBookingSaveCommand();
             var response = WhenTryBookSession(command, setup);
-            AssertMultipleErrors(response, new[,] { { "The sessions field is required.", "booking.sessions" },
-                                                    { "The customer field is required.", "booking.customer" } });
+            AssertMultipleErrors(response, new[,] { { null, "The sessions field is required.", null, "booking.sessions" },
+                                                    { null, "The customer field is required.", null, "booking.customer" } });
         }
 
         [Test]

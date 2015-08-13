@@ -31,8 +31,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenEmptyServiceSaveCommand();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { "The name field is required.", "service.name" },
-                                                        { "The repetition field is required.", "service.repetition" } });
+                AssertMultipleErrors(response, new[,] { { null, "The name field is required.", null, "service.name" },
+                                                        { null, "The repetition field is required.", null, "service.repetition" } });
             }
 
             [Test]
@@ -123,8 +123,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { "The duration field is not valid.", "service.timing.duration" }, 
-                                                        { "The colour field is not valid.", "service.presentation.colour" } });
+                AssertMultipleErrors(response, new[,] { { null, "The duration field is not valid.", null, "service.timing.duration" }, 
+                                                        { ErrorCodes.ColourInvalid, "Colour 'mandarin' is not valid.", "mandarin", null } });
             }
 
             [Test]
@@ -180,13 +180,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             }
 
             [Test]
-            public void GivenServiceWithoutColour_WhenTryPost_ThenReturnServiceColourError()
+            public void GivenServiceWithoutColour_WhenTryCreateService_ThenCreateServiceAndDefaultColourToGreen()
             {
                 var setup = RegisterBusiness();
 
                 var command = GivenServiceWithoutColour();
-                var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "The colour field is required.", "service.presentation.colour");
+                var response = WhenTryCreateService(command, setup);
+                ThenCreateServiceAndDefaultColourToGreen(response);
             }
 
             [Test]
@@ -228,8 +228,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenInvalidCourseService();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { "The sessionCount field is not valid.", "service.repetition.sessionCount" },
-                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" } });
+                AssertMultipleErrors(response, new[,] { { null, "The sessionCount field is not valid.", null, "service.repetition.sessionCount" },
+                                                        { null, "The repeatFrequency field is not valid.", null, "service.repetition.repeatFrequency" } });
             }
 
             [Test]
@@ -238,12 +238,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 var setup = RegisterBusiness();
 
                 var command = GivenMultipleErrorsInService();
-                var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { "The duration field is not valid.", "service.timing.duration" }, 
-                                                        { "The studentCapacity field is not valid.", "service.booking.studentCapacity" },
-                                                        { "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing" },
-                                                        { "The repeatFrequency field is not valid.", "service.repetition.repeatFrequency" },
-                                                        { "The colour field is not valid.", "service.presentation.colour" } });
+                var response = WhenTryCreateService(command, setup);
+                AssertMultipleErrors(response, new[,] { { null, "The duration field is not valid.", null, "service.timing.duration" }, 
+                                                        { null, "The studentCapacity field is not valid.", null, "service.booking.studentCapacity" },
+                                                        { null, "This service is priced but has neither sessionPrice nor coursePrice.", null, "service.pricing" },
+                                                        { null, "The repeatFrequency field is not valid.", null, "service.repetition.repeatFrequency" },
+                                                        { ErrorCodes.ColourInvalid, "Colour 'lime' is not valid.", "lime", null } });
             }
 
             [Test]
@@ -299,6 +299,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             private void ThenReturnDuplicateServiceError(ApiResponse response)
             {
                 AssertSingleError(response, ErrorCodes.ServiceDuplicate, "Service 'Mini Red' already exists.", "Mini Red");
+            }
+
+            private void ThenCreateServiceAndDefaultColourToGreen(ApiResponse response)
+            {
+                var service = AssertSuccessResponse<ServiceData>(response);
+                Assert.That(service.presentation.colour, Is.EqualTo("green"));
             }
 
             private void ThenReturnUpdatedService(ApiResponse response, SetupData setup)
@@ -670,7 +676,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNonExistentServiceId(setup);
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "This service does not exist.", "service.id");
+                AssertSingleError(response, ErrorCodes.ServiceInvalid, "This service does not exist.", command.id.Value.ToString());
             }
 
             [Test]
@@ -891,6 +897,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             }
         }
 
+
+        private ApiResponse WhenTryCreateService(ApiServiceSaveCommand command, SetupData setup)
+        {
+            return WhenTryPost(command, setup);
+        }
 
         private ApiResponse WhenTryPost(ApiServiceSaveCommand command, SetupData setup)
         {

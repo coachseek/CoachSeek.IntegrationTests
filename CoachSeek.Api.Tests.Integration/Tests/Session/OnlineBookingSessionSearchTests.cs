@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
@@ -36,7 +37,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidCoachId();
             var response = WhenTrySearchForOnlineBookableSessions(criteria, setup);
-            ThenReturnInvalidCoachIdError(response);
+            ThenReturnInvalidCoachIdError(response, criteria.Item3.Value);
         }
 
         [Test]
@@ -60,7 +61,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidLocationId();
             var response = WhenTrySearchForOnlineBookableSessions(criteria, setup);
-            ThenReturnInvalidLocationIdError(response);
+            ThenReturnInvalidLocationIdError(response, criteria.Item4.Value);
         }
 
         [Test]
@@ -84,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidServiceId();
             var response = WhenTrySearchForOnlineBookableSessions(criteria, setup);
-            ThenReturnInvalidServiceIdError(response);
+            ThenReturnInvalidServiceIdError(response, criteria.Item5.Value);
         }
 
         [Test]

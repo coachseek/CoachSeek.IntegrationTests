@@ -36,7 +36,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidCoachId();
             var response = WhenTrySearch(criteria, setup);
-            ThenReturnInvalidCoachIdError(response);
+            ThenReturnInvalidCoachIdError(response, criteria.Item3.Value);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidLocationId();
             var response = WhenTrySearch(criteria, setup);
-            ThenReturnInvalidLocationIdError(response);
+            ThenReturnInvalidLocationIdError(response, criteria.Item4.Value);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidServiceId();
             var response = WhenTrySearch(criteria, setup);
-            ThenReturnInvalidServiceIdError(response);
+            ThenReturnInvalidServiceIdError(response, criteria.Item5.Value);
         }
 
         [Test]
