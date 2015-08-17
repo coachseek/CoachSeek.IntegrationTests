@@ -1,4 +1,5 @@
 ﻿using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -23,8 +24,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenEmptyBookingSaveCommand();
             var response = WhenTryBookSession(command, setup);
-            AssertMultipleErrors(response, new[,] { { null, "The sessions field is required.", null, "booking.sessions" },
-                                                    { null, "The customer field is required.", null, "booking.customer" } });
+            AssertMultipleErrors(response, new[,] { { "sessions-required", "The Sessions field is required.", null, null },
+                                                    { "customer-required", "The Customer field is required.", null, null } });
         }
 
         [Test]
@@ -35,7 +36,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNoSessionsOnBookingSaveCommand(setup);
             var response = WhenTryBookSession(command, setup);
-            AssertSingleError(response, "A booking must have at least one session.");
+            AssertSingleError(response, ErrorCodes.BookingSessionRequired, "A booking must have at least one session.", null);
         }
 
         [Test]

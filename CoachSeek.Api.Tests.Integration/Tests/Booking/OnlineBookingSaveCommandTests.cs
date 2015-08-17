@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using CoachSeek.Common;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 {
@@ -22,8 +23,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenEmptyBookingSaveCommand();
             var response = WhenTryOnlineBookSession(command, setup);
-            AssertMultipleErrors(response, new[,] { { null, "The sessions field is required.", null, "booking.sessions" },
-                                                    { null, "The customer field is required.", null, "booking.customer" } });
+            AssertMultipleErrors(response, new[,] { { "sessions-required", "The Sessions field is required.", null, null },
+                                                    { "customer-required", "The Customer field is required.", null, null } });
         }
 
 

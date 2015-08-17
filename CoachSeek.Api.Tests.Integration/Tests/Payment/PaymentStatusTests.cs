@@ -4,6 +4,7 @@ using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Tests.Booking;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Payment
@@ -163,7 +164,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
 
         private void ThenReturnsInvalidPaymentStatusError(object response)
         {
-            AssertSingleError((ApiResponse)response, "This payment status does not exist.");
+            AssertSingleError((ApiResponse)response, ErrorCodes.PaymentStatusInvalid, "Payment status 'Hello world!' does not exist.", "Hello world!");
         }
 
         private void ThenSetsSessionBookingPaymentStatusTo(string paymentStatus, SetupData setup)

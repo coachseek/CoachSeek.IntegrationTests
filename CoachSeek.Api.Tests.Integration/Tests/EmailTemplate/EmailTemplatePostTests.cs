@@ -111,12 +111,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         private void ThenReturnInvalidTemplateTypeError(ApiResponse response)
         {
-            AssertSingleError(response, "Email template type is not valid.", "emailTemplate.type");
+            AssertSingleError(response, ErrorCodes.EmailTemplateTypeInvalid, "Email template type 'bogus' is not valid.", "bogus");
         }
 
         private void ThenReturnSubjectRequiredError(ApiResponse response)
         {
-            AssertSingleError(response, "Email template must have a subject.", "emailTemplate.subject");
+            AssertSingleError(response, "subject-required", "The Subject field is required.", null);
         }
 
         private void ThenCreateCustomisedCustomerSessionBookingEmailTemplate(ApiResponse response, SetupData setup)

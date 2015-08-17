@@ -2,6 +2,7 @@
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Customer
@@ -51,7 +52,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
             var command = GivenCustomerIdSpecified();
             var response = WhenTryAddOnlineBookCustomer(command, setup);
-            AssertSingleError(response, "Existing customer used for online booking.");
+            ThenReturnExistingCustomerError(response);
         }
 
         [Test]
@@ -206,8 +207,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The firstName field is required.", null, "customer.firstName" },
-                                                    { null, "The lastName field is required.", null, "customer.lastName" } });
+            AssertMultipleErrors(response, new[,] { { "firstname-required", "The FirstName field is required.", null, null },
+                                                    { "lastname-required", "The LastName field is required.", null, null } });
+        }
+
+        private void ThenReturnExistingCustomerError(ApiResponse response)
+        {
+            AssertSingleError(response,
+                              ErrorCodes.UseExistingCustomerForOnlineBookingNotSupported,
+                              "Using an existing customer for online booking is not supported.",
+                              null);
         }
 
         private void ThenReturnNewCustomerResponse(ApiResponse response)

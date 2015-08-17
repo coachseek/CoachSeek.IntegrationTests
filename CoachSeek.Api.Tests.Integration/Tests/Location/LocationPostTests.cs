@@ -239,7 +239,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertSingleError(response, "The name field is required.", "location.name");
+            AssertSingleError(response, "name-required", "The Name field is required.", null);
         }
 
         private void ThenReturnInvalidLocationIdError(ApiResponse response, Guid locationId)

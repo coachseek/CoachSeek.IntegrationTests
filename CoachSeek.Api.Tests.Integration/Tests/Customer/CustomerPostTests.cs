@@ -50,32 +50,32 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         public class CustomerNewTests : CustomerPostTests
         {
             [Test]
-            public void GivenEmptyStringForEmailAddress_WhenTryPost_ThenReturnInvalidEmailAddressError()
+            public void GivenEmptyStringForEmailAddress_WhenTryCreateNewCustomer_ThenReturnInvalidEmailAddressError()
             {
                 var setup = RegisterBusiness();
 
                 var command = GivenEmptyStringForEmailAddress();
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryCreateNewCustomer(command, setup);
                 ThenReturnInvalidEmailAddressError(response);
             }
 
             [Test]
-            public void GivenEmailIsNotAnEmailAddress_WhenTryPost_ThenReturnInvalidEmailAddressError()
+            public void GivenEmailIsNotAnEmailAddress_WhenTryCreateNewCustomer_ThenReturnInvalidEmailAddressError()
             {
                 var setup = RegisterBusiness();
 
                 var command = GivenEmailIsNotAnEmailAddress();
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryCreateNewCustomer(command, setup);
                 ThenReturnInvalidEmailAddressError(response);
             }
 
             [Test]
-            public void GivenValidNewCustomer_WhenTryPost_ThenReturnNewCustomer()
+            public void GivenValidNewCustomer_WhenTryCreateNewCustomer_ThenReturnNewCustomer()
             {
                 var setup = RegisterBusiness();
 
                 var command = GivenValidNewCustomer();
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryCreateNewCustomer(command, setup);
                 ThenReturnNewCustomer(response);
             }
 
@@ -96,9 +96,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 return command;
             }
 
-            private string GivenValidNewCustomer()
+            private ApiCustomerSaveCommand GivenValidNewCustomer()
             {
-                return JsonSerialiser.Serialise(CreateNewCustomerSaveCommand());
+                return CreateNewCustomerSaveCommand();
+            }
+
+            private ApiResponse WhenTryCreateNewCustomer(ApiCustomerSaveCommand command, SetupData setup)
+            {
+                var json = JsonSerialiser.Serialise(command);
+                return WhenTryPost(json, setup);
             }
         }
 
@@ -107,45 +113,45 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         public class CustomerExistingTests : CustomerPostTests
         {
             [Test]
-            public void GivenNonExistentCustomerId_WhenTryPost_ThenReturnInvalidCustomerIdError()
+            public void GivenNonExistentCustomerId_WhenTryUpdateExistingCustomer_ThenReturnInvalidCustomerIdError()
             {
                 var setup = RegisterBusiness();
 
                 var command = GivenNonExistentCustomerId();
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryUpdateExistingCustomer(command, setup);
                 ThenReturnInvalidCustomerIdError(response, command.id.Value);
             }
 
             [Test]
-            public void GivenWantToUpdateExistingCustomer_WhenTryPost_ThenReturnUpdatedCustomer()
+            public void GivenWantToUpdateExistingCustomer_WhenTryUpdateExistingCustomer_ThenReturnUpdatedCustomer()
             {
                 var setup = RegisterBusiness();
                 RegisterCustomerFred(setup);
 
                 var command = GivenWantToUpdateExistingCustomer(setup);
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryUpdateExistingCustomer(command, setup);
                 ThenReturnUpdatedCustomer(response, setup);
             }
 
             [Test]
-            public void GivenWantToUpdateExistingCustomerWithoutEmail_WhenTryPost_ThenReturnUpdatedCustomerWithoutEmail()
+            public void GivenWantToUpdateExistingCustomerWithoutEmail_WhenTryUpdateExistingCustomer_ThenReturnUpdatedCustomerWithoutEmail()
             {
                 var setup = RegisterBusiness();
                 RegisterCustomerFred(setup);
 
                 var command = GivenWantToUpdateExistingCustomerWithoutEmail(setup);
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryUpdateExistingCustomer(command, setup);
                 ThenReturnUpdatedCustomerWithoutEmail(response, setup);
             }
 
             [Test]
-            public void GivenCustomerMatchesOnEmailAndName_WhenTryPost_ThenReturnDuplicateCustomerError()
+            public void GivenCustomerMatchesOnEmailAndName_WhenTryUpdateExistingCustomer_ThenReturnDuplicateCustomerError()
             {
                 var setup = RegisterBusiness();
                 RegisterCustomerFred(setup);
 
                 var command = GivenCustomerMatchesOnEmailAndName(setup);
-                var response = WhenTryPost(command, setup);
+                var response = WhenTryUpdateExistingCustomer(command, setup);
                 ThenReturnDuplicateCustomerError(response, setup.Fred.Email);
             }
 
@@ -179,6 +185,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             private ApiCustomerSaveCommand GivenCustomerMatchesOnEmailAndName(SetupData setup)
             {
                 return CreateNewCustomerSaveCommand("fred ", " flintStone", setup.Fred.Email, "12345");
+            }
+
+
+            private ApiResponse WhenTryUpdateExistingCustomer(ApiCustomerSaveCommand command, SetupData setup)
+            {
+                var json = JsonSerialiser.Serialise(command);
+                return WhenTryPost(json, setup);
             }
 
 
@@ -264,6 +277,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                                                                        RelativePath);
         }
 
+        private ApiResponse WhenTryPostAnonymously(string json, SetupData setup)
+        {
+            return new TestBusinessAnonymousApiClient().Post<CustomerData>(json,
+                                                                           setup.Business.Domain,
+                                                                           "OnlineBooking/Customers");
+        }
+
 
         private void ThenReturnNoDataError(ApiResponse response)
         {
@@ -272,13 +292,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The firstName field is required.", null, "customer.firstName" },
-                                                    { null, "The lastName field is required.", null, "customer.lastName" } });
+            AssertMultipleErrors(response, new[,] { { "firstname-required", "The FirstName field is required.", null, null },
+                                                    { "lastname-required", "The LastName field is required.", null, null } });
         }
 
         private void ThenReturnInvalidEmailAddressError(ApiResponse response)
         {
-            AssertSingleError(response, "The email address is not valid.", "customer.email");
+            AssertSingleError(response, "email-invalid", "The Email field is not a valid e-mail address.", null);
         }
 
         private void ThenReturnNewCustomer(ApiResponse response)

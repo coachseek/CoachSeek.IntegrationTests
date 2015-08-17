@@ -42,6 +42,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 AssertUnauthorised(response);
             }
 
+            [Test]
+            public void GivenIsOnlinePaymentEnabledButNoPaymentProvider_WhenTryUpdateBusiness_ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenIsOnlinePaymentEnabledButNoPaymentProvider();
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError(response);
+            }
+
 
             private string GivenNoBusinessSaveCommand()
             {
@@ -51,6 +61,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             private string GivenEmptyBusinessSaveCommand()
             {
                 return "{}";
+            }
+
+            private ApiBusinessSaveCommand GivenIsOnlinePaymentEnabledButNoPaymentProvider()
+            {
+                return new ApiBusinessSaveCommand
+                {
+                    name = Random.RandomString,
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "EUR",
+                        isOnlinePaymentEnabled = true,
+                        forceOnlinePayment = false,
+                        merchantAccountIdentifier = "olaf@coachseek.com"
+                    }
+                };
             }
 
             private ApiBusinessSaveCommand GivenValidBusinessSaveCommand()
@@ -67,6 +92,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                         merchantAccountIdentifier = "olaf@coachseek.com"
                     }
                 };
+            }
+
+            private void ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError(ApiResponse response)
+            {
+                AssertSingleError(response, 
+                                  ErrorCodes.PaymentProviderRequiredWhenOnlineBookingIsEnabled,
+                                  "When Online Payment is enabled then an Online Payment Provider must be specified.",
+                                  null);
             }
         }
 
@@ -218,8 +251,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             private void ThenReturnsRequiredPaymentOptionErrors(ApiResponse response)
             {
-                AssertMultipleErrors(response, new[,] { { null, "The currency field is required.", null, "business.payment.currency" },
-                                                        { null, "The isOnlinePaymentEnabled field is required.", null, "business.payment.isOnlinePaymentEnabled" } });
+                AssertMultipleErrors(response, new[,] { { "currency-required", "The Currency field is required.", null, null },
+                                                        { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null, null } });
             }
 
             private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
@@ -234,12 +267,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             private void ThenReturnsMissingMerchantAccountIdentifierError(ApiResponse response)
             {
-                AssertSingleError(response, "Missing merchant account identifier.", "business.payment.merchantAccountIdentifier");
+                AssertSingleError(response, "merchantaccountidentifier-required", "The MerchantAccountIdentifier field is required.", null);
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierFormatError(ApiResponse response)
             {
-                AssertSingleError(response, "Invalid merchant account identifier format.", "business.payment.merchantAccountIdentifier");
+                AssertSingleError(response, 
+                                  ErrorCodes.MerchantAccountIdentifierFormatInvalid,
+                                  "The MerchantAccountIdentifier field is not in a valid format.", 
+                                  null);
             }
 
             private void ThenUpdateTheBusinessWithoutPaymentProvider(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
@@ -354,8 +390,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The name field is required.", null, "business.name" },
-                                                    { null, "The payment field is required.", null, "business.payment" } });
+            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
+                                                    { "payment-required", "The Payment field is required.", null, null } });
         }
     }
 }

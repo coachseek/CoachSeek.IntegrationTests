@@ -36,9 +36,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "This session does not exist.");
         }
 
-        protected void ThenReturnNonExistentCustomerError(ApiResponse response)
+        protected void ThenReturnNonExistentCustomerError(ApiResponse response, Guid customerId)
         {
-            AssertSingleError(response, "This customer does not exist.", "booking.customer.id");
+            AssertSingleError(response, 
+                              ErrorCodes.CustomerInvalid, 
+                              "This customer does not exist.",
+                              customerId.ToString());
         }
 
         protected void ThenReturnDuplicateStandaloneSessionBookingError(ApiResponse response)

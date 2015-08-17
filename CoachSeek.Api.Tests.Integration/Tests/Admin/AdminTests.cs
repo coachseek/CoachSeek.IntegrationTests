@@ -36,7 +36,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         {
             var email = GivenMissingEmailAddress();
             var response = WhenTryUnsubscribeEmail(email);
-            AssertSingleError(response, "Missing email address.");
+            AssertSingleError(response, "email-required", "The Email field is required.", null);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         {
             var email = GivenIsNotValidEmailAddress();
             var response = WhenTryUnsubscribeEmail(email);
-            AssertSingleError(response, "Invalid email address format.");
+            AssertSingleError(response, "email-invalid", "The Email field is not a valid e-mail address.", null);
         }
 
         [Test]

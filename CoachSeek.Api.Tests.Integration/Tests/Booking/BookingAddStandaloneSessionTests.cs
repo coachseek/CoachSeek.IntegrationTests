@@ -2,6 +2,7 @@
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Booking
@@ -40,7 +41,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentCustomer(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnNonExistentCustomerError(response);
+            ThenReturnNonExistentCustomerError(response, command.customer.id.Value);
         }
 
         [Test]
@@ -97,7 +98,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSessionIsFull(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnSessionFullError(response);
+            ThenReturnSessionFullError(response, setup);
         }
         
 
@@ -130,12 +131,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private void ThenReturnStandaloneSessionsAreBookedOneAtATimeError(ApiResponse response)
         {
-            AssertSingleError(response, "Standalone sessions must be booked one at a time.", "booking.sessions");
+            AssertSingleError(response, 
+                              ErrorCodes.StandaloneSessionsMustBeBookedOneAtATime, 
+                              "Standalone sessions must be booked one at a time.", 
+                              null);
         }
 
-        private void ThenReturnSessionFullError(ApiResponse response)
+        private void ThenReturnSessionFullError(ApiResponse response, SetupData setup)
         {
-            AssertSingleError(response, "This session is already fully booked.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionFullyBooked, 
+                              "This session is already fully booked.",
+                              setup.AaronOrakeiMiniRed14To15.Id.ToString());
         }
     }
 }

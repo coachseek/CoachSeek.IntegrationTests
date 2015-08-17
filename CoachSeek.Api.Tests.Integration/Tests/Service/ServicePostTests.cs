@@ -31,8 +31,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenEmptyServiceSaveCommand();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { null, "The name field is required.", null, "service.name" },
-                                                        { null, "The repetition field is required.", null, "service.repetition" } });
+                AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
+                                                        { "repetition-required", "The Repetition field is required.", null, null } });
             }
 
             [Test]
@@ -176,7 +176,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenServiceWithoutRepetition();
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "The repetition field is required.", "service.repetition");
+                AssertSingleError(response, "repetition-required", "The Repetition field is required.", null);
             }
 
             [Test]

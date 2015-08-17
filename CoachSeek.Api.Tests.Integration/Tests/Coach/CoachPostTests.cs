@@ -264,24 +264,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The firstName field is required.", null, "coach.firstName" },
-                                                    { null, "The lastName field is required.", null, "coach.lastName" },
-                                                    { null, "The email field is required.", null, "coach.email" },
-                                                    { null, "The phone field is required.", null, "coach.phone" },
-                                                    { null, "The workingHours field is required.", null, "coach.workingHours" } });
+            AssertMultipleErrors(response, new[,] { { "firstname-required", "The FirstName field is required.", null, null },
+                                                    { "lastname-required", "The LastName field is required.", null, null },
+                                                    { "email-required", "The Email field is required.", null, null },
+                                                    { "phone-required", "The Phone field is required.", null, null },
+                                                    { "workinghours-required", "The WorkingHours field is required.", null, null } });
         }
 
         private void ThenReturnMissingWorkingHoursPropertyError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The tuesday field is required.", null, "coach.workingHours.tuesday" },
-                                                    { null, "The wednesday field is required.", null, "coach.workingHours.wednesday" },
-                                                    { null, "The sunday field is required.", null, "coach.workingHours.sunday" } });
+            AssertMultipleErrors(response, new[,] { { "tuesday-required", "The Tuesday field is required.", null, null },
+                                                    { "wednesday-required", "The Wednesday field is required.", null, null },
+                                                    { "sunday-required", "The Sunday field is required.", null, null } });
         }
 
         private void ThenReturnInvalidWorkingHoursPropertyError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The wednesday working hours are not valid.", null, "coach.workingHours.wednesday" },
-                                                    { null, "The friday working hours are not valid.", null, "coach.workingHours.friday" } });
+            AssertMultipleErrors(response, new[,] { { ErrorCodes.DailyWorkingHoursInvalid, "Wednesday working hours are not valid.", "Wednesday", null },
+                                                    { ErrorCodes.DailyWorkingHoursInvalid, "Friday working hours are not valid.", "Friday", null } });
         }
 
         private void ThenReturnInvalidCoachIdError(ApiResponse response)

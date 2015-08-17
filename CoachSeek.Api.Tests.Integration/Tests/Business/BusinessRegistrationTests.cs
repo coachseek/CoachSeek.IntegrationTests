@@ -187,22 +187,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnNoDataError(ApiResponse response)
         {
-            AssertSingleError(response, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!", null);
         }
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The business field is required.", null, "registration.business" },
-                                                    { null, "The admin field is required.", null, "registration.admin" } });
+            AssertMultipleErrors(response, new[,] { { "business-required", "The Business field is required.", null, null },
+                                                    { "admin-required", "The Admin field is required.", null, null } });
         }
 
         private void ThenReturnMissingPropertiesError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The name field is required.", null, "registration.business.name" },
-                                                    { null, "The firstName field is required.", null, "registration.admin.firstName" },
-                                                    { null, "The lastName field is required.", null, "registration.admin.lastName" },
-                                                    { null, "The email field is required.", null, "registration.admin.email" },
-                                                    { null, "The password field is required.", null, "registration.admin.password" } });
+            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
+                                                    { "firstname-required", "The FirstName field is required.", null, null },
+                                                    { "lastname-required", "The LastName field is required.", null, null },
+                                                    { "email-required", "The Email field is required.", null, null },
+                                                    { "password-required", "The Password field is required.", null, null } });
         }
 
         private void ThenReturnMultipleErrorResponse(ApiResponse response)
@@ -212,22 +212,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
             var errors = (ApiApplicationError[])response.Payload;
             Assert.That(errors.GetLength(0), Is.EqualTo(4));
-            AssertApplicationError(errors[0], "registration.business.currency", "The field currency must be a string with a maximum length of 3.");
+            AssertApplicationError(errors[0], "currency-too-long", "The field Currency must be a string with a maximum length of 3.", null);
             AssertMultipleEmailErrors(errors[1], errors[2]);
-            AssertApplicationError(errors[3], "registration.admin.password", "The field password must be a string with a maximum length of 20.");
+            AssertApplicationError(errors[3], "password-too-long", "The field Password must be a string with a maximum length of 20.", null);
         }
 
         private void AssertMultipleEmailErrors(ApiApplicationError error1, ApiApplicationError error2)
         {
             if (error1.message.Contains("maximum length"))
             {
-                AssertApplicationError(error1, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
-                AssertApplicationError(error2, "registration.admin.email", "The email field is not a valid e-mail address.");
+                AssertApplicationError(error1, "email-too-long", "The field Email must be a string with a maximum length of 100.", null);
+                AssertApplicationError(error2, "email-invalid", "The Email field is not a valid e-mail address.", null);
             }
             else
             {
-                AssertApplicationError(error1, "registration.admin.email", "The email field is not a valid e-mail address.");
-                AssertApplicationError(error2, "registration.admin.email", "The field email must be a string with a maximum length of 100.");
+                AssertApplicationError(error1, "email-invalid", "The Email field is not a valid e-mail address.", null);
+                AssertApplicationError(error2, "email-too-long", "The field Email must be a string with a maximum length of 100.", null);
             }
         }
 
