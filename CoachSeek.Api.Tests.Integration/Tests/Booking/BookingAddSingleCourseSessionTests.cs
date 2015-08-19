@@ -18,7 +18,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentCustomer(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenReturnNonExistentCustomerError(response, command.customer.id.Value);
+            ThenReturnNonExistentCustomerError(response, command.customer.id.GetValueOrDefault());
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenTheCourseSessionIsFull(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenReturnCourseSessionFullError(response);
+            ThenReturnCourseSessionFullError(response, command.sessions[0].id.GetValueOrDefault());
         }
 
         [Test]
@@ -38,7 +38,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenThisCustomerIsAlreadyBookedOntoThisCourseSession(setup);
             var response = WhenTryBookSingleCourseSession(command, setup);
-            ThenReturnDuplicateCourseSessionBookingError(response);
+            ThenReturnDuplicateCourseSessionBookingError(response, 
+                                                         setup.Fred.Id, 
+                                                         setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id);
         }
 
         [Test]
@@ -152,9 +154,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        private void ThenReturnCourseSessionFullError(ApiResponse response)
+        private void ThenReturnCourseSessionFullError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "One or more of the sessions is already fully booked.");
+            AssertSingleError(response,
+                              ErrorCodes.SessionFullyBooked,
+                              "Session is already fully booked.",
+                              sessionId.ToString());
         }
 
         private void ThenCreateSingleCourseSessionBooking(ApiResponse response, SetupData setup)

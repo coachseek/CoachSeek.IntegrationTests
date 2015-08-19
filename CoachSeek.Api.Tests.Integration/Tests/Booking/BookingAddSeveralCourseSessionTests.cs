@@ -33,7 +33,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSecondSessionIsStandalone(setup);
             var response = WhenTryBookSeveralCourseSessions(command, setup);
-            ThenReturnSessionNotInCourseError(response);
+            ThenReturnSessionNotInCourseError(response, 
+                                              setup.AaronOrakeiMiniRed14To15.Id, 
+                                              setup.AaronOrakeiHolidayCamp9To15For3Days.Id);
         }
 
         [Test]
@@ -46,7 +48,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSecondSessionBelongsToADifferentCourse(setup);
             var response = WhenTryBookSeveralCourseSessions(command, setup);
-            ThenReturnSessionNotInCourseError(response);
+            ThenReturnSessionNotInCourseError(response, 
+                                              setup.BobbyRemueraMiniRed9To10For3Weeks.Sessions[0].Id,
+                                              setup.AaronOrakeiHolidayCamp9To15For3Days.Id);
         }
 
         [Test]
@@ -58,7 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenACourseSessionIsFull(setup);
             var response = WhenTryBookSeveralCourseSessions(command, setup);
-            ThenReturnCourseSessionFullError(response);
+            ThenReturnCourseSessionFullError(response, command.sessions[1].id.GetValueOrDefault());
         }
 
         [Test]
@@ -159,14 +163,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "Some sessions are duplicates.", "booking.sessions");
         }
 
-        private void ThenReturnSessionNotInCourseError(ApiResponse response)
+        private void ThenReturnSessionNotInCourseError(ApiResponse response, Guid sessionId, Guid courseId)
         {
-            AssertSingleError(response, "One or more of the sessions is not in the course.", "booking.sessions");
+            AssertSingleError(response,
+                              ErrorCodes.SessionNotInCourse,
+                              "Session is not in course.",
+                              string.Format("Session: '{0}', Course: '{1}'", sessionId, courseId));
         }
 
-        private void ThenReturnCourseSessionFullError(ApiResponse response)
+        private void ThenReturnCourseSessionFullError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "One or more of the sessions is already fully booked.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionFullyBooked, 
+                              "Session is already fully booked.",
+                              sessionId.ToString());
         }
 
         private void ThenCreateSeveralCourseSessionBookings(ApiResponse response, SetupData setup)

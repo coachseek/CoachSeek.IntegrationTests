@@ -98,7 +98,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSessionIsFull(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnSessionFullError(response);
+            ThenReturnSessionFullError(response, command.sessions[0].id.GetValueOrDefault());
         }
         
 
@@ -133,7 +133,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private void ThenReturnStandaloneSessionsAreBookedOneAtATimeError(ApiResponse response)
         {
             AssertSingleError(response, 
-                              ErrorCodes.StandaloneSessionsMustBeBookedOneAtATime, 
+                              ErrorCodes.StandaloneSessionMustBeBookedOneAtATime, 
                               "Standalone sessions must be booked one at a time.", 
                               null);
         }
@@ -143,9 +143,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "A session is not online bookable.", "booking.sessions");
         }
 
-        private void ThenReturnSessionFullError(ApiResponse response)
+        private void ThenReturnSessionFullError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "This session is already fully booked.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionFullyBooked, 
+                              "Session is already fully booked.",
+                              sessionId.ToString());
         }
     }
 }

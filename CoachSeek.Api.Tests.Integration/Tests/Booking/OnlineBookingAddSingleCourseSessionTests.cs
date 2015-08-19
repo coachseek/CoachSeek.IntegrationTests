@@ -31,7 +31,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenTheCourseSessionIsFull(setup);
             var response = WhenTryOnlineBookSingleCourseSession(command, setup);
-            ThenReturnCourseSessionFullError(response);
+            ThenReturnCourseSessionFullError(response, setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id);
         }
 
         // TODO: Customer already booked
@@ -97,9 +97,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        private void ThenReturnCourseSessionFullError(ApiResponse response)
+        private void ThenReturnCourseSessionFullError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "One or more of the sessions is already fully booked.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionFullyBooked,
+                              "Session is already fully booked.",
+                              sessionId.ToString());
         }
 
         private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response)

@@ -103,7 +103,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNewServiceWithBooking(-8, true);
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "The studentCapacity field is not valid.", "service.booking.studentCapacity");
+                AssertSingleError(response, 
+                                  ErrorCodes.StudentCapacityInvalid,
+                                  "StudentCapacity of -8 is not valid.", 
+                                  "-8");
             }
 
             [Test]
@@ -123,7 +126,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { null, "The duration field is not valid.", null, "service.timing.duration" }, 
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '67' is not valid.", "67", null }, 
                                                         { ErrorCodes.ColourInvalid, "Colour 'mandarin' is not valid.", "mandarin", null } });
             }
 
@@ -144,7 +147,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNewServiceWithPricing(null, null);
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "This service is priced but has neither sessionPrice nor coursePrice.", "service.pricing");
+                AssertSingleError(response, 
+                                  ErrorCodes.ServiceIsPricedButHasNoPrices,
+                                  "Service is priced but has neither session price nor course price.", 
+                                  null);
             }
 
             [Test]
@@ -165,8 +171,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 var command = GivenSessionServiceWithCoursePrice();
                 var response = WhenTryPost(command, setup);
                 AssertSingleError(response, 
-                                  "The coursePrice cannot be specified if the service is not for a course or is open-ended.",
-                                  "service.pricing.coursePrice");
+                                  ErrorCodes.ServiceForStandaloneSessionMustHaveNoCoursePrice,
+                                  "Services for standalone sessions must not have the CoursePrice set.",
+                                  null);
             }
 
             [Test]
@@ -190,15 +197,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             }
 
             [Test]
-            public void GivenOpenEndedCourseServiceWithCoursePrice_WhenTryPost_ThenReturnServiceDefaultsCoursePriceError()
+            public void GivenInvalidSessionCount_WhenTryPost_ThenReturnInvalidSessionCountError()
             {
                 var setup = RegisterBusiness();
 
-                var command = GivenOpenEndedCourseServiceWithCoursePrice();
+                var command = GivenInvalidSessionCount();
                 var response = WhenTryPost(command, setup);
                 AssertSingleError(response,
-                                  "The coursePrice cannot be specified if the service is not for a course or is open-ended.",
-                                  "service.pricing.coursePrice");
+                                  ErrorCodes.SessionCountInvalid,
+                                  "The SessionCount field is not valid.",
+                                  "-1");
             }
 
             [Test]
@@ -228,8 +236,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenInvalidCourseService();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { null, "The sessionCount field is not valid.", null, "service.repetition.sessionCount" },
-                                                        { null, "The repeatFrequency field is not valid.", null, "service.repetition.repeatFrequency" } });
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.SessionCountInvalid, "The SessionCount field is not valid.", "-12", null },
+                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "xxx", null } });
             }
 
             [Test]
@@ -239,10 +247,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenMultipleErrorsInService();
                 var response = WhenTryCreateService(command, setup);
-                AssertMultipleErrors(response, new[,] { { null, "The duration field is not valid.", null, "service.timing.duration" }, 
-                                                        { null, "The studentCapacity field is not valid.", null, "service.booking.studentCapacity" },
-                                                        { null, "This service is priced but has neither sessionPrice nor coursePrice.", null, "service.pricing" },
-                                                        { null, "The repeatFrequency field is not valid.", null, "service.repetition.repeatFrequency" },
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '80' is not valid.", "80", null }, 
+                                                        { ErrorCodes.StudentCapacityInvalid, "StudentCapacity of -8 is not valid.", "-8", null },
+                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "fred", null },
                                                         { ErrorCodes.ColourInvalid, "Colour 'lime' is not valid.", "lime", null } });
             }
 
@@ -429,13 +436,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
                 return service;
             }
 
-            private ApiServiceSaveCommand GivenOpenEndedCourseServiceWithCoursePrice()
+            private ApiServiceSaveCommand GivenInvalidSessionCount()
             {
                 var service = GivenNewSessionService();
 
                 service.repetition = new ApiServiceRepetition
                 {
-                    sessionCount = -1,  // Open-Ended
+                    sessionCount = -1,  // Invalid SessionCount
                     repeatFrequency = "d"
                 };
 

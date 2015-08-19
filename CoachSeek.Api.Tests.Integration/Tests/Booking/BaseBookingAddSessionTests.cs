@@ -49,9 +49,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             AssertSingleError(response, "This customer is already booked for this session.");
         }
 
-        protected void ThenReturnDuplicateCourseSessionBookingError(ApiResponse response)
+        protected void ThenReturnDuplicateCourseSessionBookingError(ApiResponse response, Guid customerId, Guid sessionId)
         {
-            AssertSingleError(response, "This customer is already booked onto a session in this course.");
+            AssertSingleError(response,
+                              ErrorCodes.CustomerAlreadyBookedOntoSession,
+                              "This customer is already booked for this session.",
+                              string.Format("Customer: '{0}', Session: '{1}'", customerId, sessionId));
         }
 
         protected void ThenCreateSessionBooking(ApiResponse response, 

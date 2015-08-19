@@ -267,7 +267,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             private void ThenReturnsMissingMerchantAccountIdentifierError(ApiResponse response)
             {
-                AssertSingleError(response, "merchantaccountidentifier-required", "The MerchantAccountIdentifier field is required.", null);
+                AssertSingleError(response, 
+                                  "merchantaccountidentifier-required", 
+                                  "The MerchantAccountIdentifier field is required.", 
+                                  null);
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierFormatError(ApiResponse response)

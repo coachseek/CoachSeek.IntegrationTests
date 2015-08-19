@@ -132,7 +132,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         private void ThenReturnStandaloneSessionsAreBookedOneAtATimeError(ApiResponse response)
         {
             AssertSingleError(response, 
-                              ErrorCodes.StandaloneSessionsMustBeBookedOneAtATime, 
+                              ErrorCodes.StandaloneSessionMustBeBookedOneAtATime, 
                               "Standalone sessions must be booked one at a time.", 
                               null);
         }
@@ -141,7 +141,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertSingleError(response, 
                               ErrorCodes.SessionFullyBooked, 
-                              "This session is already fully booked.",
+                              "Session is already fully booked.",
                               setup.AaronOrakeiMiniRed14To15.Id.ToString());
         }
     }

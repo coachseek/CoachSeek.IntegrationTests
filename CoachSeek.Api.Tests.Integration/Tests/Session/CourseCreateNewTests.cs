@@ -1,5 +1,6 @@
 ﻿using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -40,7 +41,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseWithTooManyDailySessions(setup);
             var response = WhenTryCreateCourse(command, setup);
-            AssertSingleError(response, "The maximum number of daily sessions is 30.", "session.repetition.sessionCount");
+            AssertSingleError(response,
+                              ErrorCodes.CourseExceedsMaximumNumberOfDailySessions,
+                              "31 exceeds the maximum number of daily sessions in a course of 30.",
+                              "Maximum Allowed Daily Session Count: 30; Specified Session Count: 31");
         }
 
         [Test]
@@ -51,7 +55,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseWithTooManyWeeklySessions(setup);
             var response = WhenTryCreateCourse(command, setup);
-            AssertSingleError(response, "The maximum number of weekly sessions is 26.", "session.repetition.sessionCount");
+            AssertSingleError(response,
+                              ErrorCodes.CourseExceedsMaximumNumberOfWeeklySessions,
+                              "27 exceeds the maximum number of weekly sessions in a course of 26.",
+                              "Maximum Allowed Weekly Session Count: 26; Specified Session Count: 27");
         }
 
         [Test]

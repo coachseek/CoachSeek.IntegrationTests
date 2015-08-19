@@ -1,6 +1,7 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -32,6 +33,34 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
+        public void GivenNewSessionWithInvalidStudentCapacity_WhenTryCreateSession_ThenReturnInvalidStudentCapacityError()
+        {
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenNewSessionWithInvalidStudentCapacity(setup);
+            var response = WhenTryCreateSession(command, setup);
+            AssertSingleError(response,
+                              ErrorCodes.StudentCapacityInvalid,
+                              "StudentCapacity of 2000 is not valid.", 
+                              "2000");
+        }
+
+        [Test]
+        public void GivenNewSessionWithMissingStudentCapacity_WhenTryCreateSession_ThenReturnMissingStudentCapacityError()
+        {
+            var setup = RegisterBusiness();
+            RegisterStandaloneAaronOrakeiMiniRed14To15(setup);
+
+            var command = GivenNewSessionWithMissingStudentCapacity(setup);
+            var response = WhenTryCreateSession(command, setup);
+            AssertSingleError(response,
+                              "studentcapacity-required",
+                              "The StudentCapacity field is required.",
+                              null);
+        }
+
+        [Test]
         public void GivenNewSessionWithZeroSessionCount_WhenTryCreateSession_ThenReturnInvalidSessionCountErrorResponse()
         {
             var setup = RegisterBusiness();
@@ -39,7 +68,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewSessionWithZeroSessionCount(setup);
             var response = WhenTryCreateSession(command, setup);
-            AssertSingleError(response, "The sessionCount field is not valid.", "session.repetition.sessionCount");
+            AssertSingleError(response,
+                              ErrorCodes.SessionCountInvalid,
+                              "The SessionCount field is not valid.", 
+                              "0");
         }
 
         [Test]
@@ -85,6 +117,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             return command;
         }
+
+        private ApiSessionSaveCommand GivenNewSessionWithInvalidStudentCapacity(SetupData setup)
+        {
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.booking.studentCapacity = 2000;
+
+            return command;
+        }
+
+        private ApiSessionSaveCommand GivenNewSessionWithMissingStudentCapacity(SetupData setup)
+        {
+            var command = CreateSessionSaveCommand(setup.AaronOrakeiMiniRed14To15);
+            command.booking.studentCapacity = null;
+
+            return command;
+        }
+
 
         private SessionData ThenCreateNewSession(ApiResponse response, SetupData setup)
         {
