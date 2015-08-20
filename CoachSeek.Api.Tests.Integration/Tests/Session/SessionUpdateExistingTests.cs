@@ -1,6 +1,7 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -220,7 +221,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private void ThenReturnsCannotChangeSessionToCourseError(ApiResponse response)
         {
-            AssertSingleError(response, "Cannot change a session to a course.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionChangeToCourseNotSupported, 
+                              "Cannot change a session to a course.");
         }
     }
 }

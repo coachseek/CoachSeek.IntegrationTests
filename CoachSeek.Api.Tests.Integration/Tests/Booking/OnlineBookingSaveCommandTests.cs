@@ -13,7 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNoBookingSaveCommand();
             var response = WhenTryOnlineBookSession(command, setup);
-            AssertSingleError(response, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
         }
 
         [Test]

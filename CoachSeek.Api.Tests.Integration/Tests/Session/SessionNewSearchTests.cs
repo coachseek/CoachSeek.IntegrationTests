@@ -10,6 +10,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
     public class SessionNewSearchTests : BaseSessionSearchTests
     {
         [Test]
+        public void GivenNoSearchPeriod_WhenTrySearch_ThenReturnNoSearchPeriodError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCoachAaron(setup);
+            RegisterLocationOrakei(setup);
+            RegisterServiceMiniRed(setup);
+
+            var criteria = GivenNoSearchPeriod(setup);
+            var response = WhenTrySearch(criteria, setup);
+            ThenReturnNoSearchPeriodError(response);
+        }
+
+        [Test]
         public void GivenInvalidSearchPeriod_WhenTrySearch_ThenReturnInvalidSearchPeriodError()
         {
             var setup = RegisterBusiness();

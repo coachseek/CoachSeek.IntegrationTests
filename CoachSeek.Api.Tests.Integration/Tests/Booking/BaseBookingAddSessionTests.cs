@@ -31,9 +31,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         }
 
 
-        protected void ThenReturnNonExistentSessionError(ApiResponse response)
+        protected void ThenReturnNonExistentSessionError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "This session does not exist.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionInvalid, 
+                              "This session does not exist.",
+                              sessionId.ToString());
         }
 
         protected void ThenReturnNonExistentCustomerError(ApiResponse response, Guid customerId)
@@ -44,9 +47,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                               customerId.ToString());
         }
 
-        protected void ThenReturnDuplicateStandaloneSessionBookingError(ApiResponse response)
+        protected void ThenReturnDuplicateStandaloneSessionBookingError(ApiResponse response, Guid customerId, Guid sessionId)
         {
-            AssertSingleError(response, "This customer is already booked for this session.");
+            AssertSingleError(response,
+                              ErrorCodes.CustomerAlreadyBookedOntoSession,
+                              "This customer is already booked for this session.",
+                              string.Format("Customer: '{0}', Session: '{1}'", customerId, sessionId));
         }
 
         protected void ThenReturnDuplicateCourseSessionBookingError(ApiResponse response, Guid customerId, Guid sessionId)

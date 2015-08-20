@@ -69,7 +69,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseWithNeitherSessionNorCoursePrice(setup);
             var response = WhenTryCreateCourse(command, setup);
-            AssertSingleError(response, "At least a session or course price must be specified.", "session.pricing");
+            AssertSingleError(response,
+                              ErrorCodes.CourseMustHavePrice,
+                              "A course must have at least a session or course price.");
         }
 
         [Test]

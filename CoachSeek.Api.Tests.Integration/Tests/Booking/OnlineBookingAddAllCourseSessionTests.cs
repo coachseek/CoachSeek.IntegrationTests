@@ -74,7 +74,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenTheCourseIsNotOnlineBookable(setup);
             var response = WhenTryOnlineBookAllCourseSessions(command, setup);
-            ThenReturnCourseSessionIsNotOnlineBookableError(response);
+            ThenReturnCourseSessionIsNotOnlineBookableError(response, setup.BobbyRemueraMiniRed9To10For3Weeks.Id);
         }
 
         [Test]
@@ -190,7 +190,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         protected void ThenReturnDuplicateSessionError(ApiResponse response)
         {
-            AssertSingleError(response, "Some sessions are duplicates.", "booking.sessions");
+            AssertSingleError(response,
+                              ErrorCodes.BookingContainsDuplicateSessions,
+                              "Booking contains duplicate sessions.");
         }
 
         private void ThenReturnSessionNotInCourseError(ApiResponse response, Guid sessionId, Guid courseId)
@@ -209,9 +211,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                               sessionId.ToString());
         }
 
-        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response)
+        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response, Guid courseId)
         {
-            AssertSingleError(response, "The course is not online bookable.");
+            AssertSingleError(response, 
+                              ErrorCodes.CourseNotOnlineBookable, 
+                              "The course is not online bookable.",
+                              courseId.ToString());
         }
 
         private void ThenCreateAllCourseSessionBookings(ApiResponse response, SetupData setup)

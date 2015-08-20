@@ -529,17 +529,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
         private void ThenReturnInvalidServiceErrorResponse(ApiResponse response, Guid serviceId)
         {
-            AssertSingleError(response, ErrorCodes.ServiceInvalid, "This service does not exist.", serviceId.ToString());
+            AssertSingleError(response, 
+                              ErrorCodes.ServiceInvalid, 
+                              "This service does not exist.", 
+                              serviceId.ToString());
         }
 
         private void ThenReturnsCannotUpdateRepetitionOfCourseError(ApiResponse response)
         {
-            AssertSingleError(response, "Cannot change the repetition of a course.");
+            AssertSingleError(response, 
+                              ErrorCodes.CourseChangeRepetitionNotSupported,
+                              "Changing course repetition not supported.");
         }
 
         private void ThenReturnsInvalidRepetitionError(ApiResponse response)
         {
-            AssertSingleError(response, "Cannot change a session to a course.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionChangeToCourseNotSupported, 
+                              "Cannot change a session to a course.");
         }
     }
 }

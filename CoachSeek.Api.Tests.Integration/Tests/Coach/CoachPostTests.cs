@@ -259,7 +259,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void ThenReturnNoDataError(ApiResponse response)
         {
-            AssertSingleError(response, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredError(ApiResponse response)

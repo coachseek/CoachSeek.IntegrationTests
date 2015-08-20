@@ -8,6 +8,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
     public abstract class BaseSessionSearchTests : ScheduleTests
     {
+        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenNoSearchPeriod(SetupData setup)
+        {
+            return new Tuple<string, string, Guid?, Guid?, Guid?>(null, null, setup.Aaron.Id, setup.Orakei.Id, setup.MiniRed.Id);
+        }
+
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenInvalidSearchPeriod()
         {
             return new Tuple<string, string, Guid?, Guid?, Guid?>("blah", "2015-02-30", null, null, null);
@@ -55,11 +60,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
 
+        protected void ThenReturnNoSearchPeriodError(ApiResponse response)
+        {
+            AssertMultipleErrors(response, new[,] { { ErrorCodes.StartDateRequired, "The StartDate field is required.", null },
+                                                    { ErrorCodes.EndDateRequired, "The EndDate field is required.", null } });
+        }
 
         protected void ThenReturnInvalidSearchPeriodError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { null, "The startDate is not a valid date.", null, "startDate" },
-                                                    { null, "The endDate is not a valid date.", null, "endDate" } });
+            AssertMultipleErrors(response, new[,] { { ErrorCodes.StartDateInvalid, "'blah' is not a valid start date.", "blah" },
+                                                    { ErrorCodes.EndDateInvalid, "'2015-02-30' is not a valid end date.", "2015-02-30" } });
         }
 
         protected void ThenReturnInvalidCoachIdError(ApiResponse response, Guid coachId)

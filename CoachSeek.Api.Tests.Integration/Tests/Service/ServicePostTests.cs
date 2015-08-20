@@ -21,7 +21,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNoServiceSaveCommand();
                 var response = WhenTryPost(command, setup);
-                AssertSingleError(response, "Please post us some data!");
+                AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
             }
 
             [Test]

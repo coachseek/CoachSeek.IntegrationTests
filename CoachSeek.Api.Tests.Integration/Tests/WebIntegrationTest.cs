@@ -196,17 +196,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return (ApiApplicationError[])response.Payload;
         }
 
-        protected ApiApplicationError AssertSingleError(ApiResponse response, string message, string field = null)
-        {
-            var errors = AssertErrorResponse(response);
-
-            Assert.That(errors.GetLength(0), Is.EqualTo(1));
-            AssertApplicationError(errors[0], field, message);
-
-            return errors[0];
-        }
-
-        protected ApiApplicationError AssertSingleError(ApiResponse response, string code, string message, string data)
+        protected ApiApplicationError AssertSingleError(ApiResponse response, string code, string message, string data = null)
         {
             var errors = AssertErrorResponse(response);
 
@@ -234,23 +224,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var i = 0;
             foreach (var error in errors)
             {
-                AssertApplicationError(error, expectedErrors[i, 0], expectedErrors[i, 1], expectedErrors[i, 2], expectedErrors[i, 3]);
+                AssertApplicationError(error, expectedErrors[i, 0], expectedErrors[i, 1], expectedErrors[i, 2]);
                 i++;
             }
         }
 
-        protected void AssertApplicationError(ApiApplicationError error, string field, string message)
-        {
-            Assert.That(error.field, Is.EqualTo(field));
-            Assert.That(error.message, Is.EqualTo(message));
-        }
-
-        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data, string field = null)
+        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data)
         {
             Assert.That(error.code, Is.EqualTo(code));
             Assert.That(error.message, Is.EqualTo(message));
             Assert.That(error.data, Is.EqualTo(data));
-            Assert.That(error.field, Is.EqualTo(field));
         }
 
         protected void AssertApplicationErrorDataContainsFragment(ApiApplicationError error, string code, string message, string dataFragment)

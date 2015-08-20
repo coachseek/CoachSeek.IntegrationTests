@@ -30,7 +30,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentSession(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnNonExistentSessionError(response);
+            ThenReturnNonExistentSessionError(response, command.sessions[0].id.GetValueOrDefault());
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentSessionAndCustomer(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnNonExistentSessionError(response);
+            ThenReturnNonExistentSessionError(response, command.sessions[0].id.GetValueOrDefault());
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenThisCustomerIsAlreadyBookedOntoThisStandaloneSession(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnDuplicateStandaloneSessionBookingError(response);
+            ThenReturnDuplicateStandaloneSessionBookingError(response, setup.Fred.Id, setup.AaronOrakeiMiniRed14To15.Id);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenSessionIsNotOnlineBookable(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnSessionNotOnlineBookableError(response);
+            ThenReturnSessionNotOnlineBookableError(response, setup.AaronOrakeiMiniRed16To17.Id);
         }
 
         [Test]
@@ -134,13 +134,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertSingleError(response, 
                               ErrorCodes.StandaloneSessionMustBeBookedOneAtATime, 
-                              "Standalone sessions must be booked one at a time.", 
-                              null);
+                              "Standalone sessions must be booked one at a time.");
         }
 
-        private void ThenReturnSessionNotOnlineBookableError(ApiResponse response)
+        private void ThenReturnSessionNotOnlineBookableError(ApiResponse response, Guid sessionId)
         {
-            AssertSingleError(response, "A session is not online bookable.", "booking.sessions");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionNotOnlineBookable,
+                              "The session is not online bookable.",
+                              sessionId.ToString());
         }
 
         private void ThenReturnSessionFullError(ApiResponse response, Guid sessionId)

@@ -2,6 +2,7 @@
 using System.Net;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -36,7 +37,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var id = GivenStandaloneSessionWithBookings(setup);
             var response = WhenTryDeleteSession(id, setup);
-            AssertSingleError(response, "Cannot delete session as it has one or more bookings.");
+            AssertSingleError(response, 
+                              ErrorCodes.SessionHasBookingsCannotDelete, 
+                              "Cannot delete session as it has one or more bookings.",
+                              id.ToString());
         }
 
         [Test]

@@ -160,7 +160,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         protected void ThenReturnDuplicateSessionError(ApiResponse response)
         {
-            AssertSingleError(response, "Some sessions are duplicates.", "booking.sessions");
+            AssertSingleError(response,
+                              ErrorCodes.BookingContainsDuplicateSessions,
+                              "Booking contains duplicate sessions.");
         }
 
         private void ThenReturnSessionNotInCourseError(ApiResponse response, Guid sessionId, Guid courseId)

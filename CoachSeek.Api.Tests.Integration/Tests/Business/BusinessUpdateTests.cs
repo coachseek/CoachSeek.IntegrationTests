@@ -388,7 +388,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnNoDataError(ApiResponse response)
         {
-            AssertSingleError(response, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredErrorResponse(ApiResponse response)

@@ -192,17 +192,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "business-required", "The Business field is required.", null, null },
-                                                    { "admin-required", "The Admin field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "business-required", "The Business field is required.", null },
+                                                    { "admin-required", "The Admin field is required.", null } });
         }
 
         private void ThenReturnMissingPropertiesError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
-                                                    { "firstname-required", "The FirstName field is required.", null, null },
-                                                    { "lastname-required", "The LastName field is required.", null, null },
-                                                    { "email-required", "The Email field is required.", null, null },
-                                                    { "password-required", "The Password field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null },
+                                                    { "firstname-required", "The FirstName field is required.", null },
+                                                    { "lastname-required", "The LastName field is required.", null },
+                                                    { "email-required", "The Email field is required.", null },
+                                                    { "password-required", "The Password field is required.", null } });
         }
 
         private void ThenReturnMultipleErrorResponse(ApiResponse response)

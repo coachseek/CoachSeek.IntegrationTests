@@ -30,7 +30,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentSession(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnNonExistentSessionError(response);
+            ThenReturnNonExistentSessionError(response, command.sessions[0].id.GetValueOrDefault());
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentSessionAndCustomer(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnNonExistentSessionError(response);
+            ThenReturnNonExistentSessionError(response, command.sessions[0].id.GetValueOrDefault());
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenThisCustomerIsAlreadyBookedOntoThisStandaloneSession(setup);
             var response = WhenTryBookStandaloneSession(command, setup);
-            ThenReturnDuplicateStandaloneSessionBookingError(response);
+            ThenReturnDuplicateStandaloneSessionBookingError(response, setup.Fred.Id, setup.AaronOrakeiMiniRed14To15.Id);
         }
 
         [Test]

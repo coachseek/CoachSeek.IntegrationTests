@@ -45,7 +45,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenTheCourseIsNotOnlineBookable(setup);
             var response = WhenTryOnlineBookSingleCourseSession(command, setup);
-            ThenReturnCourseSessionIsNotOnlineBookableError(response);
+            ThenReturnCourseSessionIsNotOnlineBookableError(response, setup.BobbyRemueraMiniRed9To10For3Weeks.Id);
         }
 
         [Test]
@@ -105,9 +105,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
                               sessionId.ToString());
         }
 
-        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response)
+        private void ThenReturnCourseSessionIsNotOnlineBookableError(ApiResponse response, Guid courseId)
         {
-            AssertSingleError(response, "The course is not online bookable.");
+            AssertSingleError(response,
+                              ErrorCodes.CourseNotOnlineBookable, 
+                              "The course is not online bookable.",
+                              courseId.ToString());
         }
 
         private void ThenCreateSingleCourseSessionBooking(ApiResponse response, SetupData setup)

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using CoachSeek.Common;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
 {
@@ -12,7 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNoSessionSaveCommand();
             var response = WhenPostSession(command, setup);
-            AssertSingleError(response, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
         }
 
         [Test]

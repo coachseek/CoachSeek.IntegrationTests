@@ -2,6 +2,7 @@
 using System.Net;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Common;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Session
@@ -36,7 +37,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var id = GivenCourseWithBookings(setup);
             var response = WhenTryDeleteCourse(id, setup);
-            AssertSingleError(response, "Cannot delete course as it has one or more bookings.");
+            AssertSingleError(response,
+                              ErrorCodes.CourseHasBookingsCannotDelete, 
+                              "Cannot delete course as it has one or more bookings.",
+                              setup.AaronOrakeiHolidayCamp9To15For3Days.Id.ToString());
         }
 
 
