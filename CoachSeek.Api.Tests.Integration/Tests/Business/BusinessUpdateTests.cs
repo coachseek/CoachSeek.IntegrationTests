@@ -251,8 +251,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             private void ThenReturnsRequiredPaymentOptionErrors(ApiResponse response)
             {
-                AssertMultipleErrors(response, new[,] { { "currency-required", "The Currency field is required.", null, null },
-                                                        { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null, null } });
+                AssertMultipleErrors(response, new[,] { { "currency-required", "The Currency field is required.", null },
+                                                        { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null } });
             }
 
             private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
@@ -393,8 +393,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
-                                                    { "payment-required", "The Payment field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null },
+                                                    { "payment-required", "The Payment field is required.", null } });
         }
     }
 }

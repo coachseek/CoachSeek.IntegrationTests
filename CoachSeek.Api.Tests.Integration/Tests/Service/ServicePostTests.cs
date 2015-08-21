@@ -31,8 +31,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenEmptyServiceSaveCommand();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null, null },
-                                                        { "repetition-required", "The Repetition field is required.", null, null } });
+                AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null },
+                                                        { "repetition-required", "The Repetition field is required.", null } });
             }
 
             [Test]
@@ -126,8 +126,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenNewServiceWithInvalidDefaults();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '67' is not valid.", "67", null }, 
-                                                        { ErrorCodes.ColourInvalid, "Colour 'mandarin' is not valid.", "mandarin", null } });
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '67' is not valid.", "67" }, 
+                                                        { ErrorCodes.ColourInvalid, "Colour 'mandarin' is not valid.", "mandarin" } });
             }
 
             [Test]
@@ -236,8 +236,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenInvalidCourseService();
                 var response = WhenTryPost(command, setup);
-                AssertMultipleErrors(response, new[,] { { ErrorCodes.SessionCountInvalid, "The SessionCount field is not valid.", "-12", null },
-                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "xxx", null } });
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.SessionCountInvalid, "The SessionCount field is not valid.", "-12" },
+                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "xxx" } });
             }
 
             [Test]
@@ -247,10 +247,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
                 var command = GivenMultipleErrorsInService();
                 var response = WhenTryCreateService(command, setup);
-                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '80' is not valid.", "80", null }, 
-                                                        { ErrorCodes.StudentCapacityInvalid, "StudentCapacity of -8 is not valid.", "-8", null },
-                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "fred", null },
-                                                        { ErrorCodes.ColourInvalid, "Colour 'lime' is not valid.", "lime", null } });
+                AssertMultipleErrors(response, new[,] { { ErrorCodes.DurationInvalid, "Duration '80' is not valid.", "80" }, 
+                                                        { ErrorCodes.StudentCapacityInvalid, "StudentCapacity of -8 is not valid.", "-8" },
+                                                        { ErrorCodes.RepeatFrequencyInvalid, "The RepeatFrequency field is not valid.", "fred" },
+                                                        { ErrorCodes.ColourInvalid, "Colour 'lime' is not valid.", "lime" } });
             }
 
             [Test]

@@ -264,18 +264,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         private void ThenReturnRootRequiredError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "firstname-required", "The FirstName field is required.", null, null },
-                                                    { "lastname-required", "The LastName field is required.", null, null },
-                                                    { "email-required", "The Email field is required.", null, null },
-                                                    { "phone-required", "The Phone field is required.", null, null },
-                                                    { "workinghours-required", "The WorkingHours field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "firstname-required", "The FirstName field is required.", null },
+                                                    { "lastname-required", "The LastName field is required.", null },
+                                                    { "email-required", "The Email field is required.", null },
+                                                    { "phone-required", "The Phone field is required.", null },
+                                                    { "workinghours-required", "The WorkingHours field is required.", null } });
         }
 
         private void ThenReturnMissingWorkingHoursPropertyError(ApiResponse response)
         {
-            AssertMultipleErrors(response, new[,] { { "tuesday-required", "The Tuesday field is required.", null, null },
-                                                    { "wednesday-required", "The Wednesday field is required.", null, null },
-                                                    { "sunday-required", "The Sunday field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "tuesday-required", "The Tuesday field is required.", null },
+                                                    { "wednesday-required", "The Wednesday field is required.", null },
+                                                    { "sunday-required", "The Sunday field is required.", null } });
         }
 
         private void ThenReturnInvalidWorkingHoursPropertyError(ApiResponse response)

@@ -18,6 +18,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return new Tuple<string, string, Guid?, Guid?, Guid?>("blah", "2015-02-30", null, null, null);
         }
 
+        protected Tuple<string, string, Guid?, Guid?, Guid?> GivenStartDateAfterEndDate()
+        {
+            return new Tuple<string, string, Guid?, Guid?, Guid?>("2015-01-02", "2015-01-01", null, null, null);
+        }
+
         protected Tuple<string, string, Guid?, Guid?, Guid?> GivenNoSessionInSearchPeriod()
         {
             return new Tuple<string, string, Guid?, Guid?, Guid?>("2015-01-01", "2015-01-02", null, null, null);
@@ -70,6 +75,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         {
             AssertMultipleErrors(response, new[,] { { ErrorCodes.StartDateInvalid, "'blah' is not a valid start date.", "blah" },
                                                     { ErrorCodes.EndDateInvalid, "'2015-02-30' is not a valid end date.", "2015-02-30" } });
+        }
+
+        protected void ThenReturnStartDateAfterEndDateError(ApiResponse response)
+        {
+            AssertSingleError(response,
+                              ErrorCodes.StartDateAfterEndDate, 
+                              "Start date '2015-01-02' is after end date '2015-01-01'",
+                              "Start date: '2015-01-02', End date: '2015-01-01'");
         }
 
         protected void ThenReturnInvalidCoachIdError(ApiResponse response, Guid coachId)

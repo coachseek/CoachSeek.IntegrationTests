@@ -33,6 +33,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         }
 
         [Test]
+        public void GivenStartDateAfterEndDate_WhenTrySearch_ThenReturnStartDateAfterEndDateError()
+        {
+            var setup = RegisterBusiness();
+            RegisterCoachAaron(setup);
+            RegisterLocationOrakei(setup);
+            RegisterServiceMiniRed(setup);
+
+            var criteria = GivenStartDateAfterEndDate();
+            var response = WhenTrySearch(criteria, setup);
+            ThenReturnStartDateAfterEndDateError(response);
+        }
+
+        [Test]
         public void GivenNoSessionInSearchPeriod_WhenTrySearch_ThenReturnNoSessionOrCourses()
         {
             var setup = RegisterBusiness();

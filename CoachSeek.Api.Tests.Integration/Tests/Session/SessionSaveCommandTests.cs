@@ -23,14 +23,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenEmptySessionSaveCommand();
             var response = WhenPostSession(command, setup);
-            AssertMultipleErrors(response, new[,] { { "service-required", "The Service field is required.", null, null },
-                                                    { "location-required", "The Location field is required.", null, null },
-                                                    { "coach-required", "The Coach field is required.", null, null },
-                                                    { "timing-required", "The Timing field is required.", null, null },
-                                                    { "booking-required", "The Booking field is required.", null, null },
-                                                    { "pricing-required", "The Pricing field is required.", null, null },
-                                                    { "repetition-required", "The Repetition field is required.", null, null },
-                                                    { "presentation-required", "The Presentation field is required.", null, null } });
+            AssertMultipleErrors(response, new[,] { { "service-required", "The Service field is required.", null },
+                                                    { "location-required", "The Location field is required.", null },
+                                                    { "coach-required", "The Coach field is required.", null },
+                                                    { "timing-required", "The Timing field is required.", null },
+                                                    { "booking-required", "The Booking field is required.", null },
+                                                    { "pricing-required", "The Pricing field is required.", null },
+                                                    { "repetition-required", "The Repetition field is required.", null },
+                                                    { "presentation-required", "The Presentation field is required.", null } });
         }
 
 
