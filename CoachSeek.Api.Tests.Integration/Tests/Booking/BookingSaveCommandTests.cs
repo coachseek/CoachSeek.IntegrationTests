@@ -14,7 +14,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNoBookingSaveCommand();
             var response = WhenTryBookSession(command, setup);
-            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataRequired, "Please post us some data!");
         }
 
         [Test]

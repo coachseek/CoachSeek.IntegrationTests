@@ -13,7 +13,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNoSessionSaveCommand();
             var response = WhenPostSession(command, setup);
-            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!");
+            AssertSingleError(response, ErrorCodes.DataRequired, "Please post us some data!");
         }
 
         [Test]

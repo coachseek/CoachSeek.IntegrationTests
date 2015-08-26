@@ -91,28 +91,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
 
-
-        //[Test]
-        //public void TestWelcomeEmail()
-        //{
-        //    var command = new ApiBusinessRegistrationCommand
-        //    {
-        //        business = new ApiBusiness { name = "Test Business" },
-        //        admin = new ApiBusinessAdmin
-        //        {
-        //            firstName = "Olaf",
-        //            lastName = "Thielke",
-        //            email = "olaft@ihug.co.nz",
-        //            password = "password1"
-        //        }
-        //    };
-
-        //    var response = WhenTryRegisterBusiness(command);
-        //    ThenReturnNewBusinessSuccessResponse(response);
-        //}
-
-
-
         private string GivenNoBusinessRegistrationCommand()
         {
             return "";
@@ -187,7 +165,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenReturnNoDataError(ApiResponse response)
         {
-            AssertSingleError(response, ErrorCodes.DataMissing, "Please post us some data!", null);
+            AssertSingleError(response, ErrorCodes.DataRequired, "Please post us some data!");
         }
 
         private void ThenReturnRootRequiredError(ApiResponse response)
