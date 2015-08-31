@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Web;
 using Coachseek.API.Client.Models;
+using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Tests.Admin
@@ -63,6 +64,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             ThenEmailIsStillUnsubscribed(email);
         }
 
+        [Test]
+        public void GivenUserDoesNotExist_WhenTryGetUser_ThenReturnsNotFound()
+        {
+            var email = GivenUserDoesNotExist();
+            var response = WhenTryGetUser(email);
+            AssertStatusCode(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public void GivenUserExists_WhenTryGetUser_ThenReturnsUser()
+        {
+            var setup = RegisterBusiness();
+
+            var username = GivenUserExists(setup);
+            var response = WhenTryGetUser(username);
+            ThenReturnsUser(response, setup);
+        }
+
 
         private string GivenMissingEmailAddress()
         {
@@ -84,6 +103,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             var email = Random.RandomEmail;
             UnsubscribeEmail(email);
             return email;
+        }
+
+        private string GivenUserDoesNotExist()
+        {
+            return Random.RandomEmail;
+        }
+
+        private string GivenUserExists(SetupData setup)
+        {
+            return setup.Business.UserName;
         }
 
 
@@ -109,6 +138,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             return AdminGet<string>(url);
         }
 
+        private ApiResponse WhenTryGetUser(string emailAddress)
+        {
+            var url = string.Format("Users/{0}", HttpUtility.UrlEncode(emailAddress));
+            return AdminGet<UserData>(url);
+        }
+
 
         private void ThenUnsubscribesEmail(string emailAddress)
         {
@@ -120,6 +155,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         {
             var response = GetIsEmailUnsubscribed(emailAddress);
             AssertStatusCode(response.StatusCode, HttpStatusCode.Found);
+        }
+
+        private void ThenReturnsUser(ApiResponse response, SetupData setup)
+        {
+            var user = AssertSuccessResponse<UserData>(response);
+
+            Assert.That(user.businessId, Is.EqualTo(setup.Business.Id));
+            Assert.That(user.businessName, Is.EqualTo(setup.Business.Name));
+            Assert.That(user.id, Is.EqualTo(setup.Business.Admin.id));
+            Assert.That(user.firstName, Is.EqualTo(setup.Business.Admin.firstName));
+            Assert.That(user.lastName, Is.EqualTo(setup.Business.Admin.lastName));
+            Assert.That(user.email, Is.EqualTo(setup.Business.Admin.email));
+            Assert.That(user.username, Is.EqualTo(setup.Business.Admin.email));
+            Assert.That(user.phone, Is.EqualTo(setup.Business.Admin.phone));
         }
     }
 }

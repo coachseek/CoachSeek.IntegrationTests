@@ -229,7 +229,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             }
         }
 
-        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data)
+        protected void AssertApplicationError(ApiApplicationError error, string code, string message, string data = null)
         {
             Assert.That(error.code, Is.EqualTo(code));
             Assert.That(error.message, Is.EqualTo(message));

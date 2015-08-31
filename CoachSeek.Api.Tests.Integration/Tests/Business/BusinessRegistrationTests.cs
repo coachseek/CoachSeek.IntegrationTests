@@ -51,6 +51,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
         [Test]
+        public void GivenNoCurrency_WhenTryRegisterBusiness_ThenReturnNoCurrencyError()
+        {
+            var business = GivenNoCurrency();
+            var response = WhenTryRegisterBusiness(business);
+            ThenReturnNoCurrencyError(response);
+        }
+
+        [Test]
         public void GivenInvalidCurrency_WhenTryRegisterBusiness_ThenReturnsCurrencyNotSupportedError()
         {
             var business = GivenInvalidCurrency();
@@ -82,14 +90,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             ThenCreateNewBusiness(response, business);
         }
 
-        [Test]
-        public void GivenNoCurrency_WhenTryRegisterBusiness_ThenUseNewZealandCurrency()
-        {
-            var business = GivenNoCurrency();
-            var response = WhenTryRegisterBusiness(business);
-            ThenUseNewZealandCurrency(response, business);
-        }
-
 
         private string GivenNoBusinessRegistrationCommand()
         {
@@ -119,6 +119,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                                         "Bob",
                                         "Smith",
                                         "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+                                        "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
                                         "abcdefghijklmnopqrstuvwxyz01234567890");
         }
 
@@ -134,7 +135,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ExpectedBusiness GivenUniqueBusinessAdmin()
         {
-            return new ExpectedBusiness(Random.RandomString, "USD", Random.RandomEmail);
+            return new ExpectedBusiness(Random.RandomString, "USD", "Bob", "Smith", Random.RandomEmail, "021 123456", "password1");
         }
 
         private ExpectedBusiness GivenNoCurrency()
@@ -177,6 +178,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         private void ThenReturnMissingPropertiesError(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null },
+                                                    { "currency-required", "The Currency field is required.", null },
                                                     { "firstname-required", "The FirstName field is required.", null },
                                                     { "lastname-required", "The LastName field is required.", null },
                                                     { "email-required", "The Email field is required.", null },
@@ -189,10 +191,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
             var errors = (ApiApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(4));
-            AssertApplicationError(errors[0], "currency-too-long", "The field Currency must be a string with a maximum length of 3.", null);
+            Assert.That(errors.GetLength(0), Is.EqualTo(5));
+            AssertApplicationError(errors[0], "currency-too-long", "The field Currency must be a string with a maximum length of 3.");
             AssertMultipleEmailErrors(errors[1], errors[2]);
-            AssertApplicationError(errors[3], "password-too-long", "The field Password must be a string with a maximum length of 20.", null);
+            AssertApplicationError(errors[3], "phone-too-long", "The field Phone must be a string with a maximum length of 50.");
+            AssertApplicationError(errors[4], "password-too-long", "The field Password must be a string with a maximum length of 20.");
         }
 
         private void AssertMultipleEmailErrors(ApiApplicationError error1, ApiApplicationError error2)
@@ -207,6 +210,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 AssertApplicationError(error1, "email-invalid", "The Email field is not a valid e-mail address.", null);
                 AssertApplicationError(error2, "email-too-long", "The field Email must be a string with a maximum length of 100.", null);
             }
+        }
+
+        private void ThenReturnNoCurrencyError(ApiResponse response)
+        {
+            AssertSingleError(response, "currency-required", "The Currency field is required.");
         }
 
         private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
@@ -227,15 +235,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private void ThenCreateNewBusiness(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
-            AssertNewBusinessResponse(response, expectedBusiness);
-
-            AssertBusinessGet(expectedBusiness);
-        }
-
-        private void ThenUseNewZealandCurrency(ApiResponse response, ExpectedBusiness expectedBusiness)
-        {
-            expectedBusiness.Payment.currency = "NZD";
-
             AssertNewBusinessResponse(response, expectedBusiness);
 
             AssertBusinessGet(expectedBusiness);
@@ -262,6 +261,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(admin.firstName, Is.EqualTo(expectedBusiness.Admin.firstName));
             Assert.That(admin.lastName, Is.EqualTo(expectedBusiness.Admin.lastName));
             Assert.That(admin.email, Is.EqualTo(expectedBusiness.Admin.email));
+            Assert.That(admin.phone, Is.EqualTo(expectedBusiness.Admin.phone));
             Assert.That(admin.username, Is.EqualTo(expectedBusiness.Admin.email));
             Assert.That(admin.passwordHash, Is.Not.EqualTo(expectedBusiness.Admin.password));
             Assert.That(admin.businessId, Is.EqualTo(business.id));

@@ -51,9 +51,11 @@ namespace CoachSeek.Api.Tests.Integration.Models
                                             registration.business.payment.forceOnlinePayment,
                                             registration.business.payment.paymentProvider,
                                             registration.business.payment.merchantAccountIdentifier,
+                                            registration.admin.id,
                                             registration.admin.firstName,
                                             registration.admin.lastName,
                                             registration.admin.email,
+                                            registration.admin.phone,
                                             password)
             {
                 Id = registration.business.id,

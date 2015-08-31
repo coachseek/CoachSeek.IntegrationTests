@@ -14,7 +14,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
 
 
         public ExpectedBusiness(string name, string currency, string email)
-            : this(name, currency, "Bob", "Smith", email, "password1")
+            : this(name, currency, "Bob", "Smith", email, "0900COACHSEEK", "password1")
         { }
 
         public ExpectedBusiness(string name,
@@ -22,6 +22,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string firstName,
                                 string lastName,
                                 string email,
+                                string phone,
                                 string password)
         {
             Name = name;
@@ -30,6 +31,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                 firstName = firstName,
                 lastName = lastName,
                 email = UserName = email,
+                phone = phone,
                 password = Password = password
             };
             Payment = new ApiBusinessPaymentOptions
@@ -45,17 +47,21 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 bool? forceOnlinePayment,
                                 string paymentProvider,
                                 string merchantAccountIdentifier,
-                                string firstName, 
-                                string lastName, 
-                                string email, 
+                                Guid adminId,
+                                string firstName,
+                                string lastName,
+                                string email,
+                                string phone,
                                 string password)
         {
             Name = name;
             Admin = new ApiBusinessAdmin
             {
+                id = adminId,
                 firstName = firstName,
                 lastName = lastName,
                 email = UserName = email,
+                phone = phone,
                 password = Password = password
             };
             Payment = new ApiBusinessPaymentOptions
@@ -73,9 +79,11 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
             Name = business.Name;
             Admin = new ApiBusinessAdmin
             {
+                id = business.Admin.id,
                 firstName = business.Admin.firstName,
                 lastName = business.Admin.lastName,
                 email = UserName = business.Admin.email,
+                phone = business.Admin.phone,
                 password = Password = business.Admin.password
             };
             Payment = new ApiBusinessPaymentOptions
