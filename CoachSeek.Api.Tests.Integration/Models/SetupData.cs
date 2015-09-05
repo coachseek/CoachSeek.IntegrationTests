@@ -46,6 +46,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public SetupData(RegistrationData registration, string password)
         {
             Business = new ExpectedBusiness(registration.business.name,
+                                            registration.business.sport,
                                             registration.business.payment.currency,
                                             registration.business.payment.isOnlinePaymentEnabled,
                                             registration.business.payment.forceOnlinePayment,

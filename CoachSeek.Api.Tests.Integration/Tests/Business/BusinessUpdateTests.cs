@@ -277,8 +277,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             {
                 AssertSingleError(response, 
                                   ErrorCodes.MerchantAccountIdentifierFormatInvalid,
-                                  "The MerchantAccountIdentifier field is not in a valid format.", 
-                                  null);
+                                  "The MerchantAccountIdentifier field is not in a valid format.");
             }
 
             private void ThenUpdateTheBusinessWithoutPaymentProvider(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
@@ -288,6 +287,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
                 Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
+                Assert.That(responseBusiness.sport, Is.EqualTo(setup.Business.Sport));
                 Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(responseBusiness.payment.paymentProvider, Is.Null);
 
@@ -308,6 +308,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
                 Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
+                Assert.That(responseBusiness.sport, Is.EqualTo(setup.Business.Sport));
                 Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
                 Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));

@@ -114,7 +114,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ExpectedBusiness GivenMultipleErrorsOnProperties()
         {
-            return new ExpectedBusiness(Random.RandomString, 
+            return new ExpectedBusiness(Random.RandomString,
+                                        "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
                                         "ABCDE",
                                         "Bob",
                                         "Smith",
@@ -135,7 +136,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ExpectedBusiness GivenUniqueBusinessAdmin()
         {
-            return new ExpectedBusiness(Random.RandomString, "USD", "Bob", "Smith", Random.RandomEmail, "021 123456", "password1");
+            return new ExpectedBusiness(Random.RandomString, "Tennis", "USD", "Bob", "Smith", Random.RandomEmail, "021 123456", "password1");
         }
 
         private ExpectedBusiness GivenNoCurrency()
@@ -191,11 +192,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
             Assert.That(response.Payload, Is.InstanceOf<ApiApplicationError[]>());
             var errors = (ApiApplicationError[])response.Payload;
-            Assert.That(errors.GetLength(0), Is.EqualTo(5));
+            Assert.That(errors.GetLength(0), Is.EqualTo(6));
             AssertApplicationError(errors[0], "currency-too-long", "The field Currency must be a string with a maximum length of 3.");
-            AssertMultipleEmailErrors(errors[1], errors[2]);
-            AssertApplicationError(errors[3], "phone-too-long", "The field Phone must be a string with a maximum length of 50.");
-            AssertApplicationError(errors[4], "password-too-long", "The field Password must be a string with a maximum length of 20.");
+            AssertApplicationError(errors[1], "sport-too-long", "The field Sport must be a string with a maximum length of 100.");
+            AssertMultipleEmailErrors(errors[2], errors[3]);
+            AssertApplicationError(errors[4], "phone-too-long", "The field Phone must be a string with a maximum length of 50.");
+            AssertApplicationError(errors[5], "password-too-long", "The field Password must be a string with a maximum length of 20.");
         }
 
         private void AssertMultipleEmailErrors(ApiApplicationError error1, ApiApplicationError error2)
@@ -249,6 +251,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
+            Assert.That(business.sport, Is.EqualTo(expectedBusiness.Sport));
             Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.False);
             Assert.That(business.payment.forceOnlinePayment, Is.False);

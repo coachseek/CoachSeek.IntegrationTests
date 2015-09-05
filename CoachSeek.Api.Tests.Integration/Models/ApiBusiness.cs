@@ -4,5 +4,6 @@
     {
         public string name { get; set; }
         public string currency { get; set; }
+        public string sport { get; set; }
     }
 }

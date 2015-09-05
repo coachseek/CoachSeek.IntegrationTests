@@ -7,6 +7,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         public Guid Id { get; set; }
         public string Name { get; private set; }
         public string Domain { get; set; }
+        public string Sport { get; set; }
         public ApiBusinessAdmin Admin { get; private set; }
         public string UserName { get; private set; }
         public string Password { get; private set; }
@@ -14,10 +15,11 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
 
 
         public ExpectedBusiness(string name, string currency, string email)
-            : this(name, currency, "Bob", "Smith", email, "0900COACHSEEK", "password1")
+            : this(name, "Tennis", currency, "Bob", "Smith", email, "0900COACHSEEK", "password1")
         { }
 
         public ExpectedBusiness(string name,
+                                string sport,
                                 string currency,
                                 string firstName,
                                 string lastName,
@@ -26,6 +28,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string password)
         {
             Name = name;
+            Sport = sport;
             Admin = new ApiBusinessAdmin
             {
                 firstName = firstName,
@@ -42,6 +45,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         }
 
         public ExpectedBusiness(string name,
+                                string sport,
                                 string currency,
                                 bool isOnlinePaymentEnabled,
                                 bool? forceOnlinePayment,
@@ -55,6 +59,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string password)
         {
             Name = name;
+            Sport = sport;
             Admin = new ApiBusinessAdmin
             {
                 id = adminId,

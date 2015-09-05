@@ -27,7 +27,12 @@ namespace CoachSeek.Api.Tests.Integration
         {
             var command = new ApiBusinessRegistrationCommand
             {
-                business = new ApiBusiness { name = expectedBusiness.Name, currency = expectedBusiness.Payment.currency },
+                business = new ApiBusiness 
+                { 
+                    name = expectedBusiness.Name,
+                    sport = expectedBusiness.Sport, 
+                    currency = expectedBusiness.Payment.currency
+                },
                 admin = expectedBusiness.Admin
             };
 
