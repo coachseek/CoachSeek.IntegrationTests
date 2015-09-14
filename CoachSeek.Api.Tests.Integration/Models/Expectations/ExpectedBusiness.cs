@@ -8,6 +8,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         public string Name { get; private set; }
         public string Domain { get; set; }
         public string Sport { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime AuthorisedUntil { get; private set; }
         public ApiBusinessAdmin Admin { get; private set; }
         public string UserName { get; private set; }
         public string Password { get; private set; }
@@ -15,7 +17,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
 
 
         public ExpectedBusiness(string name, string currency, string email)
-            : this(name, "Tennis", currency, "Bob", "Smith", email, "0900COACHSEEK", "password1")
+            : this(name, "Tennis", currency, "Bob", "Smith", email, "0900COACHSEEK", "password1", DateTime.UtcNow)
         { }
 
         public ExpectedBusiness(string name,
@@ -25,24 +27,23 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string lastName,
                                 string email,
                                 string phone,
-                                string password)
-        {
-            Name = name;
-            Sport = sport;
-            Admin = new ApiBusinessAdmin
-            {
-                firstName = firstName,
-                lastName = lastName,
-                email = UserName = email,
-                phone = phone,
-                password = Password = password
-            };
-            Payment = new ApiBusinessPaymentOptions
-            {
-                currency  = currency,
-                isOnlinePaymentEnabled = false
-            };
-        }
+                                string password,
+                                DateTime? createdOn = null)
+            : this(name, 
+                   sport, 
+                   currency,
+                   false,
+                   false,
+                   null,
+                   null,
+                   null,
+                   firstName, 
+                   lastName, 
+                   email, 
+                   phone, 
+                   password, 
+                   createdOn)
+        { }
 
         public ExpectedBusiness(string name,
                                 string sport,
@@ -51,15 +52,18 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 bool? forceOnlinePayment,
                                 string paymentProvider,
                                 string merchantAccountIdentifier,
-                                Guid adminId,
+                                Guid? adminId,
                                 string firstName,
                                 string lastName,
                                 string email,
                                 string phone,
-                                string password)
+                                string password,
+                                DateTime? createdOn = null)
         {
             Name = name;
             Sport = sport;
+            CreatedOn = createdOn ?? DateTime.UtcNow;
+            AuthorisedUntil = CreatedOn.AddDays(30);
             Admin = new ApiBusinessAdmin
             {
                 id = adminId,
@@ -82,6 +86,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         public ExpectedBusiness(ExpectedBusiness business)
         {
             Name = business.Name;
+            CreatedOn = business.CreatedOn;
+            AuthorisedUntil = business.AuthorisedUntil;
             Admin = new ApiBusinessAdmin
             {
                 id = business.Admin.id,

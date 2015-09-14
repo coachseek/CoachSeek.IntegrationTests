@@ -252,6 +252,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
             Assert.That(business.sport, Is.EqualTo(expectedBusiness.Sport));
+            AssertDateTime(business.authorisedUntil, expectedBusiness.AuthorisedUntil);
             Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.False);
             Assert.That(business.payment.forceOnlinePayment, Is.False);
@@ -279,6 +280,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.id, Is.EqualTo(expectedBusiness.Id));
             Assert.That(business.name, Is.EqualTo(expectedBusiness.Name));
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
+            Assert.That(business.sport, Is.EqualTo(expectedBusiness.Sport));
+            AssertDateTime(business.authorisedUntil, expectedBusiness.AuthorisedUntil);
             Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(false));
             Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(false));

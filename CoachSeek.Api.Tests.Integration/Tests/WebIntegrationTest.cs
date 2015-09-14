@@ -242,5 +242,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             Assert.That(error.message, Is.EqualTo(message));
             Assert.That(error.data, Is.StringContaining(dataFragment));
         }
+
+        protected void AssertDateTime(DateTime actualDateTime, DateTime expectedDateTime, int varianceInSeconds = 60)
+        {
+            Assert.That(actualDateTime, Is.GreaterThan(expectedDateTime.AddSeconds(-1 * varianceInSeconds)));
+            Assert.That(actualDateTime, Is.LessThan(expectedDateTime.AddSeconds(varianceInSeconds)));
+        }
     }
 }
