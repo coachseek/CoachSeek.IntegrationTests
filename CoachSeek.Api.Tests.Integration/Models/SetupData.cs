@@ -38,7 +38,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public ExpectedBooking BarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
 
 
-        public SetupData(RandomBusiness business)
+        public SetupData(ExpectedBusiness business)
         {
             Business = business;
         }

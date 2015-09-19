@@ -66,6 +66,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.domain, Is.EqualTo(setup.Business.Domain));
             Assert.That(business.sport, Is.EqualTo(setup.Business.Sport));
             AssertDateTime(business.authorisedUntil, setup.Business.AuthorisedUntil);
+            Assert.That(business.subscriptionPlan, Is.EqualTo(setup.Business.SubscriptionPlan));
             Assert.That(business.payment.currency, Is.EqualTo(setup.Business.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(setup.Business.Payment.isOnlinePaymentEnabled));
             Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(setup.Business.Payment.forceOnlinePayment));

@@ -67,11 +67,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
         [Test]
-        public void GivenDuplicateBusinessAdmin_WhenTryRegisterBusiness_ThenReturnDuplicateAdminErrorResponse()
+        public void GivenDuplicateBusinessAdmin_WhenTryRegisterBusiness_ThenReturnDuplicateAdminError()
         {
             var setup = GivenDuplicateBusinessAdmin();
             var response = WhenTryRegisterBusiness(setup);
-            ThenReturnDuplicateAdminErrorResponse(response, setup.Business.Admin.email);
+            ThenReturnDuplicateAdminError(response, setup.Business.Admin.email);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             AssertSingleError(response, ErrorCodes.CurrencyNotSupported, "Currency 'XX' is not supported.", "XX");
         }
 
-        private void ThenReturnDuplicateAdminErrorResponse(ApiResponse response, string expextedEmail)
+        private void ThenReturnDuplicateAdminError(ApiResponse response, string expextedEmail)
         {
             AssertSingleError(response, ErrorCodes.UserDuplicate, string.Format("The user with email address '{0}' already exists.", expextedEmail), expextedEmail);
         }
@@ -253,6 +253,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.domain, Is.EqualTo(expectedBusiness.Domain));
             Assert.That(business.sport, Is.EqualTo(expectedBusiness.Sport));
             AssertDateTime(business.authorisedUntil, expectedBusiness.AuthorisedUntil);
+            Assert.That(business.subscriptionPlan, Is.EqualTo(expectedBusiness.SubscriptionPlan));
             Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.False);
             Assert.That(business.payment.forceOnlinePayment, Is.False);

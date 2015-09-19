@@ -168,6 +168,7 @@
     <Compile Include="Clients\TestAuthenticatedApiClient.cs" />
     <Compile Include="Tests\Admin\AdminTests.cs" />
     <Compile Include="Tests\Attendance\AttendanceTests.cs" />
+    <Compile Include="Tests\AuthorisationTests.cs" />
     <Compile Include="Tests\Booking\BaseBookingAddSessionTests.cs" />
     <Compile Include="Tests\Booking\BookingGetTests.cs" />
     <Compile Include="Tests\Booking\OnlineBookingAddAllCourseSessionTests.cs" />

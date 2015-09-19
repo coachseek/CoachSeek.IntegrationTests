@@ -1,4 +1,5 @@
 ﻿using System;
+using CoachSeek.Common;
 
 namespace CoachSeek.Api.Tests.Integration.Models.Expectations
 {
@@ -10,6 +11,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         public string Sport { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime AuthorisedUntil { get; private set; }
+        public string SubscriptionPlan { get; set; }
         public ApiBusinessAdmin Admin { get; private set; }
         public string UserName { get; private set; }
         public string Password { get; private set; }
@@ -28,7 +30,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string email,
                                 string phone,
                                 string password,
-                                DateTime? createdOn = null)
+                                DateTime? createdOn = null,
+                                string subscription = Constants.SUBSCRIPTION_TRIAL)
             : this(name, 
                    sport, 
                    currency,
@@ -58,12 +61,14 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
                                 string email,
                                 string phone,
                                 string password,
-                                DateTime? createdOn = null)
+                                DateTime? createdOn = null,
+                                string subscription = Constants.SUBSCRIPTION_TRIAL)
         {
             Name = name;
             Sport = sport;
             CreatedOn = createdOn ?? DateTime.UtcNow;
             AuthorisedUntil = CreatedOn.AddDays(30);
+            SubscriptionPlan = subscription;
             Admin = new ApiBusinessAdmin
             {
                 id = adminId,
@@ -88,6 +93,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
             Name = business.Name;
             CreatedOn = business.CreatedOn;
             AuthorisedUntil = business.AuthorisedUntil;
+            SubscriptionPlan = business.SubscriptionPlan; 
             Admin = new ApiBusinessAdmin
             {
                 id = business.Admin.id,

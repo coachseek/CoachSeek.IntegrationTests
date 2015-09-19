@@ -13,6 +13,23 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         protected abstract string RelativePath { get; }
 
 
+        protected SetupData RegisterExpiredBusinessIfNotExists()
+        {
+            var expiredBusiness = new ExpectedBusiness("Expired Business",
+                                                       "Tennis",
+                                                       "NZD",
+                                                       "Test",
+                                                       "Tester",
+                                                       "expired.business@coachseek.com",
+                                                       "666 666",
+                                                       "password");
+            var getResponse = BusinessAnonymousGet<BusinessData>("OnlineBooking/Business", "expiredbusiness");
+            if (getResponse.StatusCode == HttpStatusCode.OK)
+                return new SetupData(expiredBusiness);
+            var response = BusinessRegistrar.RegisterBusiness(expiredBusiness);
+            return new SetupData((RegistrationData)response.Payload, expiredBusiness.Password);
+        }
+
         protected SetupData RegisterBusiness()
         {
             var business = new RandomBusiness();
