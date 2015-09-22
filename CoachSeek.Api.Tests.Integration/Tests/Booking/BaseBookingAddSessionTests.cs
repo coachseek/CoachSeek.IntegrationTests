@@ -71,7 +71,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
 
-            AssertSingleSessionBooking(booking, session, customer);
+            AssertCreateSingleSessionBooking(booking, session, customer);
             var bookingId = booking.id;
 
             var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id, setup);
@@ -91,7 +91,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
 
-            AssertSingleSessionOnlineBooking(booking, session, customer);
+            AssertCreateSingleSessionOnlineBooking(booking, session, customer);
             var bookingId = booking.id;
 
             var sessionResponse = AuthenticatedGet<SessionData>("Sessions", booking.session.id, setup);

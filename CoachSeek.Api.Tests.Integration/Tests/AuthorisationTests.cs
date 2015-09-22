@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using NUnit.Framework;
@@ -17,11 +19,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         [Test]
         public void GivenTrialHasExired_WhenTryAndAccessSystemAuthenticated_ThenReturnForbidden()
         {
-            RegisterExpiredBusinessIfNotExists();
-            var setup = CreateExpiredBusinessSetupData();
+            var setup = RegisterBusiness();
+            SetBusinessAsExpired(setup);
 
             var response = WhenTryAndAccessSystemAuthenticated(setup);
             ThenReturnForbidden(response);
+        }
+
+        private void SetBusinessAsExpired(SetupData setup)
+        {
+            var command = new ApiBusinessSetAuthorisedUntilCommand { authorisedUntil = DateTime.UtcNow.AddMonths(-1) };
+            var url = string.Format("Businesses/{0}", setup.Business.Id);
+            var json = JsonSerialiser.Serialise(command);
+            AdminPost(json, url);
         }
 
 

@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -82,6 +84,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             ThenReturnsUser(response, setup);
         }
 
+        [Test]
+        public void GivenWantToExtendAuthorisedUntilByOneMonth_WhenTryUpdateAuthorisedUntil_ThenExtendsAuthorisedUntilByOneMonth()
+        {
+            var setup = RegisterBusiness();
+
+            var command = GivenWantToExtendAuthorisedUntilByOneMonth();
+            var response = WhenTryUpdateAuthorisedUntil(command, setup);
+            ThenExtendsAuthorisedUntilByOneMonth(response, setup);
+        }
+
 
         private string GivenMissingEmailAddress()
         {
@@ -115,6 +127,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             return setup.Business.UserName;
         }
 
+        private ApiBusinessSetAuthorisedUntilCommand GivenWantToExtendAuthorisedUntilByOneMonth()
+        {
+            return new ApiBusinessSetAuthorisedUntilCommand { authorisedUntil = DateTime.UtcNow.AddMonths(1) };
+        }
+
 
         private ApiResponse WhenTryGetIsEmailUnsubscribed(string emailAddress)
         {
@@ -144,6 +161,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             return AdminGet<UserData>(url);
         }
 
+        private ApiResponse WhenTryUpdateAuthorisedUntil(ApiBusinessSetAuthorisedUntilCommand command, SetupData setup)
+        {
+            var url = string.Format("Businesses/{0}", setup.Business.Id);
+            var json = JsonSerialiser.Serialise(command);
+            return AdminPost(json, url);
+        }
+
 
         private void ThenUnsubscribesEmail(string emailAddress)
         {
@@ -169,6 +193,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             Assert.That(user.email, Is.EqualTo(setup.Business.Admin.email));
             Assert.That(user.username, Is.EqualTo(setup.Business.Admin.email));
             Assert.That(user.phone, Is.EqualTo(setup.Business.Admin.phone));
+        }
+
+        private void ThenExtendsAuthorisedUntilByOneMonth(ApiResponse response, SetupData setup)
+        {
+            AssertSuccessResponse(response);
+
+            var getResponse = BusinessAnonymousGet<BusinessData>("OnlineBooking/Business", setup.Business.Domain);
+            var business = (BusinessData) getResponse.Payload;
+            Assert.That(business.authorisedUntil.Year, Is.EqualTo(setup.Business.AuthorisedUntil.Year));
+            Assert.That(business.authorisedUntil.Month, Is.EqualTo(setup.Business.AuthorisedUntil.Month));
+            Assert.That(business.authorisedUntil.Day, Is.EqualTo(setup.Business.AuthorisedUntil.Day));
+            Assert.That(business.authorisedUntil.Hour, Is.EqualTo(setup.Business.AuthorisedUntil.Hour));
+            Assert.That(business.authorisedUntil.Minute, Is.EqualTo(setup.Business.AuthorisedUntil.Minute));
+            Assert.That(business.authorisedUntil.Second, Is.EqualTo(setup.Business.AuthorisedUntil.Second));
         }
     }
 }

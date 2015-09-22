@@ -54,6 +54,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                                             "Bookings");
         }
 
+        protected ApiResponse AdminPost(string json, string relativePath)
+        {
+            return new TestAdminApiClient().Post(json, relativePath);
+        }
+
         protected ApiResponse AdminGet<TResponse>(string relativePath)
         {
             return new TestAdminApiClient().Get<TResponse>(relativePath);

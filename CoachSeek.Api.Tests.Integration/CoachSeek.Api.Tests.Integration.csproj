@@ -65,6 +65,7 @@
     <Compile Include="Clients\TestAdminApiClient.cs" />
     <Compile Include="Clients\TestBusinessAnonymousApiClient.cs" />
     <Compile Include="CustomerRegistrar.cs" />
+    <Compile Include="Models\ApiBusinessSetAuthorisedUntilCommand.cs" />
     <Compile Include="Models\ApiBookingSetAttendanceCommand.cs" />
     <Compile Include="Models\ApiBookingSetPaymentStatusCommand.cs" />
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />

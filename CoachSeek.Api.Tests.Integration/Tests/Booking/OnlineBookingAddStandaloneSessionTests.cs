@@ -41,7 +41,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNonExistentCustomer(setup);
             var response = WhenTryOnlineBookStandaloneSession(command, setup);
-            ThenReturnNonExistentCustomerError(response, command.customer.id.Value);
+            ThenReturnNonExistentCustomerError(response, command.customer.id.GetValueOrDefault());
         }
 
         [Test]

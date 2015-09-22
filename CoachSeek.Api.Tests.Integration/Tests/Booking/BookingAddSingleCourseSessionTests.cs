@@ -188,6 +188,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(sessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName,  setup.Fred.LastName)));
 
             Assert.That(sessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
+            Assert.That(sessionBooking.hasAttended, Is.Null);
 
             // Check the bookings on the course
             GetAndAssertCourse(courseBooking.id, sessionBooking.id, setup);
@@ -219,6 +220,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(sessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
             Assert.That(sessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
+            Assert.That(sessionBooking.hasAttended, Is.Null);
 
             // Check the bookings on the course
             GetAndAssertCourseWithTwoBookings(courseBooking.id, sessionBooking.id, setup);

@@ -237,6 +237,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(firstSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
             Assert.That(firstSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_PAYMENT));
+            Assert.That(firstSessionBooking.hasAttended, Is.Null);
 
             var secondSessionBooking = courseBooking.sessionBookings[1];
             Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
@@ -248,6 +249,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(secondSessionBooking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
             Assert.That(secondSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_PAYMENT));
+            Assert.That(secondSessionBooking.hasAttended, Is.Null);
 
             // Check the bookings on the course
             GetAndAssertCourse(courseBooking.id, firstSessionBooking.id, secondSessionBooking.id, setup);

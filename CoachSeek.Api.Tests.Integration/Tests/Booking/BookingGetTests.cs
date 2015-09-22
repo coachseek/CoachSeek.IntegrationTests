@@ -1,6 +1,8 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using CoachSeek.Api.Tests.Integration.Models;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
+using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
 using CoachSeek.Common;
 using NUnit.Framework;
 
@@ -150,7 +152,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             var booking = AssertSuccessResponse<SingleSessionBookingData>(response);
 
-            AssertSingleSessionBooking(booking, setup.AaronOrakeiMiniRed14To15, setup.Fred);
+            AssertGetSingleSessionBooking(booking, setup.AaronOrakeiMiniRed14To15, setup.Fred);
         }
 
         private void ThenReturnCourseBooking(ApiResponse response, SetupData setup)
@@ -174,12 +176,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(firstSessionBooking.session.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id));
             Assert.That(firstSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(firstSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
+            Assert.That(firstSessionBooking.hasAttended, Is.Null);
 
             var secondSessionBooking = booking.sessionBookings[1];
             Assert.That(secondSessionBooking.id, Is.InstanceOf<Guid>());
             Assert.That(secondSessionBooking.session.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id));
             Assert.That(secondSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(secondSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
+            Assert.That(secondSessionBooking.hasAttended, Is.Null);
+        }
+
+        protected void AssertGetSingleSessionBooking(SingleSessionBookingData booking, 
+                                                     ExpectedStandaloneSession session, 
+                                                     ExpectedCustomer expectedCustomer)
+        {
+            Assert.That(booking.id, Is.InstanceOf<Guid>());
+            Assert.That(booking.parentId, Is.Null);
+
+            Assert.That(booking.session.id, Is.EqualTo(session.Id));
+            Assert.That(booking.session.name, Is.EqualTo(session.Description));
+
+            Assert.That(booking.customer.id, Is.EqualTo(expectedCustomer.Id));
+            Assert.That(booking.customer.name, Is.EqualTo(string.Format("{0} {1}", expectedCustomer.FirstName, expectedCustomer.LastName)));
+
+            Assert.That(booking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
+            Assert.That(booking.hasAttended, Is.Null);
         }
     }
 }
