@@ -40,136 +40,124 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse PostBooking(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<BookingData>(json,
-                                                                      setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      "Bookings");
+            return AuthenticatedPost<SingleSessionBookingData>(json, "Bookings", setup);
         }
 
         protected ApiResponse PostCourseBooking(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<CourseBookingData>(json,
-                                                                            setup.Business.UserName,
-                                                                            setup.Business.Password,
-                                                                            "Bookings");
+            return AuthenticatedPost<CourseBookingData>(json, "Bookings", setup);
         }
 
-        protected ApiResponse AdminPost(string json, string relativePath)
+
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, SetupData setup)
         {
-            return new TestAdminApiClient().Post(json, relativePath);
+            return BusinessAnonymousGet<TResponse>(relativePath, setup.Business.Domain);
         }
 
-        protected ApiResponse AdminGet<TResponse>(string relativePath)
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, Guid id, SetupData setup)
         {
-            return new TestAdminApiClient().Get<TResponse>(relativePath);
-        }
-
-        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, SetupData setup)
-        {
-            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
-                                                                   setup.Business.Password,
-                                                                   relativePath);
-        }
-
-        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, string username, string password)
-        {
-            var url = string.Format("{0}/{1}", relativePath, id);
-            return new TestAuthenticatedApiClient().Get<TResponse>(username,
-                                                                   password,
-                                                                   url);
-        }
-
-        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, string username, string password)
-        {
-            return new TestAuthenticatedApiClient().Get<TResponse>(username,
-                                                                   password,
-                                                                   relativePath);
-        }
-
-        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, Guid id, string businessDomain)
-        {
-            var url = string.Format("{0}/{1}", relativePath, id);
-            return BusinessAnonymousGet<TResponse>(url, businessDomain);
+            return BusinessAnonymousGet<TResponse>(relativePath, id, setup.Business.Domain);
         }
 
         protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
         {
-            return new TestBusinessAnonymousApiClient().Get<TResponse>(businessDomain, relativePath);
+            return new TestCoachseekBusinessAnonymousApiClient(businessDomain).Get<TResponse>(relativePath);
+        }
+
+        protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, Guid id, string businessDomain)
+        {
+            return BusinessAnonymousGet<TResponse>(string.Format("{0}/{1}", relativePath, id), businessDomain);
+        }
+
+
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, SetupData setup)
+        {
+            return AuthenticatedGet<TResponse>(relativePath, setup.Business.UserName, setup.Business.Password);
         }
 
         protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, SetupData setup)
         {
-            var url = string.Format("{0}/{1}", relativePath, id);
-            return new TestAuthenticatedApiClient().Get<TResponse>(setup.Business.UserName,
-                                                                   setup.Business.Password,
-                                                                   url);
+            return AuthenticatedGet<TResponse>(relativePath, id, setup.Business.UserName, setup.Business.Password);
         }
 
-
-        protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, SetupData setup)
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, string username, string password)
         {
-            return new TestAuthenticatedApiClient().Post<TResponse>(json,
-                                                                    setup.Business.UserName,
-                                                                    setup.Business.Password,
-                                                                    relativePath);
+            return new TestCoachseekAuthenticatedApiClient(username, password)
+                        .Get<TResponse>(relativePath);
         }
+
+        protected ApiResponse AuthenticatedGet<TResponse>(string relativePath, Guid id, string username, string password)
+        {
+            return AuthenticatedGet<TResponse>(string.Format("{0}/{1}", relativePath, id), username, password);
+        }
+
+        protected ApiResponse AdminGet<TResponse>(string relativePath)
+        {
+            return new TestCoachseekAdminApiClient().Get<TResponse>(relativePath);
+        }
+
 
         protected ApiResponse AnonymousPost<TResponse>(string json, string relativePath)
         {
-            return new TestAnonymousApiClient().Post<TResponse>(json, RelativePath);
+            return new TestCoachseekAnonymousApiClient().Post<TResponse>(json, relativePath);
         }
 
         protected ApiResponse BusinessAnonymousPost<TResponse>(string json, string relativePath, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<TResponse>(json,
-                                                                        setup.Business.Domain,
-                                                                        relativePath);
+            return BusinessAnonymousPost<TResponse>(json, relativePath, setup.Business.Domain);
         }
 
-
-        protected ApiResponse Delete(string relativePath, string id, SetupData setup)
+        protected ApiResponse BusinessAnonymousPost<TResponse>(string json, string relativePath, string businessDomain)
         {
-            return new TestAuthenticatedApiClient().Delete(setup.Business.UserName,
-                                                           setup.Business.Password,
-                                                           relativePath,
-                                                           id);
+            return new TestCoachseekBusinessAnonymousApiClient(businessDomain).Post<TResponse>(json, relativePath);
         }
 
-        protected ApiResponse DeleteAnonymously(string relativePath, string id)
+        protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, SetupData setup)
         {
-            return new TestAnonymousApiClient().Delete(relativePath, id);
+            return AuthenticatedPost<TResponse>(json, relativePath, setup.Business.UserName, setup.Business.Password);
         }
+
+        protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, string username, string password)
+        {
+            return new TestCoachseekAuthenticatedApiClient(username, password).Post<TResponse>(json, relativePath);
+        }
+
+        protected ApiResponse AdminPost(string json, string relativePath)
+        {
+            return new TestCoachseekAdminApiClient().Post(json, relativePath);
+        }
+
+
+        protected ApiResponse AnonymousDelete(string relativePath, string id)
+        {
+            return new TestCoachseekAnonymousApiClient().Delete(relativePath, id);
+        }
+
+        protected ApiResponse AuthenticatedDelete(string relativePath, string id, SetupData setup)
+        {
+            return new TestCoachseekAuthenticatedApiClient(setup.Business.UserName, setup.Business.Password)
+                        .Delete(relativePath, id);
+        }
+
 
         protected ApiResponse PostSession(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<SessionData>(json,
-                                                                      setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      "Sessions");
+            return AuthenticatedPost<SessionData>(json, "Sessions", setup);
         }
 
         protected ApiResponse PostCourse(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<CourseData>(json,
-                                                                     setup.Business.UserName,
-                                                                     setup.Business.Password,
-                                                                     "Sessions");
+            return AuthenticatedPost<CourseData>(json, "Sessions", setup);
         }
 
         protected ApiResponse WhenPostSession(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<SessionData>(json,
-                                                                      setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      RelativePath);
+            return AuthenticatedPost<SessionData>(json, RelativePath, setup);
         }
 
         protected ApiResponse WhenPostCourse(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<CourseData>(json,
-                                                                     setup.Business.UserName,
-                                                                     setup.Business.Password,
-                                                                     RelativePath);
+            return AuthenticatedPost<CourseData>(json, RelativePath, setup);
         }
 
 

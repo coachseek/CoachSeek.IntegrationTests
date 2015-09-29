@@ -36,9 +36,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Attendance
             var setup = RegisterBusiness();
             RegisterFredOnStandaloneAaronOrakeiMiniRed14To15(setup);
 
+            SetAttendanceToTrue(setup);
+
             var command = GivenWantToClearSetAttendance();
             WhenTrySetAttendance(command, setup);
             ThenSetsHasAttendedTo(null, setup);
+        }
+
+
+        private void SetAttendanceToTrue(SetupData setup)
+        {
+            var command = GivenWantToSetToHasAttended();
+            WhenTrySetAttendance(command, setup);
         }
 
 

@@ -96,7 +96,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
         private ApiResponse WhenTryDelete(Guid id, SetupData setup)
         {
-            return Delete(RelativePath, id.ToString(), setup);
+            return AuthenticatedDelete(RelativePath, id.ToString(), setup);
         }
 
 
@@ -104,7 +104,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id, setup);
+            var getResponse = AuthenticatedGet<SingleSessionBookingData>(RelativePath, setup.FredOnAaronOrakeiMiniRed14To15.Id, setup);
             AssertNotFound(getResponse);
         }
 
@@ -112,7 +112,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var getResponse = AuthenticatedGet<CourseBookingData>(RelativePath, setup.FredOnAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             AssertNotFound(getResponse);
         }
 
@@ -120,7 +120,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var getResponse = AuthenticatedGet<SingleSessionBookingData>(RelativePath, setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             AssertNotFound(getResponse);
 
             GetAndAssertCourseHasLostSessionBooking(setup);
@@ -130,7 +130,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             AssertStatusCode(response.StatusCode, HttpStatusCode.OK);
 
-            var getResponse = AuthenticatedGet<BookingData>(RelativePath, setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
+            var getResponse = AuthenticatedGet<SingleSessionBookingData>(RelativePath, setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days.Id, setup);
             AssertNotFound(getResponse);
 
             GetAndAssertCourseAndSessionBookingWereDeleted(setup);

@@ -81,13 +81,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
 
             private ApiResponse WhenTryGetLocationByIdAnonymously(Guid locationId, string businessDomain)
             {
-                var url = string.Format("{0}/{1}", RelativePath, locationId);
-                return new TestBusinessAnonymousApiClient().Get<LocationData>(businessDomain, url);
+                return BusinessAnonymousGet<LocationData>(RelativePath, locationId, businessDomain);
             }
 
             private ApiResponse WhenTryGetAllLocationsAnonymously(string businessDomain)
             {
-                return new TestBusinessAnonymousApiClient().Get<List<LocationData>>(businessDomain, RelativePath);
+                return BusinessAnonymousGet<List<LocationData>>(RelativePath, businessDomain);
             }
 
 

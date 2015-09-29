@@ -62,8 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessRegistrar.cs" />
-    <Compile Include="Clients\TestAdminApiClient.cs" />
-    <Compile Include="Clients\TestBusinessAnonymousApiClient.cs" />
+    <Compile Include="Clients\TestCoachseekAdminApiClient.cs" />
+    <Compile Include="Clients\TestCoachseekBusinessAnonymousApiClient.cs" />
+    <Compile Include="Clients\TestingHeaderSetter.cs" />
     <Compile Include="CustomerRegistrar.cs" />
     <Compile Include="Models\ApiBusinessSetAuthorisedUntilCommand.cs" />
     <Compile Include="Models\ApiBookingSetAttendanceCommand.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="Models\SessionBookingData.cs" />
     <Compile Include="Models\ApiSessionBooking.cs" />
     <Compile Include="Models\ApiSessionSaveCommand.cs" />
-    <Compile Include="Models\BookingData.cs" />
     <Compile Include="Models\SessionTimingData.cs" />
     <Compile Include="Models\ApiSessionTiming.cs" />
     <Compile Include="Models\SessionData.cs" />
@@ -165,8 +165,8 @@
     <Compile Include="Models\WeeklyWorkingHoursData.cs" />
     <Compile Include="Random.cs" />
     <Compile Include="StringExtensions.cs" />
-    <Compile Include="Clients\TestAnonymousApiClient.cs" />
-    <Compile Include="Clients\TestAuthenticatedApiClient.cs" />
+    <Compile Include="Clients\TestCoachseekAnonymousApiClient.cs" />
+    <Compile Include="Clients\TestCoachseekAuthenticatedApiClient.cs" />
     <Compile Include="Tests\Admin\AdminTests.cs" />
     <Compile Include="Tests\Attendance\AttendanceTests.cs" />
     <Compile Include="Tests\AuthorisationTests.cs" />

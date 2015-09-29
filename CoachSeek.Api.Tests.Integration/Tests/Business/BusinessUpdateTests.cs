@@ -367,10 +367,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenTryUpdateBusiness(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<BusinessData>(json, 
-                                                                       setup.Business.UserName,
-                                                                       setup.Business.Password,
-                                                                       RelativePath);
+            return AuthenticatedPost<BusinessData>(json, RelativePath, setup);
         }
 
         private ApiResponse WhenTryUpdateBusinessAnonymously(ApiBusinessSaveCommand command, SetupData setup)
@@ -381,9 +378,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
         private ApiResponse WhenTryUpdateBusinessAnonymously(string json, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<BusinessData>(json,
-                                                                           setup.Business.Domain,
-                                                                           RelativePath);
+            return BusinessAnonymousPost<BusinessData>(json, RelativePath, setup);
         }
 
 

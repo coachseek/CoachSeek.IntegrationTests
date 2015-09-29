@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -82,12 +81,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
             private ApiResponse WhenTryGetServiceByIdAnonymously(Guid serviceId, string businessDomain)
             {
                 var url = string.Format("{0}/{1}", RelativePath, serviceId);
-                return new TestBusinessAnonymousApiClient().Get<ServiceData>(businessDomain, url);                
+                return BusinessAnonymousGet<ServiceData>(url, businessDomain);
             }
 
             private ApiResponse WhenTryGetAllServicesAnonymously(string businessDomain)
             {
-                return new TestBusinessAnonymousApiClient().Get<List<ServiceData>>(businessDomain, RelativePath);
+                return BusinessAnonymousGet<List<ServiceData>>(RelativePath, businessDomain);
             }
 
 

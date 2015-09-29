@@ -12,7 +12,7 @@ namespace CoachSeek.Api.Tests.Integration
         public static ApiResponse RegisterBusiness(ExpectedBusiness business, string scheme = "https")
         {
             var json = CreateNewBusinessSaveCommand(business);
-            var response = new TestAnonymousApiClient().Post<RegistrationData>(json, "BusinessRegistration", scheme);
+            var response = new TestCoachseekAnonymousApiClient(scheme).Post<RegistrationData>(json, "BusinessRegistration");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var registration = ((RegistrationData)response.Payload);

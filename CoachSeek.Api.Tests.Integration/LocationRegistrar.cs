@@ -29,7 +29,8 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static ApiResponse PostLocation(ExpectedBusiness business, string json)
         {
-            return new TestAuthenticatedApiClient().Post<LocationData>(json, business.UserName, business.Password, "Locations");
+            return new TestCoachseekAuthenticatedApiClient(business.UserName, business.Password)
+                        .Post<LocationData>(json, "Locations");
         }
     }
 }

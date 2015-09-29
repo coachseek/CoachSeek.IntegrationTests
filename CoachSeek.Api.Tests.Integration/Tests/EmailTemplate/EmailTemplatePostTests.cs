@@ -167,9 +167,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         {
             var json = JsonSerialiser.Serialise(command);
             var relativePath = string.Format("{0}/{1}", RelativePath, templateType);
-            return new TestBusinessAnonymousApiClient().Post<LocationData>(json,
-                                                                           setup.Business.Domain,
-                                                                           relativePath);
+
+            return BusinessAnonymousPost<LocationData>(json, relativePath, setup);
         }
 
 

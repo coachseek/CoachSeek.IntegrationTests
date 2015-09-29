@@ -2,7 +2,6 @@
 using System.Net;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Common;
 using NUnit.Framework;
@@ -918,17 +917,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Service
 
         private ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<ServiceData>(json,
-                                                                      setup.Business.UserName,
-                                                                      setup.Business.Password,
-                                                                      RelativePath);
+            return AuthenticatedPost<ServiceData>(json, RelativePath, setup);
         }
 
         private ApiResponse WhenTryPostAnonymously(string json, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<ServiceData>(json,
-                                                                          setup.Business.Domain,
-                                                                          RelativePath);
+            return BusinessAnonymousPost<ServiceData>(json, RelativePath, setup);
         }
     }
 }

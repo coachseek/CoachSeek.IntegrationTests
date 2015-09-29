@@ -424,7 +424,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             var json = CreateBookingSaveCommandJson(booking);
             var response = PostBooking(json, setup);
             if (response.Payload != null)
-                booking.Id = ((BookingData)response.Payload).id;
+                booking.Id = ((SingleSessionBookingData)response.Payload).id;
         }
 
         protected void RegisterTestBooking(ExpectedCourseBooking booking, SetupData setup)

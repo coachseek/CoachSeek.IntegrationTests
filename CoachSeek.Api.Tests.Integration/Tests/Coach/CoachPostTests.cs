@@ -250,10 +250,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
 
         protected ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<CoachData>(json,
-                                                                    setup.Business.UserName,
-                                                                    setup.Business.Password,
-                                                                    RelativePath);
+            return AuthenticatedPost<CoachData>(json, RelativePath, setup);
         }
 
 

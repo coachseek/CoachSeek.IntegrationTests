@@ -271,17 +271,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
         private ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<CustomerData>(json,
-                                                                       setup.Business.UserName,
-                                                                       setup.Business.Password,
-                                                                       RelativePath);
+            return AuthenticatedPost<CustomerData>(json, RelativePath, setup);
         }
 
         private ApiResponse WhenTryPostAnonymously(string json, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<CustomerData>(json,
-                                                                           setup.Business.Domain,
-                                                                           "OnlineBooking/Customers");
+            return BusinessAnonymousPost<CustomerData>(json, "OnlineBooking/Customers", setup);
         }
 
 

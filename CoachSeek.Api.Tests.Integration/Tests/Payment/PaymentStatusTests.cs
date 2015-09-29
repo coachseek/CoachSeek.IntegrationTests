@@ -1,7 +1,6 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Api.Tests.Integration.Tests.Booking;
 using CoachSeek.Common;
@@ -150,10 +149,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Payment
         {
             try
             {
-                return new TestAuthenticatedApiClient().Post<SingleSessionBookingData>(json,
-                                                                                       setup.Business.UserName,
-                                                                                       setup.Business.Password,
-                                                                                       relativePath);
+                return AuthenticatedPost<SingleSessionBookingData>(json, relativePath, setup);
             }
             catch (Exception ex)
             {

@@ -131,9 +131,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private ApiResponse WhenTrySearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria, SetupData setup)
         {
             var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
-            return new TestAuthenticatedApiClient().Get<SessionSearchData>(setup.Business.UserName,
-                                                                           setup.Business.Password,
-                                                                           url);
+            return AuthenticatedGet<SessionSearchData>(url, setup);
         }
 
 

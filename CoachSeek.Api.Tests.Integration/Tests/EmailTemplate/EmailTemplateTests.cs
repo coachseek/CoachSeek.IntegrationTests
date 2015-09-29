@@ -49,10 +49,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
         protected ApiResponse WhenTryPost(string json, string templateType, SetupData setup)
         {
             var relativePath = string.Format("{0}/{1}", RelativePath, templateType);
-            return new TestAuthenticatedApiClient().Post<LocationData>(json,
-                                                                       setup.Business.UserName,
-                                                                       setup.Business.Password,
-                                                                       relativePath);
+            return AuthenticatedPost<LocationData>(json, relativePath, setup);
         }
 
 

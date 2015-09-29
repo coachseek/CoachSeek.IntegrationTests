@@ -76,12 +76,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests.EmailTemplate
 
         private ApiResponse WhenTryDeleteEmailTemplate(string templateType, SetupData setup)
         {
-            return Delete(RelativePath, templateType, setup);
+            return AuthenticatedDelete(RelativePath, templateType, setup);
         }
 
         private ApiResponse WhenTryDeleteEmailTemplateAnonymously(string templateType)
         {
-            return DeleteAnonymously(RelativePath, templateType);
+            return AnonymousDelete(RelativePath, templateType);
         }
 
         private void ThenSucceedsButDidNothing(ApiResponse response, SetupData setup)

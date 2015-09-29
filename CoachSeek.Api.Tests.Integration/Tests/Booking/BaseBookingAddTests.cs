@@ -21,7 +21,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         protected ApiResponse WhenTryBookSessionAnonymously(ApiBookingSaveCommand command, SetupData setup)
         {
             var json = JsonSerialiser.Serialise(command);
-            return BusinessAnonymousPost<BookingData>(json, RelativePath, setup);
+            return BusinessAnonymousPost<SingleSessionBookingData>(json, RelativePath, setup);
         }
 
         protected ApiResponse WhenTryBookSession(string json, SetupData setup)

@@ -2,7 +2,6 @@
 using System.Net;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Common;
 using NUnit.Framework;
@@ -210,25 +209,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
         private ApiResponse WhenTryPost(ApiLocationSaveCommand command, SetupData setup)
         {
             var json = JsonSerialiser.Serialise(command);
-            return new TestAuthenticatedApiClient().Post<LocationData>(json,
-                                                                       setup.Business.UserName,
-                                                                       setup.Business.Password,
-                                                                       RelativePath);
+            return AuthenticatedPost<LocationData>(json, RelativePath, setup);
         }
 
         private ApiResponse WhenTryPost(string json, SetupData setup)
         {
-            return new TestAuthenticatedApiClient().Post<LocationData>(json,
-                                                                       setup.Business.UserName,
-                                                                       setup.Business.Password,
-                                                                       RelativePath);
+            return AuthenticatedPost<LocationData>(json, RelativePath, setup);
         }
 
         private ApiResponse WhenTryPostAnonymously(string json, SetupData setup)
         {
-            return new TestBusinessAnonymousApiClient().Post<LocationData>(json,
-                                                                           setup.Business.Domain,
-                                                                           RelativePath);
+            return BusinessAnonymousPost<LocationData>(json, RelativePath, setup);
         }
 
 
@@ -261,6 +252,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Location
             var location = (LocationData)response.Payload;
             Assert.That(location.id, Is.Not.EqualTo(Guid.Empty));
             Assert.That(location.name, Is.EqualTo("Mt Eden Squash Club"));
+
+
         }
 
         private void ThenReturnExistingLocationSuccessResponse(ApiResponse response, 

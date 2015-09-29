@@ -39,7 +39,8 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static ApiResponse PostService(ExpectedBusiness business, string json)
         {
-            return new TestAuthenticatedApiClient().Post<ServiceData>(json, business.UserName, business.Password, "Services");
+            return new TestCoachseekAuthenticatedApiClient(business.UserName, business.Password)
+                        .Post<ServiceData>(json, "Services");
         }
     }
 }

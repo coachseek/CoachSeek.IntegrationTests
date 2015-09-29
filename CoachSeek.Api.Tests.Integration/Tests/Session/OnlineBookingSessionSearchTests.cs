@@ -106,7 +106,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private ApiResponse WhenTrySearchForOnlineBookableSessions(Tuple<string, string, Guid?, Guid?, Guid?> criteria, SetupData setup)
         {
             var url = BuildOnlineBookingSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
-            return new TestBusinessAnonymousApiClient().Get<SessionSearchData>(setup.Business.Domain, url);
+            return BusinessAnonymousGet<SessionSearchData>(url, setup);
         }
 
 
