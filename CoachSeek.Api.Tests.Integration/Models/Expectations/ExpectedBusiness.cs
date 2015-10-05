@@ -10,7 +10,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
         public string Domain { get; set; }
         public string Sport { get; set; }
         public DateTime CreatedOn { get; set; }
-        public DateTime AuthorisedUntil { get; private set; }
+        public DateTime AuthorisedUntil { get; set; }
         public string SubscriptionPlan { get; set; }
         public ApiBusinessAdmin Admin { get; private set; }
         public string UserName { get; private set; }
@@ -19,7 +19,7 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations
 
 
         public ExpectedBusiness(string name, string currency, string email)
-            : this(name, "Tennis", currency, "Bob", "Smith", email, "0900COACHSEEK", "password1", DateTime.UtcNow)
+            : this(name, "tennis", currency, "Bob", "Smith", email, "0900COACHSEEK", "password1", DateTime.UtcNow)
         { }
 
         public ExpectedBusiness(string name,

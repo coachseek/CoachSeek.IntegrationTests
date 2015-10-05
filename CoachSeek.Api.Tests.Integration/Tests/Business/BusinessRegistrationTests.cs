@@ -90,6 +90,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             ThenCreateNewBusiness(response, business);
         }
 
+        [Test]
+        public void GivenMissingSport_WhenTryRegisterBusiness_ThenCreateNewBusinessWithoutSport()
+        {
+            var business = GivenMissingSport();
+            var response = WhenTryRegisterBusiness(business);
+            ThenCreateNewBusinessWithoutSport(response, business);
+        }
+
 
         private string GivenNoBusinessRegistrationCommand()
         {
@@ -127,6 +135,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         private ExpectedBusiness GivenInvalidCurrency()
         {
             return new ExpectedBusiness(Random.RandomString, "XX", Random.RandomEmail);
+        }
+
+        private ExpectedBusiness GivenMissingSport()
+        {
+            return new ExpectedBusiness(Random.RandomString,
+                                        null,
+                                        "USD",
+                                        "Bob",
+                                        "Smith",
+                                        Random.RandomEmail,
+                                        "0900COACHSEEK",
+                                        "password1",
+                                        DateTime.UtcNow);
         }
 
         private SetupData GivenDuplicateBusinessAdmin()
@@ -236,6 +257,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
         private void ThenCreateNewBusiness(ApiResponse response, ExpectedBusiness expectedBusiness)
+        {
+            AssertNewBusinessResponse(response, expectedBusiness);
+
+            AssertBusinessGet(expectedBusiness);
+        }
+
+        private void ThenCreateNewBusinessWithoutSport(ApiResponse response, ExpectedBusiness expectedBusiness)
         {
             AssertNewBusinessResponse(response, expectedBusiness);
 

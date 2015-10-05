@@ -1,6 +1,5 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -62,7 +61,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidCoachId();
             var response = WhenTrySearch(criteria, setup);
-            ThenReturnInvalidCoachIdError(response, criteria.Item3.Value);
+            ThenReturnInvalidCoachIdError(response, criteria.Item3.GetValueOrDefault());
         }
 
         [Test]
@@ -86,7 +85,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var criteria = GivenInvalidLocationId();
             var response = WhenTrySearch(criteria, setup);
-            ThenReturnInvalidLocationIdError(response, criteria.Item4.Value);
+            ThenReturnInvalidLocationIdError(response, criteria.Item4.GetValueOrDefault());
         }
 
         [Test]

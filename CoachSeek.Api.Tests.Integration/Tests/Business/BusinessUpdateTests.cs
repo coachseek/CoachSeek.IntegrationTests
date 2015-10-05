@@ -1,6 +1,5 @@
 ﻿using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Common;
 using NUnit.Framework;
@@ -47,7 +46,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             {
                 var setup = RegisterBusiness();
 
-                var command = GivenIsOnlinePaymentEnabledButNoPaymentProvider();
+                var command = GivenIsOnlinePaymentEnabledButNoPaymentProvider(setup);
                 var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError(response);
             }
@@ -63,11 +62,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return "{}";
             }
 
-            private ApiBusinessSaveCommand GivenIsOnlinePaymentEnabledButNoPaymentProvider()
+            private ApiBusinessSaveCommand GivenIsOnlinePaymentEnabledButNoPaymentProvider(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
-                    name = Random.RandomString,
+                    name = setup.Business.Name,
+                    domain = setup.Business.Domain,
+                    sport = setup.Business.Sport,
                     payment = new ApiBusinessPaymentOptions
                     {
                         currency = "EUR",
@@ -114,6 +115,46 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 var command = GivenEmptyPayment(setup);
                 var response = WhenTryUpdateBusiness(command, setup);
                 ThenReturnsRequiredPaymentOptionErrors(response);
+            }
+
+            [Test]
+            public void GivenInvalidSubdomainFormat_WhenTryUpdateBusiness_ThenReturnsInvalidSubdomainFormatError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenInvalidSubdomainFormat(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnsInvalidSubdomainFormatError(response, command, setup);
+            }
+
+            [Test]
+            public void GivenSubdomainAlreadyExists_WhenTryUpdateBusiness_ThenReturnsDuplicateSubdomainError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenSubdomainAlreadyExists(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnsDuplicateSubdomainError(response, command, setup);
+            }
+
+            [Test]
+            public void GivenSubdomainIsReserved_WhenTryUpdateBusiness_ThenReturnsDuplicateSubdomainError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenSubdomainIsReserved(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnsDuplicateSubdomainError(response, command, setup);
+            }
+
+            [Test]
+            public void GivenValidBusinessSaveCommandWithoutSport_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithoutSport()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenValidBusinessSaveCommandWithoutSport(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenUpdateTheBusinessWithoutSport(response, command, setup);
             }
 
             [Test]
@@ -171,29 +212,32 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             {
                 var setup = RegisterBusiness();
 
-                var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn();
+                var command = GivenValidBusinessSaveCommandWithOnlinePaymentOn(setup);
                 var response = WhenTryUpdateBusiness(command, setup);
                 ThenUpdateTheBusinessWithPaymentOptionsSet(response, command, setup);
             }
 
-
-            private ApiBusinessSaveCommand GivenEmptyPayment(SetupData setup)
+            [Test]
+            public void GivenHaveLotsOfChanges_WhenTryUpdateBusiness_ThenUpdateTheBusinessWithChanges()
             {
-                return new ApiBusinessSaveCommand
-                {
-                    name = setup.Business.Name,
-                    payment = new ApiBusinessPaymentOptions()
-                };
+                var setup = RegisterBusiness();
+
+                var command = GivenHaveLotsOfChanges(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenUpdateTheBusinessWithChanges(response, command, setup);
             }
 
-            private ApiBusinessSaveCommand GivenInvalidCurrency(SetupData setup)
+
+            private ApiBusinessSaveCommand CreateValidBusinessSaveCommand(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
                 {
                     name = setup.Business.Name,
+                    domain = setup.Business.Domain,
+                    sport = setup.Business.Sport,
                     payment = new ApiBusinessPaymentOptions
                     {
-                        currency = "QQQ",
+                        currency = "AUD",
                         isOnlinePaymentEnabled = false,
                         forceOnlinePayment = false,
                         paymentProvider = "PayPal",
@@ -202,48 +246,101 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 };
             }
 
+            private ApiBusinessSaveCommand GivenEmptyPayment(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment = new ApiBusinessPaymentOptions();
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenInvalidSubdomainFormat(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.domain = "my new shiny domain";
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenSubdomainIsReserved(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.domain = "tennis";
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithoutSport(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.sport = null;
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenSubdomainAlreadyExists(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.domain = RegisterBusiness().Business.Domain;
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenInvalidCurrency(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment.currency = "QQQ";
+                return command;
+            }
+
             private ApiBusinessSaveCommand GivenInvalidPaymentProvider(SetupData setup)
             {
-                return new ApiBusinessSaveCommand
-                {
-                    name = setup.Business.Name,
-                    payment = new ApiBusinessPaymentOptions
-                    {
-                        currency = "AUD",
-                        isOnlinePaymentEnabled = false,
-                        forceOnlinePayment = false,
-                        paymentProvider = "ABC"
-                    }
-                };
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment.paymentProvider = "ABC";
+                return command;
             }
 
             private ApiBusinessSaveCommand GivenNoMerchantAccountIdentifier(SetupData setup)
             {
-                return new ApiBusinessSaveCommand
-                {
-                    name = setup.Business.Name,
-                    payment = new ApiBusinessPaymentOptions
-                    {
-                        currency = "AUD",
-                        isOnlinePaymentEnabled = true,
-                        forceOnlinePayment = false,
-                        paymentProvider = "PayPal"
-                    }
-                };
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment.merchantAccountIdentifier = null;
+                return command;
             }
 
             private ApiBusinessSaveCommand GivenInvalidMerchantAccountIdentifierFormat(SetupData setup)
             {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment.merchantAccountIdentifier = "abc123";
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithoutPaymentProvider(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment = new ApiBusinessPaymentOptions
+                {
+                    currency = "EUR",
+                    isOnlinePaymentEnabled = false
+                };
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithOnlinePaymentOn(SetupData setup)
+            {
+                var command = CreateValidBusinessSaveCommand(setup);
+                command.payment.isOnlinePaymentEnabled = true;
+                return command;
+            }
+
+            private ApiBusinessSaveCommand GivenHaveLotsOfChanges(SetupData setup)
+            {
                 return new ApiBusinessSaveCommand
                 {
-                    name = setup.Business.Name,
+                    name = Random.RandomString,
+                    domain = Random.RandomString.ToUpper(),
+                    sport = "martial-arts",
                     payment = new ApiBusinessPaymentOptions
                     {
-                        currency = "AUD",
-                        isOnlinePaymentEnabled = false,
-                        forceOnlinePayment = false,
+                        currency = "EUR",
+                        isOnlinePaymentEnabled = true,
+                        forceOnlinePayment = true,
                         paymentProvider = "PayPal",
-                        merchantAccountIdentifier = "abc123"
+                        merchantAccountIdentifier = "olaf@coachseek.com"
                     }
                 };
             }
@@ -253,6 +350,50 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             {
                 AssertMultipleErrors(response, new[,] { { "currency-required", "The Currency field is required.", null },
                                                         { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null } });
+            }
+
+            private void ThenReturnsInvalidSubdomainFormatError(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
+            {
+                AssertSingleError(response,
+                                  ErrorCodes.SubdomainFormatInvalid,
+                                  string.Format("The subdomain '{0}' is not in a valid format.", command.domain),
+                                  command.domain);
+            }
+
+            private void ThenReturnsDuplicateSubdomainError(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
+            {
+                AssertSingleError(response,
+                                  ErrorCodes.SubdomainDuplicate,
+                                  string.Format("The subdomain '{0}' already exists.", command.domain),
+                                  command.domain);
+            }
+
+            private void ThenUpdateTheBusinessWithoutSport(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
+            {
+                var responseBusiness = AssertSuccessResponse<BusinessData>(response);
+
+                Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(responseBusiness.name, Is.EqualTo(command.name));
+                Assert.That(responseBusiness.domain, Is.EqualTo(command.domain));
+                Assert.That(responseBusiness.sport, Is.Null);
+                Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+
+                var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
+                var getBusiness = (BusinessData)getResponse.Payload;
+
+                Assert.That(getBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(getBusiness.name, Is.EqualTo(command.name));
+                Assert.That(getBusiness.domain, Is.EqualTo(command.domain));
+                Assert.That(getBusiness.sport, Is.Null);
+                Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
             }
 
             private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
@@ -307,8 +448,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
                 Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(responseBusiness.name, Is.EqualTo(command.name));
-                Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
-                Assert.That(responseBusiness.sport, Is.EqualTo(setup.Business.Sport));
+                Assert.That(responseBusiness.domain, Is.EqualTo(command.domain));
+                Assert.That(responseBusiness.sport, Is.EqualTo(command.sport));
                 Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
                 Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
@@ -320,7 +461,36 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
 
                 Assert.That(getBusiness.id, Is.EqualTo(setup.Business.Id));
                 Assert.That(getBusiness.name, Is.EqualTo(command.name));
-                Assert.That(getBusiness.domain, Is.EqualTo(setup.Business.Domain));
+                Assert.That(getBusiness.domain, Is.EqualTo(command.domain));
+                Assert.That(getBusiness.sport, Is.EqualTo(command.sport));
+                Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+            }
+
+            private void ThenUpdateTheBusinessWithChanges(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
+            {
+                var responseBusiness = AssertSuccessResponse<BusinessData>(response);
+
+                Assert.That(responseBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(responseBusiness.name, Is.EqualTo(command.name));
+                Assert.That(responseBusiness.domain, Is.EqualTo(command.domain.ToLowerInvariant()));
+                Assert.That(responseBusiness.sport, Is.EqualTo(command.sport));
+                Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(responseBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
+                Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
+                Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
+                Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+
+                var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
+                var getBusiness = (BusinessData)getResponse.Payload;
+
+                Assert.That(getBusiness.id, Is.EqualTo(setup.Business.Id));
+                Assert.That(getBusiness.name, Is.EqualTo(command.name));
+                Assert.That(getBusiness.domain, Is.EqualTo(command.domain.ToLowerInvariant()));
+                Assert.That(getBusiness.sport, Is.EqualTo(command.sport));
                 Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
                 Assert.That(getBusiness.payment.isOnlinePaymentEnabled, Is.EqualTo(command.payment.isOnlinePaymentEnabled));
                 Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
@@ -329,35 +499,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             }
         }
 
-
-        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithoutPaymentProvider(SetupData setup)
-        {
-            return new ApiBusinessSaveCommand
-            {
-                name = setup.Business.Name,
-                payment = new ApiBusinessPaymentOptions
-                {
-                    currency = "EUR",
-                    isOnlinePaymentEnabled = false                    
-                }
-            };
-        }
-
-        private ApiBusinessSaveCommand GivenValidBusinessSaveCommandWithOnlinePaymentOn()
-        {
-            return new ApiBusinessSaveCommand
-            {
-                name = Random.RandomString,
-                payment = new ApiBusinessPaymentOptions
-                {
-                    currency = "EUR",
-                    isOnlinePaymentEnabled = true,
-                    forceOnlinePayment = true,
-                    paymentProvider = "PayPal",
-                    merchantAccountIdentifier = "bob@example.com"
-                }
-            };
-        }
 
         private ApiResponse WhenTryUpdateBusiness(ApiBusinessSaveCommand command, SetupData setup)
         {
@@ -390,6 +531,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         private void ThenReturnRootRequiredErrorResponse(ApiResponse response)
         {
             AssertMultipleErrors(response, new[,] { { "name-required", "The Name field is required.", null },
+                                                    { "domain-required", "The Domain field is required.", null },
                                                     { "payment-required", "The Payment field is required.", null } });
         }
     }

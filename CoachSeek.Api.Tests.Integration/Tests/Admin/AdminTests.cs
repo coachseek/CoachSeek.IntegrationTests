@@ -165,7 +165,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         {
             var url = string.Format("Businesses/{0}", setup.Business.Id);
             var json = JsonSerialiser.Serialise(command);
-            return AdminPost(json, url);
+            var response = AdminPost(json, url);
+            setup.Business.AuthorisedUntil = command.authorisedUntil;
+            return response;
         }
 
 
