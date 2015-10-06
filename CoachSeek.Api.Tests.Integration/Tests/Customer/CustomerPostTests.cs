@@ -1,7 +1,6 @@
 ﻿using System;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Common;
 using NUnit.Framework;
@@ -76,7 +75,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
 
                 var command = GivenValidNewCustomer();
                 var response = WhenTryCreateNewCustomer(command, setup);
-                ThenReturnNewCustomer(response);
+                ThenReturnNewCustomer(response, setup);
+            }
+
+            [Test]
+            public void GivenValidNewCustomerWithDateOfBirth_WhenTryCreateNewCustomer_ThenReturnNewCustomerWithDateOfBirth()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenValidNewCustomerWithDateOfBirth();
+                var response = WhenTryCreateNewCustomer(command, setup);
+                ThenReturnNewCustomerWithDateOfBirth(response, setup);
             }
 
 
@@ -99,6 +108,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             private ApiCustomerSaveCommand GivenValidNewCustomer()
             {
                 return CreateNewCustomerSaveCommand();
+            }
+
+            private ApiCustomerSaveCommand GivenValidNewCustomerWithDateOfBirth()
+            {
+                var command = CreateNewCustomerSaveCommand();
+                command.dateOfBirth = "1956-05-17";
+                return command;
             }
 
             private ApiResponse WhenTryCreateNewCustomer(ApiCustomerSaveCommand command, SetupData setup)
@@ -155,6 +171,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 ThenReturnDuplicateCustomerError(response, setup.Fred.Email);
             }
 
+            [Test]
+            public void 
+                GivenWantToUpdateExistingCustomerWithDateOfBirth_WhenTryUpdateExistingCustomer_ThenReturnUpdatedCustomerWithDateOfBirth()
+            {
+                var setup = RegisterBusiness();
+                RegisterCustomerFred(setup);
+
+                var command = GivenWantToUpdateExistingCustomerWithDateOfBirth(setup);
+                var response = WhenTryUpdateExistingCustomer(command, setup);
+                ThenReturnUpdatedCustomerWithDateOfBirth(response, setup);
+            }
+
 
             private ApiCustomerSaveCommand GivenNonExistentCustomerId()
             {
@@ -185,6 +213,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             private ApiCustomerSaveCommand GivenCustomerMatchesOnEmailAndName(SetupData setup)
             {
                 return CreateNewCustomerSaveCommand("fred ", " flintStone", setup.Fred.Email, "12345");
+            }
+
+            private ApiCustomerSaveCommand GivenWantToUpdateExistingCustomerWithDateOfBirth(SetupData setup)
+            {
+                return CreateExistingCustomerSaveCommand(setup.Fred.Id,
+                                                         "Barney",
+                                                         "Rubble",
+                                                         "barney@rubbles.net",
+                                                         "09 456 456",
+                                                         "1968-03-13");
             }
 
 
@@ -220,7 +258,41 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
                 Assert.That(customer.lastName, Is.EqualTo("Rubble"));
                 Assert.That(customer.email, Is.Null);
                 Assert.That(customer.phone, Is.Null);
+                Assert.That(customer.dateOfBirth, Is.Null);
+
+                var getResponse = AuthenticatedGet<CustomerData>(RelativePath, customer.id, setup);
+                var getCustomer = (CustomerData)getResponse.Payload;
+
+                Assert.That(getCustomer.id, Is.EqualTo(customer.id));
+                Assert.That(getCustomer.firstName, Is.EqualTo(customer.firstName));
+                Assert.That(getCustomer.lastName, Is.EqualTo(customer.lastName));
+                Assert.That(getCustomer.email, Is.EqualTo(customer.email));
+                Assert.That(getCustomer.phone, Is.EqualTo(customer.phone));
+                Assert.That(getCustomer.dateOfBirth, Is.EqualTo(customer.dateOfBirth));
             }
+
+            private void ThenReturnUpdatedCustomerWithDateOfBirth(ApiResponse response, SetupData setup)
+            {
+                var customer = AssertSuccessResponse<CustomerData>(response);
+
+                Assert.That(customer.id, Is.EqualTo(setup.Fred.Id));
+                Assert.That(customer.firstName, Is.EqualTo("Barney"));
+                Assert.That(customer.lastName, Is.EqualTo("Rubble"));
+                Assert.That(customer.email, Is.EqualTo("barney@rubbles.net"));
+                Assert.That(customer.phone, Is.EqualTo("09 456 456"));
+                Assert.That(customer.dateOfBirth, Is.EqualTo("1968-03-13"));
+
+                var getResponse = AuthenticatedGet<CustomerData>(RelativePath, customer.id, setup);
+                var getCustomer = (CustomerData)getResponse.Payload;
+
+                Assert.That(getCustomer.id, Is.EqualTo(customer.id));
+                Assert.That(getCustomer.firstName, Is.EqualTo(customer.firstName));
+                Assert.That(getCustomer.lastName, Is.EqualTo(customer.lastName));
+                Assert.That(getCustomer.email, Is.EqualTo(customer.email));
+                Assert.That(getCustomer.phone, Is.EqualTo(customer.phone));
+                Assert.That(getCustomer.dateOfBirth, Is.EqualTo(customer.dateOfBirth));
+            }
+
 
             private void ThenReturnDuplicateCustomerError(ApiResponse response, string email)
             {
@@ -232,22 +304,31 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
         }
 
 
-        private ApiCustomerSaveCommand CreateNewCustomerSaveCommand(string firstName, string lastName, string email, string phone)
+        private ApiCustomerSaveCommand CreateNewCustomerSaveCommand(string firstName, 
+                                                                    string lastName, 
+                                                                    string email, 
+                                                                    string phone, 
+                                                                    string dateOfBirth = null)
         {
             return new ApiCustomerSaveCommand
             {
                 firstName = firstName,
                 lastName = lastName,
                 email = email,
-                phone = phone
+                phone = phone,
+                dateOfBirth = dateOfBirth
             };
         }
 
-        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, string firstName, string lastName, string email = null, string phone = null)
+        private ApiCustomerSaveCommand CreateExistingCustomerSaveCommand(Guid id, 
+                                                                         string firstName, 
+                                                                         string lastName, 
+                                                                         string email = null,
+                                                                         string phone = null, 
+                                                                         string dateOfBirth = null)
         {
-            var command = CreateNewCustomerSaveCommand(firstName, lastName, email, phone);
+            var command = CreateNewCustomerSaveCommand(firstName, lastName, email, phone, dateOfBirth);
             command.id = id;
-
             return command;
         }
 
@@ -296,7 +377,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             AssertSingleError(response, "email-invalid", "The Email field is not a valid e-mail address.", null);
         }
 
-        private void ThenReturnNewCustomer(ApiResponse response)
+        private void ThenReturnNewCustomer(ApiResponse response, SetupData setup)
         {
             var customer = AssertSuccessResponse<CustomerData>(response);
 
@@ -305,6 +386,39 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             Assert.That(customer.lastName, Is.EqualTo("Saget"));
             Assert.That(customer.email, Is.EqualTo("bob@fullhouse.com"));
             Assert.That(customer.phone, Is.EqualTo("012 3456 7890"));
+            Assert.That(customer.dateOfBirth, Is.Null);
+
+            var getResponse = AuthenticatedGet<CustomerData>(RelativePath, customer.id, setup);
+            var getCustomer = (CustomerData)getResponse.Payload;
+
+            Assert.That(getCustomer.id, Is.EqualTo(customer.id));
+            Assert.That(getCustomer.firstName, Is.EqualTo(customer.firstName));
+            Assert.That(getCustomer.lastName, Is.EqualTo(customer.lastName));
+            Assert.That(getCustomer.email, Is.EqualTo(customer.email));
+            Assert.That(getCustomer.phone, Is.EqualTo(customer.phone));
+            Assert.That(getCustomer.dateOfBirth, Is.EqualTo(customer.dateOfBirth));
+        }
+
+        private void ThenReturnNewCustomerWithDateOfBirth(ApiResponse response, SetupData setup)
+        {
+            var customer = AssertSuccessResponse<CustomerData>(response);
+
+            Assert.That(customer.id, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(customer.firstName, Is.EqualTo("Bob"));
+            Assert.That(customer.lastName, Is.EqualTo("Saget"));
+            Assert.That(customer.email, Is.EqualTo("bob@fullhouse.com"));
+            Assert.That(customer.phone, Is.EqualTo("012 3456 7890"));
+            Assert.That(customer.dateOfBirth, Is.EqualTo("1956-05-17"));
+
+            var getResponse = AuthenticatedGet<CustomerData>(RelativePath, customer.id, setup);
+            var getCustomer = (CustomerData)getResponse.Payload;
+
+            Assert.That(getCustomer.id, Is.EqualTo(customer.id));
+            Assert.That(getCustomer.firstName, Is.EqualTo(customer.firstName));
+            Assert.That(getCustomer.lastName, Is.EqualTo(customer.lastName));
+            Assert.That(getCustomer.email, Is.EqualTo(customer.email));
+            Assert.That(getCustomer.phone, Is.EqualTo(customer.phone));
+            Assert.That(getCustomer.dateOfBirth, Is.EqualTo(customer.dateOfBirth));
         }
     }
 }
