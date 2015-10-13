@@ -8,6 +8,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
 
         public Guid? businessId { get; set; }
         public string businessName { get; set; } // Debug
+        public string role { get; set; }
 
         public string firstName { get; set; }
         public string lastName { get; set; }

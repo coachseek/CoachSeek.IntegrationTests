@@ -167,6 +167,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(booking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(booking.customer.name, Is.EqualTo(string.Format("{0} {1}", setup.Fred.FirstName, setup.Fred.LastName)));
 
+            Assert.That(booking.price, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Pricing.sessionPrice * booking.sessionBookings.Count));
             Assert.That(booking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
 
             Assert.That(booking.sessionBookings.Count, Is.EqualTo(2));
@@ -199,6 +200,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(booking.customer.id, Is.EqualTo(expectedCustomer.Id));
             Assert.That(booking.customer.name, Is.EqualTo(string.Format("{0} {1}", expectedCustomer.FirstName, expectedCustomer.LastName)));
 
+            Assert.That(booking.price, Is.EqualTo(session.Pricing.sessionPrice));
             Assert.That(booking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
             Assert.That(booking.hasAttended, Is.Null);
         }

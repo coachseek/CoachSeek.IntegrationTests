@@ -195,6 +195,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
             Assert.That(user.email, Is.EqualTo(setup.Business.Admin.email));
             Assert.That(user.username, Is.EqualTo(setup.Business.Admin.email));
             Assert.That(user.phone, Is.EqualTo(setup.Business.Admin.phone));
+            Assert.That(user.role, Is.EqualTo("BusinessAdmin"));
         }
 
         private void ThenExtendsAuthorisedUntilByOneMonth(ApiResponse response, SetupData setup)
