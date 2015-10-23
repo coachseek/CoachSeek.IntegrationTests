@@ -1,6 +1,6 @@
 ﻿namespace CoachSeek.Api.Tests.Integration.Tests.Business
 {
-    public abstract class BusinessTests : WebIntegrationTest
+    public abstract class BusinessTests : ScheduleTests
     {
         protected override string RelativePath
         {

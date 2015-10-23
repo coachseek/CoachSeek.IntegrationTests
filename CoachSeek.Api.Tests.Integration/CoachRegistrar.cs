@@ -33,8 +33,10 @@ namespace CoachSeek.Api.Tests.Integration
 
         private static ApiResponse PostCoach(ExpectedBusiness business, string json)
         {
+            //return new TestCoachseekAuthenticatedApiClient(business.UserName, business.Password)
+            //            .Post<CoachData>(json, "Coaches");
             return new TestCoachseekAuthenticatedApiClient(business.UserName, business.Password)
-                        .Post<CoachData>(json, "Coaches");
+                        .PostAsync<CoachData, ApiApplicationError>(json, "Coaches").Result;
         }
     }
 }

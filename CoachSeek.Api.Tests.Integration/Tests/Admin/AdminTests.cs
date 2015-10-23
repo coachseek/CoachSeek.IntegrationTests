@@ -202,8 +202,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Admin
         {
             AssertSuccessResponse(response);
 
-            var getResponse = BusinessAnonymousGet<BusinessData>("OnlineBooking/Business", setup.Business.Domain);
-            var business = (BusinessData) getResponse.Payload;
+            var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
+            var business = (BusinessData)getResponse.Payload;
             Assert.That(business.authorisedUntil.Year, Is.EqualTo(setup.Business.AuthorisedUntil.Year));
             Assert.That(business.authorisedUntil.Month, Is.EqualTo(setup.Business.AuthorisedUntil.Month));
             Assert.That(business.authorisedUntil.Day, Is.EqualTo(setup.Business.AuthorisedUntil.Day));

@@ -61,7 +61,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
         {
-            return new TestCoachseekBusinessAnonymousApiClient(businessDomain).Get<TResponse>(relativePath);
+            //return new TestCoachseekBusinessAnonymousApiClient(businessDomain).Get<TResponse>(relativePath);
+            return new TestCoachseekBusinessAnonymousApiClient(businessDomain).GetAsync<TResponse, ApiApplicationError[]>(relativePath).Result;
         }
 
         protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, Guid id, string businessDomain)
@@ -119,7 +120,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, string username, string password)
         {
-            return new TestCoachseekAuthenticatedApiClient(username, password).Post<TResponse>(json, relativePath);
+            //return new TestCoachseekAuthenticatedApiClient(username, password).Post<TResponse>(json, relativePath);
+            return new TestCoachseekAuthenticatedApiClient(username, password)
+                        .PostAsync<TResponse, ApiApplicationError[]>(json, relativePath).Result;
         }
 
         protected ApiResponse AdminPost(string json, string relativePath)

@@ -8,12 +8,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
     public class BusinessGetTests : BusinessTests
     {
         [Test]
-        public void WhenGetBusiness_ThenReturnBusiness()
+        public void WhenGetBusiness_ThenReturnBusinessWithStatistics()
         {
             var setup = RegisterBusiness();
+            RegisterTestSessions(setup);
+            RegisterTestCourses(setup);
 
             var response = WhenGetBusiness(setup);
-            ThenReturnBusiness(response, setup);
+            ThenReturnBusinessWithStatistics(response, setup);
         }
 
         [Test]
@@ -25,13 +27,13 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
         [Test]
-        public void GivenValidBusiness_WhenGetBusinessForOnlineBooking_ThenReturnBusiness()
+        public void GivenValidBusiness_WhenGetBusinessForOnlineBooking_ThenReturnBasicBusiness()
         {
             var setup = RegisterBusiness();
 
             GivenValidBusiness();
             var response = WhenGetBusinessForOnlineBooking(setup.Business.Domain);
-            ThenReturnBusiness(response, setup);
+            ThenReturnBasicBusiness(response, setup);
         }
 
 
@@ -57,7 +59,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
         }
 
 
-        private void ThenReturnBusiness(ApiResponse response, SetupData setup)
+        private void ThenReturnBusinessWithStatistics(ApiResponse response, SetupData setup)
         {
             var business = AssertSuccessResponse<BusinessData>(response);
 
@@ -67,6 +69,22 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.sport, Is.EqualTo(setup.Business.Sport));
             AssertDateTime(business.authorisedUntil, setup.Business.AuthorisedUntil);
             Assert.That(business.subscriptionPlan, Is.EqualTo(setup.Business.SubscriptionPlan));
+            Assert.That(business.payment.currency, Is.EqualTo(setup.Business.Payment.currency));
+            Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(setup.Business.Payment.isOnlinePaymentEnabled));
+            Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(setup.Business.Payment.forceOnlinePayment));
+            Assert.That(business.payment.paymentProvider, Is.EqualTo(setup.Business.Payment.paymentProvider));
+            Assert.That(business.payment.merchantAccountIdentifier, Is.EqualTo(setup.Business.Payment.merchantAccountIdentifier));
+            Assert.That(business.statistics.totalNumberOfSessions, Is.EqualTo(8));
+        }
+
+        private void ThenReturnBasicBusiness(ApiResponse response, SetupData setup)
+        {
+            var business = AssertSuccessResponse<BasicBusinessData>(response);
+
+            Assert.That(business.id, Is.EqualTo(setup.Business.Id));
+            Assert.That(business.name, Is.EqualTo(setup.Business.Name));
+            Assert.That(business.domain, Is.EqualTo(setup.Business.Domain));
+            Assert.That(business.sport, Is.EqualTo(setup.Business.Sport));
             Assert.That(business.payment.currency, Is.EqualTo(setup.Business.Payment.currency));
             Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(setup.Business.Payment.isOnlinePaymentEnabled));
             Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(setup.Business.Payment.forceOnlinePayment));

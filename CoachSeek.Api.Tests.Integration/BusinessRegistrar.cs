@@ -12,14 +12,9 @@ namespace CoachSeek.Api.Tests.Integration
         public static ApiResponse RegisterBusiness(ExpectedBusiness business, string scheme = "https")
         {
             var json = CreateNewBusinessSaveCommand(business);
-            var response = new TestCoachseekAnonymousApiClient(scheme).Post<RegistrationData>(json, "BusinessRegistration");
+            var response = PostBusinessRegistration(json, scheme);
             if (response.StatusCode == HttpStatusCode.OK)
-            {
-                var registration = ((RegistrationData)response.Payload);
-                business.Id = registration.business.id;
-                business.Domain = registration.business.domain;
-                business.Payment.currency = registration.business.payment.currency;
-            }
+                UpdateBusiness(business, response);
             return response;
         }
 
@@ -37,6 +32,20 @@ namespace CoachSeek.Api.Tests.Integration
             };
 
             return JsonSerialiser.Serialise(command);
+        }
+
+        private static ApiResponse PostBusinessRegistration(string json, string scheme = "https")
+        {
+            return new TestCoachseekAnonymousApiClient(scheme)
+                .PostAsync<RegistrationData, ApiApplicationError[]>(json, "BusinessRegistration").Result;
+        }
+
+        private static void UpdateBusiness(ExpectedBusiness business, ApiResponse response)
+        {
+            var registration = ((RegistrationData)response.Payload);
+            business.Id = registration.business.id;
+            business.Domain = registration.business.domain;
+            business.Payment.currency = registration.business.payment.currency;
         }
     }
 }

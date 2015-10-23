@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -72,6 +73,8 @@
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
     <Compile Include="Models\ApiEmailTemplateSaveCommand.cs" />
+    <Compile Include="Models\BusinessData.cs" />
+    <Compile Include="Models\BusinessStatisticsData.cs" />
     <Compile Include="Models\BusinessPaymentData.cs" />
     <Compile Include="Models\EmailTemplateData.cs" />
     <Compile Include="Models\Expectations\Booking\BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15.cs" />
@@ -212,7 +215,7 @@
     <Compile Include="Models\ApiWeeklyWorkingHours.cs" />
     <Compile Include="Models\ApplicationError.cs" />
     <Compile Include="Models\BusinessAdminData.cs" />
-    <Compile Include="Models\BusinessData.cs" />
+    <Compile Include="Models\BasicBusinessData.cs" />
     <Compile Include="Models\CoachData.cs" />
     <Compile Include="Models\LocationData.cs" />
     <Compile Include="Models\Response.cs" />

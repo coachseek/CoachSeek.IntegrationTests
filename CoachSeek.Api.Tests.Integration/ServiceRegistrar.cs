@@ -1,4 +1,5 @@
-﻿using Coachseek.API.Client.Models;
+﻿using System.Net;
+using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
@@ -13,8 +14,8 @@ namespace CoachSeek.Api.Tests.Integration
         {
             var json = CreateNewServiceSaveCommand(service);
             var response = PostService(business, json);
-            if (response.Payload != null)
-                service.Id = ((ServiceData)response.Payload).id;
+            if (response.StatusCode == HttpStatusCode.OK)
+                UpdateService(service, response);
         }
 
         private static string CreateNewServiceSaveCommand(ExpectedService expectedService)
@@ -40,7 +41,13 @@ namespace CoachSeek.Api.Tests.Integration
         private static ApiResponse PostService(ExpectedBusiness business, string json)
         {
             return new TestCoachseekAuthenticatedApiClient(business.UserName, business.Password)
-                        .Post<ServiceData>(json, "Services");
+                        .PostAsync<ServiceData, ApiApplicationError[]>(json, "Services").Result;
+        }
+
+        private static void UpdateService(ExpectedService service, ApiResponse response)
+        {
+            if (response.Payload != null)
+                service.Id = ((ServiceData)response.Payload).id;
         }
     }
 }

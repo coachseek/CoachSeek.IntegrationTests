@@ -2,7 +2,6 @@
 using System.Net;
 using Coachseek.API.Client.Models;
 using Coachseek.API.Client.Services;
-using CoachSeek.Api.Tests.Integration.Clients;
 using CoachSeek.Api.Tests.Integration.Models;
 using CoachSeek.Common;
 using NUnit.Framework;
