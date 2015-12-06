@@ -93,7 +93,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             var command = GivenNewCourseWithSessionPriceOnly(setup);
             var response = WhenTryCreateCourse(command, setup);
-            ThenCreatesCourseWithSessionAndCoursePrice(response, setup);
+            ThenCreatesCourseWithSessionPriceOnly(response, setup);
         }
 
         [Test]
@@ -229,14 +229,14 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionPricing(courseResponse.pricing, null, 120);
         }
 
-        private void ThenCreatesCourseWithSessionAndCoursePrice(ApiResponse response, SetupData setup)
+        private void ThenCreatesCourseWithSessionPriceOnly(ApiResponse response, SetupData setup)
         {
             var courseResponse = AssertSuccessResponse<CourseData>(response);
-            AssertSessionPricing(courseResponse.pricing, 37.5m, 112.5m);
+            AssertSessionPricing(courseResponse.pricing, 37.5m, null);
 
             var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
             var course = (CourseData)getResponse.Payload;
-            AssertSessionPricing(course.pricing, 37.5m, 112.5m);
+            AssertSessionPricing(course.pricing, 37.5m, null);
         }
 
         private void ThenCreatesCourseWithSessionPriceAndCoursePrice(ApiResponse response, SetupData setup)
@@ -252,11 +252,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
         private void ThenCreatesCourseWithZeroSessionPrice(ApiResponse response, SetupData setup)
         {
             var courseResponse = AssertSuccessResponse<CourseData>(response);
-            AssertSessionPricing(courseResponse.pricing, 0, 0);
+            AssertSessionPricing(courseResponse.pricing, 0, null);
 
             var getResponse = AuthenticatedGet<CourseData>(RelativePath, courseResponse.id, setup);
             var course = (CourseData)getResponse.Payload;
-            AssertSessionPricing(course.pricing, 0, 0);
+            AssertSessionPricing(course.pricing, 0, null);
         }
 
         private void ThenCreatesCourseWith24HrStartTime(ApiResponse response, SetupData setup)

@@ -10,6 +10,6 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public CustomerData customer { get; set; }
         public bool? hasAttended { get; set; }
         public string paymentStatus { get; set; }
-
+        public bool isOnlineBooking { get; set; }
     }
 }

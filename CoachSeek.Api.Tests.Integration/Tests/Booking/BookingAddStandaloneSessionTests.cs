@@ -111,6 +111,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
         {
             return new ApiBookingSaveCommand(Guid.NewGuid(), setup.Fred.Id);
         }
+
         protected ApiBookingSaveCommand GivenNonExistentCustomer(SetupData setup)
         {
             return new ApiBookingSaveCommand(setup.AaronOrakeiMiniRed14To15.Id, Guid.NewGuid());

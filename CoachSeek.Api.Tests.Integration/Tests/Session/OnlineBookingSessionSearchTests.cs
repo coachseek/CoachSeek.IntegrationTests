@@ -137,7 +137,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(course.coach.id, Is.EqualTo(setup.Aaron.Id));
             Assert.That(course.coach.name, Is.EqualTo(setup.Aaron.Name));
             Assert.That(course.timing.startDate, Is.EqualTo(GetDateFormatNumberOfDaysOut(14)));
-            Assert.That(course.timing.startTime, Is.EqualTo("9:00"));
+            Assert.That(course.timing.startTime, Is.EqualTo("09:00"));
             Assert.That(course.booking.bookingCount, Is.EqualTo(1));
             Assert.That(course.booking.bookings, Is.Null);     // Ensure booking details are gone
 
@@ -182,7 +182,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(course.coach.id, Is.EqualTo(setup.Aaron.Id));
             Assert.That(course.coach.name, Is.EqualTo(setup.Aaron.Name));
             Assert.That(course.timing.startDate, Is.EqualTo(GetDateFormatNumberOfDaysOut(14)));
-            Assert.That(course.timing.startTime, Is.EqualTo("9:00"));
+            Assert.That(course.timing.startTime, Is.EqualTo("09:00"));
             Assert.That(course.booking.bookingCount, Is.EqualTo(1));
             Assert.That(course.booking.bookings, Is.Null);     // Ensure booking details are gone
 
@@ -226,7 +226,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             Assert.That(course.coach.id, Is.EqualTo(setup.Bobby.Id));
             Assert.That(course.coach.name, Is.EqualTo(setup.Bobby.Name));
             Assert.That(course.timing.startDate, Is.EqualTo(GetDateFormatNumberOfDaysOut(10)));
-            Assert.That(course.timing.startTime, Is.EqualTo("9:00"));
+            Assert.That(course.timing.startTime, Is.EqualTo("09:00"));
             Assert.That(course.booking.bookingCount, Is.EqualTo(0));
             Assert.That(course.booking.bookings, Is.Null);     // Ensure booking details are gone
 

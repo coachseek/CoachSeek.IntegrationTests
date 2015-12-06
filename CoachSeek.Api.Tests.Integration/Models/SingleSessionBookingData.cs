@@ -9,6 +9,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public decimal price { get; set; }
         public string paymentStatus { get; set; }
         public bool? hasAttended { get; set; }
+        public bool isOnlineBooking { get; set; }
         public SessionKeyData session { get; set; }
         public CustomerKeyData customer { get; set; }
     }

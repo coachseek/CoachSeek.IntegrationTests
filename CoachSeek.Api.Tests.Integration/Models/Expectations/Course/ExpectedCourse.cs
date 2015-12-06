@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
 using CoachSeek.Common.Extensions;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
 {
@@ -41,7 +42,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
                                  bool isOnlineBookable,
                                  decimal? sessionPrice,
                                  decimal? coursePrice,
-                                 string colour)
+                                 string colour,
+                                 string sessionName)
         {
             Coach = new ApiCoachKey { id = coachId };
             Location = new ApiLocationKey { id = locationId };
@@ -65,7 +67,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
                                                         studentCapacity, 
                                                         isOnlineBookable, 
                                                         sessionPrice, 
-                                                        colour);
+                                                        colour,
+                                                        sessionName);
                 Sessions.Add(session);
             }
         }
@@ -79,6 +82,13 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Course
             if (repeatFrequency == "w")
                 date = startingDate.AddDays(sessionIndex * 7);
             return date.ToString("yyyy-MM-dd");
+        }
+
+
+        public void Assert(SessionKeyData actualCourse)
+        {
+            NUnit.Framework.Assert.That(actualCourse.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(actualCourse.name, Is.EqualTo(Description));
         }
     }
 }

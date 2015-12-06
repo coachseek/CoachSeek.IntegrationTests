@@ -258,7 +258,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(course.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(course.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(course.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "9:30", 300);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "09:30", 300);
             AssertSessionBooking(course.booking, 20, true);
             AssertSessionRepetition(course.repetition, 3, "d");
             AssertSessionPricing(course.pricing, 80, 200);
@@ -272,7 +272,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(firstSession.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(firstSession.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(firstSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "9:30", 300);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "09:30", 300);
             AssertSessionBooking(firstSession.booking, 20, true);
             AssertSessionRepetition(firstSession.repetition, 1, null);
             AssertSessionPricing(firstSession.pricing, 80, null);
@@ -285,7 +285,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(secondSession.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(secondSession.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(secondSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "09:30", 300);
             AssertSessionBooking(secondSession.booking, 20, true);
             AssertSessionRepetition(secondSession.repetition, 1, null);
             AssertSessionPricing(secondSession.pricing, 80, null);
@@ -298,7 +298,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(thirdSession.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(thirdSession.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(thirdSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "9:30", 300);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "09:30", 300);
             AssertSessionBooking(thirdSession.booking, 20, true);
             AssertSessionRepetition(thirdSession.repetition, 1, null);
             AssertSessionPricing(thirdSession.pricing, 80, null);
@@ -311,17 +311,17 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
 
             Assert.That(course.parentId, Is.Null);
             Assert.That(course.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Id));
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(4), "9:00", 360);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(4), "09:00", 360);
             Assert.That(course.sessions.Count, Is.EqualTo(3));
 
             var firstSession = course.sessions[0];
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(4), "9:00", 360);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(4), "09:00", 360);
 
             var secondSession = course.sessions[1];
-            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(5), "9:00", 360);
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(5), "09:00", 360);
 
             var thirdSession = course.sessions[2];
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(6), "9:00", 360);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(6), "09:00", 360);
         }
 
         private void ThenUpdateCourseSession(ApiResponse response, SetupData setup)
@@ -334,7 +334,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(session.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(session.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(session.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionTiming(session.timing, GetDateFormatNumberOfDaysOut(15), "09:30", 300);
             AssertSessionBooking(session.booking, 20, true);
             AssertSessionRepetition(session.repetition, 1, null);
             AssertSessionPricing(session.pricing, 80, null);
@@ -346,7 +346,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(course.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(course.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(course.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "09:00", 360);
             AssertSessionBooking(course.booking, 3, true);
             AssertSessionRepetition(course.repetition, 3, "d");
             AssertSessionPricing(course.pricing, 50, 120);
@@ -360,7 +360,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(firstSession.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(firstSession.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(firstSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "09:00", 360);
             AssertSessionBooking(firstSession.booking, 3, true);
             AssertSessionRepetition(firstSession.repetition, 1, null);
             AssertSessionPricing(firstSession.pricing, 50, null);
@@ -373,7 +373,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(secondSession.location, setup.Remuera.Id, setup.Remuera.Name);
             AssertSessionCoach(secondSession.coach, setup.Bobby.Id, setup.Bobby.Name);
             AssertSessionService(secondSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "9:30", 300);
+            AssertSessionTiming(secondSession.timing, GetDateFormatNumberOfDaysOut(15), "09:30", 300);
             AssertSessionBooking(secondSession.booking, 20, true);
             AssertSessionRepetition(secondSession.repetition, 1, null);
             AssertSessionPricing(secondSession.pricing, 80, null);
@@ -386,7 +386,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(thirdSession.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(thirdSession.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(thirdSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "9:00", 360);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "09:00", 360);
             AssertSessionBooking(thirdSession.booking, 3, true);
             AssertSessionRepetition(thirdSession.repetition, 1, null);
             AssertSessionPricing(thirdSession.pricing, 50, null);
@@ -415,7 +415,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(course.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(course.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(course.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionTiming(course.timing, GetDateFormatNumberOfDaysOut(14), "09:00", 360);
             AssertSessionBooking(course.booking, 3, true);
             AssertSessionRepetition(course.repetition, 3, "d");
             AssertSessionPricing(course.pricing, 50, 120);
@@ -429,7 +429,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(firstSession.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(firstSession.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(firstSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "9:00", 360);
+            AssertSessionTiming(firstSession.timing, GetDateFormatNumberOfDaysOut(14), "09:00", 360);
             AssertSessionBooking(firstSession.booking, 3, true);
             AssertSessionRepetition(firstSession.repetition, 1, null);
             AssertSessionPricing(firstSession.pricing, 50, null);
@@ -455,7 +455,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             AssertSessionLocation(thirdSession.location, setup.Orakei.Id, setup.Orakei.Name);
             AssertSessionCoach(thirdSession.coach, setup.Aaron.Id, setup.Aaron.Name);
             AssertSessionService(thirdSession.service, setup.HolidayCamp.Id, setup.HolidayCamp.Name);
-            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "9:00", 360);
+            AssertSessionTiming(thirdSession.timing, GetDateFormatNumberOfDaysOut(16), "09:00", 360);
             AssertSessionBooking(thirdSession.booking, 3, true);
             AssertSessionRepetition(thirdSession.repetition, 1, null);
             AssertSessionPricing(thirdSession.pricing, 50, null);

@@ -141,7 +141,10 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterCourseBobbyRemueraMiniRed9To10For3Weeks(setup);
         }
 
-        protected void RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(SetupData setup, int studentCapacity = 3)
+        protected void RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(SetupData setup, 
+                                                                         int studentCapacity = 3,
+                                                                         decimal? sessionPrice = 50,
+                                                                         decimal? coursePrice = 120)
         {
             if (setup.AaronOrakeiHolidayCamp9To15For3Days != null)
                 return;
@@ -154,7 +157,9 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                                                                     setup.Orakei.Id,
                                                                                                     setup.HolidayCamp.Id,
                                                                                                     GetDateFormatNumberOfDaysOut(14),
-                                                                                                    studentCapacity);
+                                                                                                    studentCapacity,
+                                                                                                    sessionPrice,
+                                                                                                    coursePrice);
             RegisterTestCourse(aaronOrakeiHolidayCamp9To15For3Days, setup);
             setup.AaronOrakeiHolidayCamp9To15For3Days = aaronOrakeiHolidayCamp9To15For3Days;
         }
@@ -349,12 +354,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             setup.FredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = fredOnFirstCourseSessionInAaronOrakeiHolidayCamp9To15For3Days;
         }
 
-        protected void RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup)
+        protected void RegisterFredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days(SetupData setup, int studentCapacity = 3)
         {
             if (setup.FredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days != null)
                 return;
 
-            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup);
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup, studentCapacity);
             RegisterCustomerFred(setup);
 
             var fredOnSecondCourseSessionInAaronOrakeiHolidayCamp9To15For3Days = new ExpectedBooking(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id,
@@ -620,5 +625,28 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             return Random.RandomString;
         }
 
+        protected void ThenReturnDuplicateSessionError(ApiResponse response, SetupData setup, params Guid[] sessionIds)
+        {
+            AssertSingleError(response,
+                              ErrorCodes.SessionDuplicate,
+                              "Duplicate session.",
+                              BuildDuplicateSessionsIdString(sessionIds));
+        }
+
+        protected void ThenReturnSessionNotInCourseError(ApiResponse response, Guid sessionId, Guid courseId)
+        {
+            AssertSingleError(response,
+                              ErrorCodes.SessionNotInCourse,
+                              "Session is not in course.",
+                              string.Format("Session: '{0}', Course: '{1}'", sessionId, courseId));
+        }
+
+        private string BuildDuplicateSessionsIdString(IEnumerable<Guid> sessionIds)
+        {
+            var output = string.Empty;
+            foreach (var sessionId in sessionIds)
+                output += string.Format("{0},", sessionId);
+            return output.TrimEnd(',').ToLowerInvariant();
+        }
     }
 }

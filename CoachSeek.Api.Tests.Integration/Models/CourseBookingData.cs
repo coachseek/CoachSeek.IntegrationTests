@@ -8,6 +8,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public Guid id { get; set; }
         public decimal price { get; set; }
         public string paymentStatus { get; set; }
+        public bool isOnlineBooking { get; set; }
         public SessionKeyData course { get; set; }
         public CustomerKeyData customer { get; set; }
         public List<SingleSessionBookingData> sessionBookings { get; set; }

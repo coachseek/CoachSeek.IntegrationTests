@@ -73,6 +73,7 @@
     <Compile Include="Models\ApiBusinessPaymentOptions.cs" />
     <Compile Include="Models\ApiBusinessSaveCommand.cs" />
     <Compile Include="Models\ApiEmailTemplateSaveCommand.cs" />
+    <Compile Include="Models\ApiPriceGetCommand.cs" />
     <Compile Include="Models\BusinessData.cs" />
     <Compile Include="Models\BusinessStatisticsData.cs" />
     <Compile Include="Models\BusinessPaymentData.cs" />
@@ -225,6 +226,7 @@
     <Compile Include="Tests\Location\LocationTests.cs" />
     <Compile Include="Tests\Payment\PaymentStatusTests.cs" />
     <Compile Include="Tests\Payment\PaymentTests.cs" />
+    <Compile Include="Tests\Price\PriceGetTests.cs" />
     <Compile Include="Tests\ScheduleTests.cs" />
     <Compile Include="Tests\Service\ServiceDeleteTests.cs" />
     <Compile Include="Tests\Service\ServicePostTests.cs" />

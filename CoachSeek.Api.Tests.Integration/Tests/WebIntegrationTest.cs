@@ -61,7 +61,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse BusinessAnonymousGet<TResponse>(string relativePath, string businessDomain)
         {
-            //return new TestCoachseekBusinessAnonymousApiClient(businessDomain).Get<TResponse>(relativePath);
             return new TestCoachseekBusinessAnonymousApiClient(businessDomain).GetAsync<TResponse, ApiApplicationError[]>(relativePath).Result;
         }
 

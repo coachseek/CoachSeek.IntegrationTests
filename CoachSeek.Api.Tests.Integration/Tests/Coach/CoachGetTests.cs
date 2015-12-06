@@ -116,7 +116,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         private void AssertWorkingDay(DailyWorkingHoursData day)
         {
             Assert.That(day.isAvailable, Is.True);
-            Assert.That(day.startTime, Is.EqualTo("9:00"));
+            Assert.That(day.startTime, Is.EqualTo("09:00"));
             Assert.That(day.finishTime, Is.EqualTo("17:00"));
         }
 

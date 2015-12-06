@@ -318,7 +318,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Coach
         {
             Assert.That(workingDay, Is.Not.Null);
             Assert.That(workingDay.isAvailable, Is.True);
-            Assert.That(workingDay.startTime, Is.EqualTo("9:00"));
+            Assert.That(workingDay.startTime, Is.EqualTo("09:00"));
             Assert.That(workingDay.finishTime, Is.EqualTo("17:00"));
         }
 

@@ -23,6 +23,12 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Customer
         }
 
 
+        public void Assert(CustomerKeyData actualCustomer)
+        {
+            NUnit.Framework.Assert.That(actualCustomer.id, Is.EqualTo(Id));
+            NUnit.Framework.Assert.That(actualCustomer.name, Is.EqualTo(string.Format("{0} {1}", FirstName, LastName)));
+        }
+
         public void Assert(CustomerData actualCustomer)
         {
             NUnit.Framework.Assert.That(actualCustomer.id, Is.EqualTo(Id));

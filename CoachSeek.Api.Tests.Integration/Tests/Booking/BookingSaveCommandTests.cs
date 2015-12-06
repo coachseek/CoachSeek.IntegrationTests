@@ -36,7 +36,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
 
             var command = GivenNoSessionsOnBookingSaveCommand(setup);
             var response = WhenTryBookSession(command, setup);
-            AssertSingleError(response, ErrorCodes.BookingSessionRequired, "A booking must have at least one session.", null);
+            AssertSingleError(response, ErrorCodes.BookingSessionRequired, "A booking must have at least one session.");
         }
 
         [Test]

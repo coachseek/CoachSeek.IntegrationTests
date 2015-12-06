@@ -16,7 +16,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Session
                                         int studentCapacity,
                                         bool isOnlineBookable,
                                         decimal? price,
-                                        string colour)
+                                        string colour,
+                                        string name)
             : base(coachId,
                 locationId,
                 serviceId,
@@ -26,7 +27,8 @@ namespace CoachSeek.Api.Tests.Integration.Models.Expectations.Session
                 studentCapacity,
                 isOnlineBookable,
                 price,
-                colour)
+                colour,
+                name)
         { }
     }
 }
