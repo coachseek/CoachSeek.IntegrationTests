@@ -77,6 +77,15 @@ namespace CoachSeek.Api.Tests.Integration.Tests
             RegisterServiceHolidayCamp(setup);
         }
 
+        protected void RegisterServiceMiniBlue(SetupData setup)
+        {
+            if (setup.MiniBlue != null)
+                return;
+            var miniBlue = new ServiceMiniBlue();
+            ServiceRegistrar.RegisterService(miniBlue, setup.Business);
+            setup.MiniBlue = miniBlue;
+        }
+
         protected void RegisterServiceMiniRed(SetupData setup)
         {
             if (setup.MiniRed != null)
@@ -180,6 +189,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests
                                                                                                 isOnlineBookable);
             RegisterTestCourse(bobbyRemueraMiniRed9To10For3Weeks, setup);
             setup.BobbyRemueraMiniRed9To10For3Weeks = bobbyRemueraMiniRed9To10For3Weeks;
+        }
+
+        protected void RegisterCourseBobbyRemueraMiniBlue12To13For25Weeks(SetupData setup, bool isOnlineBookable = true)
+        {
+            if (setup.BobbyRemueraMiniBlue12To13For25Weeks != null)
+                return;
+
+            RegisterCoachBobby(setup);
+            RegisterLocationRemuera(setup);
+            RegisterServiceMiniBlue(setup);
+
+            var bobbyRemueraMiniBlue12To13For25Weeks = new CourseBobbyRemueraMiniBlue12To13For25Weeks(setup.Bobby.Id,
+                                                                                                      setup.Remuera.Id,
+                                                                                                      setup.MiniBlue.Id,
+                                                                                                      "2016-01-28", //GetDateFormatNumberOfDaysOut(10),
+                                                                                                      isOnlineBookable);
+            RegisterTestCourse(bobbyRemueraMiniBlue12To13For25Weeks, setup);
+            setup.BobbyRemueraMiniBlue12To13For25Weeks = bobbyRemueraMiniBlue12To13For25Weeks;
         }
 
 

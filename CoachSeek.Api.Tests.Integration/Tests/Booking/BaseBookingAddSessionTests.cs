@@ -647,6 +647,25 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             else
                 Assert.That(secondSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
 
+            //// Check booked sessions
+            //var firstSession = courseBooking.bookedSessions[0];
+            //Assert.That(firstSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id));
+            //Assert.That(firstSession.date, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Timing.startDate));
+            //Assert.That(firstSession.startTime, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Timing.startTime));
+            //Assert.That(firstSession.studentCapacity, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Booking.studentCapacity));
+            //Assert.That(firstSession.name, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Description));
+            //// TODO: The booking count does not include the new booking.
+            ////Assert.That(firstSession.bookingCount, Is.EqualTo(1));
+
+            //var secondSession = courseBooking.bookedSessions[1];
+            //Assert.That(secondSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id));
+            //Assert.That(secondSession.date, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Timing.startDate));
+            //Assert.That(secondSession.startTime, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Timing.startTime));
+            //Assert.That(secondSession.studentCapacity, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Booking.studentCapacity));
+            //Assert.That(secondSession.name, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Description));
+            //// TODO: The booking count does not include the new booking.
+            ////Assert.That(secondSession.bookingCount, Is.EqualTo(1));
+
             // Check the bookings on the course
             GetAndAssertCourseWithSeveralSessionBookings(courseBooking.id,
                                                          firstSessionBooking.id,

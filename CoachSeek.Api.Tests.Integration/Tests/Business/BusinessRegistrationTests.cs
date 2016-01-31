@@ -287,6 +287,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.payment.forceOnlinePayment, Is.False);
             Assert.That(business.payment.paymentProvider, Is.Null);
             Assert.That(business.payment.merchantAccountIdentifier, Is.Null);
+            Assert.That(business.payment.useProRataPricing, Is.True);
 
             var admin = registration.admin;
             Assert.That(admin, Is.Not.Null);
@@ -312,10 +313,11 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             Assert.That(business.sport, Is.EqualTo(expectedBusiness.Sport));
             AssertDateTime(business.authorisedUntil, expectedBusiness.AuthorisedUntil);
             Assert.That(business.payment.currency, Is.EqualTo(expectedBusiness.Payment.currency));
-            Assert.That(business.payment.isOnlinePaymentEnabled, Is.EqualTo(false));
-            Assert.That(business.payment.forceOnlinePayment, Is.EqualTo(false));
+            Assert.That(business.payment.isOnlinePaymentEnabled, Is.False);
+            Assert.That(business.payment.forceOnlinePayment, Is.False);
             Assert.That(business.payment.paymentProvider, Is.EqualTo(null));
             Assert.That(business.payment.merchantAccountIdentifier, Is.EqualTo(null));
+            Assert.That(business.payment.useProRataPricing, Is.True);
         }
 
         private void AssertBusinessGet(ExpectedBusiness expectedBusiness)

@@ -185,6 +185,20 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Booking
             Assert.That(secondSessionBooking.customer.id, Is.EqualTo(setup.Fred.Id));
             Assert.That(secondSessionBooking.paymentStatus, Is.EqualTo(Constants.PAYMENT_STATUS_PENDING_INVOICE));
             Assert.That(secondSessionBooking.hasAttended, Is.Null);
+
+            //var firstBookedSession = booking.bookedSessions[0];
+            //Assert.That(firstBookedSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Id));
+            //Assert.That(firstBookedSession.name, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Description));
+            //Assert.That(firstBookedSession.date, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Timing.startDate));
+            //Assert.That(firstBookedSession.startTime, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Timing.startTime));
+            //Assert.That(firstBookedSession.studentCapacity, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[0].Booking.studentCapacity));
+
+            //var secondBookedSession = booking.bookedSessions[1];
+            //Assert.That(secondBookedSession.id, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id));
+            //Assert.That(secondBookedSession.name, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Description));
+            //Assert.That(secondBookedSession.date, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Timing.startDate));
+            //Assert.That(secondBookedSession.startTime, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Timing.startTime));
+            //Assert.That(secondBookedSession.studentCapacity, Is.EqualTo(setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Booking.studentCapacity));
         }
 
         protected void AssertGetSingleSessionBooking(SingleSessionBookingData booking, 

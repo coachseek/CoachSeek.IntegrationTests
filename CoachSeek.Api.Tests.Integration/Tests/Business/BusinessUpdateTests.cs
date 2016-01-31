@@ -42,6 +42,16 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             }
 
             [Test]
+            public void GivenMissingUseProRataPricing_WhenTryUpdateBusiness_ThenReturnUseProRataPricingRequiredError()
+            {
+                var setup = RegisterBusiness();
+
+                var command = GivenMissingUseProRataPricing(setup);
+                var response = WhenTryUpdateBusiness(command, setup);
+                ThenReturnUseProRataPricingRequiredError(response);
+            }
+
+            [Test]
             public void GivenIsOnlinePaymentEnabledButNoPaymentProvider_WhenTryUpdateBusiness_ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError()
             {
                 var setup = RegisterBusiness();
@@ -62,6 +72,21 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 return "{}";
             }
 
+            private ApiBusinessSaveCommand GivenMissingUseProRataPricing(SetupData setup)
+            {
+                return new ApiBusinessSaveCommand
+                {
+                    name = setup.Business.Name,
+                    domain = setup.Business.Domain,
+                    sport = setup.Business.Sport,
+                    payment = new ApiBusinessPaymentOptions
+                    {
+                        currency = "EUR",
+                        isOnlinePaymentEnabled = false
+                    }
+                };
+            }
+
             private ApiBusinessSaveCommand GivenIsOnlinePaymentEnabledButNoPaymentProvider(SetupData setup)
             {
                 return new ApiBusinessSaveCommand
@@ -74,7 +99,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                         currency = "EUR",
                         isOnlinePaymentEnabled = true,
                         forceOnlinePayment = false,
-                        merchantAccountIdentifier = "olaf@coachseek.com"
+                        merchantAccountIdentifier = "olaf@coachseek.com",
+                        useProRataPricing = false
                     }
                 };
             }
@@ -90,17 +116,24 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                         isOnlinePaymentEnabled = true,
                         forceOnlinePayment = false,
                         paymentProvider = "PayPal",
-                        merchantAccountIdentifier = "olaf@coachseek.com"
+                        merchantAccountIdentifier = "olaf@coachseek.com",
+                        useProRataPricing = false
                     }
                 };
+            }
+
+            private void ThenReturnUseProRataPricingRequiredError(ApiResponse response)
+            {
+                AssertSingleError(response,
+                                  ErrorCodes.UseProRataPricingRequired,
+                                  "The UseProRataPricing field is required.");
             }
 
             private void ThenReturnPaymentProviderRequiredWhenOnlineBookingIsEnabledError(ApiResponse response)
             {
                 AssertSingleError(response, 
                                   ErrorCodes.PaymentProviderRequiredWhenOnlineBookingIsEnabled,
-                                  "When Online Payment is enabled then an Online Payment Provider must be specified.",
-                                  null);
+                                  "When Online Payment is enabled then an Online Payment Provider must be specified.");
             }
         }
 
@@ -241,7 +274,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                         isOnlinePaymentEnabled = false,
                         forceOnlinePayment = false,
                         paymentProvider = "PayPal",
-                        merchantAccountIdentifier = "olaf@coachseek.com"
+                        merchantAccountIdentifier = "olaf@coachseek.com",
+                        useProRataPricing = false
                     }
                 };
             }
@@ -315,7 +349,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 command.payment = new ApiBusinessPaymentOptions
                 {
                     currency = "EUR",
-                    isOnlinePaymentEnabled = false
+                    isOnlinePaymentEnabled = false,
+                    useProRataPricing = false
                 };
                 return command;
             }
@@ -340,7 +375,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                         isOnlinePaymentEnabled = true,
                         forceOnlinePayment = true,
                         paymentProvider = "PayPal",
-                        merchantAccountIdentifier = "olaf@coachseek.com"
+                        merchantAccountIdentifier = "olaf@coachseek.com",
+                        useProRataPricing = false
                     }
                 };
             }
@@ -349,7 +385,8 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             private void ThenReturnsRequiredPaymentOptionErrors(ApiResponse response)
             {
                 AssertMultipleErrors(response, new[,] { { "currency-required", "The Currency field is required.", null },
-                                                        { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null } });
+                                                        { "isonlinepaymentenabled-required", "The IsOnlinePaymentEnabled field is required.", null },
+                                                        { "useproratapricing-required", "The UseProRataPricing field is required.", null } });
             }
 
             private void ThenReturnsInvalidSubdomainFormatError(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
@@ -381,6 +418,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(responseBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
 
                 var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
                 var getBusiness = (BusinessData)getResponse.Payload;
@@ -394,6 +432,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(getBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
             }
 
             private void ThenReturnsCurrencyNotSupportedError(ApiResponse response)
@@ -410,8 +449,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
             {
                 AssertSingleError(response, 
                                   "merchantaccountidentifier-required", 
-                                  "The MerchantAccountIdentifier field is required.", 
-                                  null);
+                                  "The MerchantAccountIdentifier field is required.");
             }
 
             private void ThenReturnsMissingMerchantAccountIdentifierFormatError(ApiResponse response)
@@ -430,6 +468,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.domain, Is.EqualTo(setup.Business.Domain));
                 Assert.That(responseBusiness.sport, Is.EqualTo(setup.Business.Sport));
                 Assert.That(responseBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(responseBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
                 Assert.That(responseBusiness.payment.paymentProvider, Is.Null);
 
                 var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
@@ -439,6 +478,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(getBusiness.name, Is.EqualTo(command.name));
                 Assert.That(getBusiness.domain, Is.EqualTo(setup.Business.Domain));
                 Assert.That(getBusiness.payment.currency, Is.EqualTo(command.payment.currency));
+                Assert.That(getBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
                 Assert.That(getBusiness.payment.paymentProvider, Is.Null);
             }
 
@@ -455,6 +495,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(responseBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
 
                 var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
                 var getBusiness = (BusinessData)getResponse.Payload;
@@ -468,6 +509,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(getBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
             }
 
             private void ThenUpdateTheBusinessWithChanges(ApiResponse response, ApiBusinessSaveCommand command, SetupData setup)
@@ -483,6 +525,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(responseBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(responseBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(responseBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(responseBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
 
                 var getResponse = AuthenticatedGet<BusinessData>("Business", setup);
                 var getBusiness = (BusinessData)getResponse.Payload;
@@ -496,6 +539,7 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Business
                 Assert.That(getBusiness.payment.forceOnlinePayment, Is.EqualTo(command.payment.forceOnlinePayment));
                 Assert.That(getBusiness.payment.paymentProvider, Is.EqualTo(command.payment.paymentProvider));
                 Assert.That(getBusiness.payment.merchantAccountIdentifier, Is.EqualTo(command.payment.merchantAccountIdentifier));
+                Assert.That(getBusiness.payment.useProRataPricing, Is.EqualTo(command.payment.useProRataPricing));
             }
         }
 

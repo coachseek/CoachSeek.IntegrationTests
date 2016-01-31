@@ -12,5 +12,6 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public SessionKeyData course { get; set; }
         public CustomerKeyData customer { get; set; }
         public List<SingleSessionBookingData> sessionBookings { get; set; }
+        //public List<BookingSessionData> bookedSessions { get; set; }
     }
 }

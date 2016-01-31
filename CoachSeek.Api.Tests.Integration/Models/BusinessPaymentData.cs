@@ -7,5 +7,6 @@
         public bool forceOnlinePayment { get; set; }
         public string paymentProvider { get; set; }
         public string merchantAccountIdentifier { get; set; }
+        public bool useProRataPricing { get; set; }
     }
 }

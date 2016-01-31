@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models
 {
@@ -11,5 +13,11 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public string email { get; set; }
         public string phone { get; set; }
         public string dateOfBirth { get; set; }
+        public List<CustomFieldKeyValueData> customFields { get; set; }
+
+        public CustomerData()
+        {
+            customFields = new List<CustomFieldKeyValueData>();
+        }
     }
 }

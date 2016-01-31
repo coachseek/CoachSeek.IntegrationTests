@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using Coachseek.API.Client.Models;
+using Coachseek.API.Client.Services;
 using CoachSeek.Api.Tests.Integration.Models;
 using NUnit.Framework;
 
@@ -39,6 +40,55 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Customer
             var id = GivenValidCustomerId(setup);
             var response = WhenTryGetCustomerById(id, setup);
             ThenReturnCustomer(response, setup);
+        }
+
+        [Test]
+        public void GivenCustomerCustomFields_WhenTryGetCustomerById_ThenReturnCustomerWithBlankCustomFields()
+        {
+            var setup = RegisterBusiness();
+            CreateCustomFields(setup);
+            RegisterCustomerFred(setup);
+
+            var id = GivenValidCustomerId(setup);
+            var response = WhenTryGetCustomerById(id, setup);
+            ThenReturnCustomer(response, setup);
+        }
+
+
+        private void CreateCustomFields(SetupData setup)
+        {
+            CreateCustomerMedicalInfoCustomField(setup);
+            CreateCustomerSchoolYearCustomField(setup);
+        }
+
+        private void CreateCustomerMedicalInfoCustomField(SetupData setup)
+        {
+            var command = CreateNewCustomFieldSaveCommand("Customer", "Medical Info", true);
+            var response = CreateNewCustomField(command, setup);
+            setup.CustomFields.Add((CustomFieldTemplateData)response.Payload);
+        }
+
+        private void CreateCustomerSchoolYearCustomField(SetupData setup)
+        {
+            var command = CreateNewCustomFieldSaveCommand("customer", "School Year");
+            var response = CreateNewCustomField(command, setup);
+            setup.CustomFields.Add((CustomFieldTemplateData)response.Payload);
+        }
+
+        private ApiCustomFieldSaveCommand CreateNewCustomFieldSaveCommand(string type, string name, bool isRequired = false)
+        {
+            return new ApiCustomFieldSaveCommand
+            {
+                type = type,
+                name = name,
+                isRequired = isRequired
+            };
+        }
+
+        private ApiResponse CreateNewCustomField(ApiCustomFieldSaveCommand command, SetupData setup)
+        {
+            var json = JsonSerialiser.Serialise(command);
+            return AuthenticatedPost<CustomFieldTemplateData>(json, "CustomFields", setup);
         }
 
 

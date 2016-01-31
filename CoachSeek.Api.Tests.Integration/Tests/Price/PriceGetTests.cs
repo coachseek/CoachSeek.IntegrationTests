@@ -114,14 +114,48 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Price
         }
 
         [Test]
-        public void GivenSomeSessionsInACourseAndHaveCoursePriceOnly_WhenTryGetPrice_ThenReturnProRataCoursePrice()
+        public void GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOn_WhenTryGetPrice_ThenReturnProRataCoursePrice()
         {
             var setup = RegisterBusiness();
             RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup, 3, null, 200);
 
-            var command = GivenSomeSessionsInACourseAndHaveCoursePriceOnly(setup);
+            var command = GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOn(setup);
             var response = WhenTryGetPrice(command, setup);
             ThenReturnProRataCoursePrice(response, setup);
+        }
+
+        [Test]
+        public void GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOff_WhenTryGetPrice_ThenReturnCoursePrice()
+        {
+            var setup = RegisterBusiness();
+            UpdateBusinessSetUseProRataPricingIsFalse(setup);
+            RegisterCourseAaronOrakeiHolidayCamp9To15For3Days(setup, 3, null, 120);
+
+            var command = GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOff(setup);
+            var response = WhenTryGetPrice(command, setup);
+            ThenReturnCoursePrice(response, setup);
+        }
+
+        private void UpdateBusinessSetUseProRataPricingIsFalse(SetupData setup)
+        {
+            var business = setup.Business;
+            var payment = business.Payment;
+            var command = new ApiBusinessSaveCommand
+            {
+                domain = business.Domain,
+                name = business.Name,
+                payment = new ApiBusinessPaymentOptions
+                {
+                    currency = payment.currency,
+                    forceOnlinePayment = payment.forceOnlinePayment,
+                    isOnlinePaymentEnabled = payment.isOnlinePaymentEnabled,
+                    merchantAccountIdentifier = payment.merchantAccountIdentifier,
+                    paymentProvider = payment.paymentProvider,
+                    useProRataPricing = false
+                }
+            };
+            var json = JsonSerialiser.Serialise(command);
+            AuthenticatedPost<BusinessData>(json, "Business", setup);
         }
 
 
@@ -214,7 +248,19 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Price
             };
         }
 
-        private ApiPriceGetCommand GivenSomeSessionsInACourseAndHaveCoursePriceOnly(SetupData setup)
+        private ApiPriceGetCommand GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOn(SetupData setup)
+        {
+            return new ApiPriceGetCommand
+            {
+                sessions = new[]
+                {
+                    new ApiSessionKey { id = setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[1].Id },
+                    new ApiSessionKey { id = setup.AaronOrakeiHolidayCamp9To15For3Days.Sessions[2].Id }
+                }
+            };
+        }
+
+        private ApiPriceGetCommand GivenSomeSessionsInACourseAndHaveCoursePriceOnlyAndUseProRataPricingIsOff(SetupData setup)
         {
             return new ApiPriceGetCommand
             {

@@ -119,7 +119,6 @@ namespace CoachSeek.Api.Tests.Integration.Tests
 
         protected ApiResponse AuthenticatedPost<TResponse>(string json, string relativePath, string username, string password)
         {
-            //return new TestCoachseekAuthenticatedApiClient(username, password).Post<TResponse>(json, relativePath);
             return new TestCoachseekAuthenticatedApiClient(username, password)
                         .PostAsync<TResponse, ApiApplicationError[]>(json, relativePath).Result;
         }
@@ -139,6 +138,12 @@ namespace CoachSeek.Api.Tests.Integration.Tests
         {
             return new TestCoachseekAuthenticatedApiClient(setup.Business.UserName, setup.Business.Password)
                         .Delete(relativePath, id);
+        }
+
+        protected ApiResponse AuthenticatedDelete(string relativePath, SetupData setup)
+        {
+            return new TestCoachseekAuthenticatedApiClient(setup.Business.UserName, setup.Business.Password)
+                        .Delete(relativePath);
         }
 
 

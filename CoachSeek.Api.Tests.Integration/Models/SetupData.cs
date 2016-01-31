@@ -1,4 +1,5 @@
-﻿using CoachSeek.Api.Tests.Integration.Models.Expectations;
+﻿using System.Collections.Generic;
+using CoachSeek.Api.Tests.Integration.Models.Expectations;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Booking;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Coach;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Course;
@@ -6,6 +7,7 @@ using CoachSeek.Api.Tests.Integration.Models.Expectations.Customer;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Location;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Service;
 using CoachSeek.Api.Tests.Integration.Models.Expectations.Session;
+using NUnit.Framework;
 
 namespace CoachSeek.Api.Tests.Integration.Models
 {
@@ -17,6 +19,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public CoachAaron Aaron { get; set; }
         public CoachBobby Bobby { get; set; }
         public ServiceMiniRed MiniRed { get; set; }
+        public ServiceMiniBlue MiniBlue { get; set; }
         public ServiceHolidayCamp HolidayCamp { get; set; }
         public CustomerFred Fred { get; set; }
         public CustomerWilma Wilma { get; set; }
@@ -26,6 +29,7 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public StandaloneAaronOrakeiMiniRed16To17 AaronOrakeiMiniRed16To17 { get; set; }
         public CourseBobbyRemueraMiniRed9To10For3Weeks BobbyRemueraMiniRed9To10For3Weeks { get; set; }
         public CourseAaronOrakeiHolidayCamp9To15For3Days AaronOrakeiHolidayCamp9To15For3Days { get; set; }
+        public CourseBobbyRemueraMiniBlue12To13For25Weeks BobbyRemueraMiniBlue12To13For25Weeks { get; set; }
         public BookingFredOnStandaloneAaronOrakeiMiniRed14To15 FredOnAaronOrakeiMiniRed14To15 { get; set; }
         public BookingWilmaOnStandaloneAaronOrakeiMiniRed14To15 WilmaOnAaronOrakeiMiniRed14To15 { get; set; }
         public BookingBarneyOnStandaloneAaronOrakeiMiniRed14To15 BarneyOnAaronOrakeiMiniRed14To15 { get; set; }
@@ -36,14 +40,22 @@ namespace CoachSeek.Api.Tests.Integration.Models
         public ExpectedBooking FredOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
         public ExpectedBooking WilmaOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
         public ExpectedBooking BarneyOnLastCourseSessionInAaronOrakeiHolidayCamp9To15For3Days { get; set; }
+        public List<CustomFieldTemplateData> CustomFields { get; set; }
 
 
-        public SetupData(ExpectedBusiness business)
+        private SetupData()
+        {
+            CustomFields = new List<CustomFieldTemplateData>();
+        }
+
+        public SetupData(ExpectedBusiness business) 
+            : this()
         {
             Business = business;
         }
 
         public SetupData(RegistrationData registration, string password)
+            : this()
         {
             Business = new ExpectedBusiness(registration.business.name,
                                             registration.business.sport,

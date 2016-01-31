@@ -3,7 +3,7 @@
     public class ServiceHolidayCamp : ExpectedCourseService
     {
         public ServiceHolidayCamp() 
-            : base("Holiday Camp", "yellow", 3, "d", 240,120, 200, 20)
+            : base("Holiday Camp", "yellow", 3, "d", 240, 120, 200, 20)
         { }
     }
 }

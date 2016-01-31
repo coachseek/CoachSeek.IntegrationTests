@@ -126,6 +126,26 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             ThenReturnSessionsAndCoursesForService(response, setup);
         }
 
+        [Test]
+        public void GivenCourseWithManySessions_WhenTrySearch_ThenReturnSessionsInDateOrder()
+        {
+            //var setup = RegisterBusiness();
+
+            var criteria = GivenCourseWithManySessions();  // setup);
+            var response = WhenTrySearch2(criteria);    //, setup);
+            //ThenReturnSessionsInDateOrder(response, setup);
+        }
+
+
+        private Tuple<string, string, Guid?, Guid?, Guid?> GivenCourseWithManySessions()    //SetupData setup)
+        {
+            //RegisterCourseBobbyRemueraMiniBlue12To13For25Weeks(setup);
+
+            return new Tuple<string, string, Guid?, Guid?, Guid?>("2016-01-27", //GetFormattedDateToday(),
+                                                                  "2017-01-27", //GetDateFormatNumberOfDaysOut(200),
+                                                                  null, null, null);
+        }
+
 
         private ApiResponse WhenTrySearch(Tuple<string, string, Guid?, Guid?, Guid?> criteria, SetupData setup)
         {
@@ -133,6 +153,18 @@ namespace CoachSeek.Api.Tests.Integration.Tests.Session
             return AuthenticatedGet<SessionSearchData>(url, setup);
         }
 
+        private ApiResponse WhenTrySearch2(Tuple<string, string, Guid?, Guid?, Guid?> criteria)
+        {
+            var url = BuildSearchUrl(criteria.Item1, criteria.Item2, criteria.Item3, criteria.Item4, criteria.Item5);
+
+            return AuthenticatedGet<SessionSearchData>(url, "denym@coachseek.com", "123qwedsazxC");
+        }
+
+
+        private void ThenReturnSessionsInDateOrder(ApiResponse response, SetupData setup)
+        {
+            throw new NotImplementedException();
+        }
 
         private void ThenReturnSessionsAndCoursesForCoach(ApiResponse response, SetupData setup)
         {
